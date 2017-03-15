@@ -5,7 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
     SITENAME = "OPS"
-    APPLICATION_ROOT = "test" #prefix test
+    #APPLICATION_ROOT = "test" #prefix test
     DEPARTMENT = ["admin", "dev", "qa", "ops", "user", "manager"]
     SSL_DISABLE = False
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True

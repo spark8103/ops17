@@ -12,13 +12,6 @@ class NameForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
-class EditProfileForm(FlaskForm):
-    name = StringField('Real name', validators=[Length(0, 64)])
-    location = StringField('Location', validators=[Length(0, 64)])
-    about_me = TextAreaField('About me')
-    submit = SubmitField('Submit')
-
-
 class EditProfileAdminForm(FlaskForm):
     email = StringField('Email', validators=[Required(), Length(1, 64),
                                              Email()])

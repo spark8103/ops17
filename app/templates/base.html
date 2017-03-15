@@ -25,18 +25,20 @@
             <ul class="nav navbar-nav">
                 {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('main.index') }}">Home</a></li>
-                <li><a href="{{ url_for('main.user', username=current_user.username) }}">Profile</a></li>
+                <li><a href="/project">Project</a></li>
                 {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        User <b class="caret"></b>
+                        {{ current_user.username }} <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('user.change_password') }}">Change Password</a></li>
-                        <li><a href="{{ url_for('user.change_email_request') }}">Change Email</a></li>
+                        {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+                        <li><a href="{{ url_for('user.user-list') }}">User Manager</a></li>
+                        {% endif %}
+                        <li><a href="{{ url_for('user.edit-profile') }}">Profile Edit</a></li>
                         <li><a href="{{ url_for('user.logout') }}">Log Out</a></li>
                     </ul>
                 </li>

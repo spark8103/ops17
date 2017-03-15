@@ -51,6 +51,7 @@ class User(UserMixin, db.Model):
     about_me = db.Column(db.Text())
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
+    login_access = db.Column(db.Boolean, default=False, index=True)
 
     @staticmethod
     def generate_fake(count=100):
