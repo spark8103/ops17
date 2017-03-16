@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, login_required, \
     current_user
 from . import user
 from .. import db
-from ..models import User
+from ..models import User, Role
 from ..email import send_email
 from .forms import LoginForm, EditProfileForm, \
     EditProfileAdminForm, PasswordResetRequestForm, PasswordResetForm
@@ -21,7 +21,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         username = User.query.filter_by(username=form.username.data).first()
-        if username is not None and username.verify_password(form.password.data):
+        if username is not None and username.allow_login and username.verify_password(form.password.data):
             login_user(username, form.remember_me.data)
             return redirect(request.args.get('next') or url_for('main.index'))
         flash('Invalid username or password.')
@@ -30,26 +30,30 @@ def login():
 
 @user.route('/user-list')
 @login_required
-def userinfo(username):
-    user = User.query.filter_by(username=username).first_or_404()
-    return render_template('user/user.html', user=user)
+def user_list():
+    user_list = User.query.all()
+    print user_list[0].role
+    return render_template('user/user.html', user_list=user_list)
 
 
 @user.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     form = EditProfileForm()
+    print form.data
     if form.validate_on_submit():
-        current_user.name = form.name.data
-        current_user.location = form.location.data
+        current_user.email = form.email.data
+        current_user.mobile = form.mobile.data
+        current_user.department = form.department.data
         current_user.about_me = form.about_me.data
         db.session.add(current_user)
         flash('Your profile has been updated.')
-        return redirect(url_for('.user', username=current_user.username))
-    form.name.data = current_user.name
-    form.location.data = current_user.location
+        return redirect(url_for('user.edit_profile'))
+    form.email.data = current_user.email
+    form.mobile.data = current_user.mobile
+    form.department.data = current_user.department
     form.about_me.data = current_user.about_me
-    return render_template('edit_profile.html', form=form)
+    return render_template('user/edit_profile.html', form=form)
 
 
 @user.route('/edit-profile/<int:id>', methods=['GET', 'POST'])

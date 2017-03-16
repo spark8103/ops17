@@ -7,6 +7,7 @@
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font-awesome.min.css') }}">
 {% endblock %}
 
 {% block navbar %}
@@ -35,10 +36,10 @@
                         {{ current_user.username }} <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        {% if current_user.can(Permission.MODERATE_COMMENTS) %}
-                        <li><a href="{{ url_for('user.user-list') }}">User Manager</a></li>
+                        {% if current_user.can(Permission.ADMINISTER) %}
+                        <li><a href="{{ url_for('user.user_list') }}">User Manager</a></li>
                         {% endif %}
-                        <li><a href="{{ url_for('user.edit-profile') }}">Profile Edit</a></li>
+                        <li><a href="{{ url_for('user.edit_profile') }}">Profile Edit</a></li>
                         <li><a href="{{ url_for('user.logout') }}">Log Out</a></li>
                     </ul>
                 </li>

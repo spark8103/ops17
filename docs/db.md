@@ -46,7 +46,7 @@ python manage.py shell
 
 ```shell
 from app import models
-admin = User(username='admin', email='admin@example.com', password='admin', role_id=1, mobile=13129388374, department="admin")
+admin = User(username='admin', email='admin@example.com', password='admin', role_id=1, mobile=13129388374, department="admin", allow_login=True)
 ops = User(username='ops', email='ops@example.com', password='ops', role_id=2, mobile=13854263519, department="ops")
 dev = User(username='dev', email='dev@example.com', password='dev', role_id=2, mobile=13625486549, department="dev")
 qa = User(username='qa', email='qa@example.com', password='qa', role_id=2, mobile=13752461259, department="qa")

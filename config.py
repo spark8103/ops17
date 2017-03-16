@@ -6,6 +6,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
     SITENAME = "OPS"
     #APPLICATION_ROOT = "test" #prefix test
+    BOOTSTRAP_SERVE_LOCAL =True
     DEPARTMENT = ["admin", "dev", "qa", "ops", "user", "manager"]
     SSL_DISABLE = False
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True

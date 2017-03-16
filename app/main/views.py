@@ -33,8 +33,4 @@ def server_shutdown():
 @main.route('/')
 @login_required
 def index():
-    print "###index info start###"
-    print "current_user: " + str(current_user)
-    print "auth: " + str(current_user.is_authenticated)
-    print "###index info end###"
     return render_template('index.html')

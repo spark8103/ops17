@@ -1,5 +1,6 @@
+from flask import current_app
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField, FloatField
 from wtforms.validators import Required, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
 from ..models import User, Role
@@ -54,8 +55,10 @@ class ChangeEmailForm(FlaskForm):
 
 
 class EditProfileForm(FlaskForm):
-    name = StringField('Real name', validators=[Length(0, 64)])
-    location = StringField('Location', validators=[Length(0, 64)])
+    email = StringField('New Email', validators=[Required(), Length(1, 64),
+                                                 Email()])
+    mobile = FloatField("New Mobile", validators=[Required()])
+    department = SelectField('Department', choices=[(i,i) for i in ["admin", "dev", "qa", "ops", "user", "manager"]])
     about_me = TextAreaField('About me')
     submit = SubmitField('Submit')
 

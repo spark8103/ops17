@@ -8,6 +8,7 @@ from . import db, login_manager
 
 
 class Permission:
+    USER = 0x01
     WRITE_ARTICLES = 0x04
     ADMINISTER = 0x80
 
@@ -43,7 +44,7 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
-    email = db.Column(db.String(64), unique=True, index=True)
+    email = db.Column(db.String(64), index=True)
     mobile = db.Column(db.INTEGER, index=True)
     department = db.Column(db.String(32), index=True, default="user")
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
@@ -51,7 +52,7 @@ class User(UserMixin, db.Model):
     about_me = db.Column(db.Text())
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
-    login_access = db.Column(db.Boolean, default=False, index=True)
+    allow_login = db.Column(db.Boolean, default=False, index=True)
 
     @staticmethod
     def generate_fake(count=100):
