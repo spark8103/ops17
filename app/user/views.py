@@ -1,12 +1,13 @@
-from flask import render_template, redirect, request, url_for, flash, session
+from flask import render_template, redirect, request, url_for, flash, \
+    current_app
 from flask_login import login_user, logout_user, login_required, \
     current_user
 from . import user
 from .. import db
 from ..models import User, Role
 from ..email import send_email
-from .forms import LoginForm, EditProfileForm, \
-    EditProfileAdminForm, PasswordResetRequestForm, PasswordResetForm
+from .forms import LoginForm, EditProfileForm, ChangePasswordForm, \
+    EditUserAdminForm, PasswordResetRequestForm, PasswordResetForm
 from ..decorators import admin_required, permission_required
 
 
@@ -31,16 +32,19 @@ def login():
 @user.route('/user-list')
 @login_required
 def user_list():
-    user_list = User.query.all()
-    print user_list[0].role
-    return render_template('user/user.html', user_list=user_list)
+    page = request.args.get('page', 1, type=int)
+    query = User.query
+    pagination = query.order_by(User.id.asc()).paginate(
+        page, per_page=current_app.config['OPS_USER_PER_PAGE'],
+        error_out=False)
+    users = pagination.items
+    return render_template('user/user-list.html', users=users, pagination=pagination)
 
 
 @user.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     form = EditProfileForm()
-    print form.data
     if form.validate_on_submit():
         current_user.email = form.email.data
         current_user.mobile = form.mobile.data
@@ -56,31 +60,48 @@ def edit_profile():
     return render_template('user/edit_profile.html', form=form)
 
 
-@user.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
+@user.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.old_password.data):
+            current_user.password = form.password.data
+            db.session.add(current_user)
+            flash('Your password has been updated.')
+            return redirect(url_for('main.index'))
+        else:
+            flash('Invalid password.')
+    return render_template("user/change_password.html", form=form)
+
+
+@user.route('/user-edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
-def edit_profile_admin(id):
+def user_edit_admin(id):
     user = User.query.get_or_404(id)
-    form = EditProfileAdminForm(user=user)
+    form = EditUserAdminForm(user=user)
     if form.validate_on_submit():
         user.email = form.email.data
-        user.username = form.username.data
-        user.confirmed = form.confirmed.data
+        user.mobile = form.mobile.data
         user.role = Role.query.get(form.role.data)
-        user.name = form.name.data
-        user.location = form.location.data
-        user.about_me = form.about_me.data
+        user.department = form.department.data
+        user.allow_login = form.allow_login
+        print "password1:" + form.password.data
+        print "password2:" + user.password
+        if form.password.data is not '':
+            user.password = form.password.data
+        print "password3:" + user.password
         db.session.add(user)
         flash('The profile has been updated.')
-        return redirect(url_for('.user', username=user.username))
+        return redirect(url_for('.user_edit_admin',id = str(id)))
     form.email.data = user.email
-    form.username.data = user.username
-    form.confirmed.data = user.confirmed
+    form.mobile.data = user.mobile
     form.role.data = user.role_id
-    form.name.data = user.name
-    form.location.data = user.location
-    form.about_me.data = user.about_me
-    return render_template('edit_profile.html', form=form, user=user)
+    form.department.data = user.department
+    form.allow_login.data = user.allow_login
+    form.password = ''
+    return render_template('user/user-edit.html', form=form, user=user.username)
 
 
 @user.route('/logout')
