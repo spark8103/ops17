@@ -1,5 +1,5 @@
 from flask import render_template, redirect, request, url_for, flash, \
-    current_app
+    current_app, jsonify
 from flask_login import login_user, logout_user, login_required, \
     current_user
 from . import user
@@ -145,3 +145,31 @@ def password_reset(token):
         else:
             return redirect(url_for('main.index'))
     return render_template('user/reset_password.html', form=form)
+
+
+@user.route('/del', methods=['POST'])
+def user_del():
+    username = request.form.get('username')
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('Non-existent user: ' + username, 'error')
+        response = {"success": "false"}
+        return jsonify(response)
+    db.session.delete(user)
+    db.session.commit()
+    response = {"success": "true"}
+    return jsonify(response)
+
+
+@user.route('/add', methods=['GET','POST'])
+def user_add():
+    username = request.form.get('username')
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('Non-existent user: ' + username, 'error')
+        response = {"success": "false"}
+        return jsonify(response)
+    db.session.delete(user)
+    db.session.commit()
+    response = {"success": "true"}
+    return jsonify(response)

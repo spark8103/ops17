@@ -8,6 +8,9 @@
 [design](/docs/design.md)
 
 ## Init
+### Install requirements
+pip install -r requirements/requirements.txt
+
 ### Create db file
 python manage.py db upgrade
 

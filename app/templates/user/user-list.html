@@ -7,7 +7,7 @@
     <h2>User Manager</h2>
     <div class="table-responsive">
         <div class="col text-right">
-            <a href="#" type="button" class="btn btn-sm btn-primary btn-create">Create New</a>
+            <a href="{{ url_for('user.user_add') }}" type="button" class="btn btn-sm btn-primary btn-create">Create New</a>
         </div>
     </div>
         <table class="table table-hover table-bordered table-striped">
@@ -39,12 +39,38 @@
                 <td>{{ user.allow_login }}</td>
                 <td>
                     <a href="{{ url_for('user.user_edit_admin', id=user.id) }}" class="btn btn-default btn-sm"><em class="fa fa-pencil fa-1g"></em></a>
-                    <a class="btn btn-danger btn-sm"><em class="fa fa-trash fa-1g"></em></a>
+                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#del_user" data-whatever="{{ user.username }}"><em class="fa fa-trash fa-1g"></em></button >
                 </td>
             </tr>
             {% endfor %}
             </tbody>
         </table>
+
+<!-- Model del_user -->
+<div class="modal fade" id="del_user" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="del_user_Label">Delete User</h4>
+            </div>
+            <div class="modal-body">
+                    <form class="form-horizontal well" data-async data-target="#rating-modal" action="/user/del" method="POST" id="del_user_form">
+                        <input id="del_user_username" name="username" type="hidden" value="">
+                        <div class="form-group">
+                            <label class="control-label col-xm-2">Are you sure?</label>
+                        </div>
+                    </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="del_user_submit">Submit</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- Model del_user -->
+
 {% if pagination %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, '.user_list') }}
@@ -57,4 +83,34 @@
 {{ super() }}
 <script type="text/javascript" src="{{ url_for('static', filename='js/Markdown.Converter.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/Markdown.Sanitizer.min.js') }}"></script>
+
+<script>
+jQuery(function() {
+    $('#del_user').on('show.bs.modal', function(event){
+        var button = $(event.relatedTarget);
+        var recipient = button.data('whatever');
+        var modal = $(this);
+        $('#del_user_username').val(recipient);
+        modal.find('.modal-title').text('Delete User: ' + recipient);
+        //modal.find('.modal-body input').val(recipient);
+    })
+})
+jQuery(function () {
+    $("button#del_user_submit").click(function(){
+        var $form = $('form#del_user_form');
+        $.ajax({
+            type: $form.attr('method'),
+            url: $form.attr('action'),
+            data: $form.serialize(),
+            success: function(data, status) {
+                if(data.success == 'true'){
+                    location.reload(true);
+                }else{
+                    location.reload(true);
+                }
+            }
+        });
+    });
+})
+</script>
 {% endblock %}
