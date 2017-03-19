@@ -4,20 +4,57 @@
 {% block title %}{{ config['SITENAME'] }} - User Manager{% endblock %}
 
 {% block page_content %}
-<div class="container">
-<h2>User Manager</h2>
-{% include '/user/_user-list.html' %}
-
+    <h2>User Manager</h2>
+    <div class="table-responsive">
+        <div class="col text-right">
+            <a href="#" type="button" class="btn btn-sm btn-primary btn-create">Create New</a>
+        </div>
+    </div>
+        <table class="table table-hover table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Moble</th>
+                <th>department</th>
+                <th>role</th>
+                <th>member_since</th>
+                <th>last_seen</th>
+                <th>allow_login</th>
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em class="fa fa-cog fa-1g"></em></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.mobile }}</td>
+                <td>{{ user.department }}</td>
+                <td>{{ user.role.name }}</td>
+                <td>{{ moment(user.member_since).format('YYYY-MM-D H:mm:ss') }}</td>
+                <td>{{ moment(user.last_seen).format('YYYY-MM-D H:mm:ss') }}</td>
+                <td>{{ user.allow_login }}</td>
+                <td>
+                    <a href="{{ url_for('user.user_edit_admin', id=user.id) }}" class="btn btn-default btn-sm"><em class="fa fa-pencil fa-1g"></em></a>
+                    <a class="btn btn-danger btn-sm"><em class="fa fa-trash fa-1g"></em></a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 {% if pagination %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, '.user_list') }}
 </div>
 {% endif %}
 
-</div>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
-{{ pagedown.include_pagedown() }}
+<script type="text/javascript" src="{{ url_for('static', filename='js/Markdown.Converter.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/Markdown.Sanitizer.min.js') }}"></script>
 {% endblock %}

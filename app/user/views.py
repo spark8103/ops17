@@ -87,11 +87,10 @@ def user_edit_admin(id):
         user.role = Role.query.get(form.role.data)
         user.department = form.department.data
         user.allow_login = form.allow_login
-        print "password1:" + form.password.data
-        print "password2:" + user.password
-        if form.password.data is not '':
+#        print user.password_hash
+        if form.password.data:
             user.password = form.password.data
-        print "password3:" + user.password
+#        print user.password_hash
         db.session.add(user)
         flash('The profile has been updated.')
         return redirect(url_for('.user_edit_admin',id = str(id)))
