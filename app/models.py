@@ -138,6 +138,9 @@ class User(UserMixin, db.Model):
         json_user = {
             'url': url_for('api.get_user', id=self.id, _external=True),
             'username': self.username,
+            'email': self.email,
+            'mobile': self.mobile,
+            'department': self.department,
             'member_since': self.member_since,
             'last_seen': self.last_seen
         }

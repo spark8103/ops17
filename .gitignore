@@ -90,10 +90,11 @@ ENV/
 
 # SQLite databases
 *.sqlite
+*.sqlite-journal
 
 # PyCharm
 .idea
-.idea/ops17.iml
+.idea/*.iml
 .idea/inspectionProfiles/
 .idea/misc.xml
 .idea/modules.xml
