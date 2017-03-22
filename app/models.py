@@ -164,6 +164,38 @@ class User(UserMixin, db.Model):
         return '<User %r>' % self.username
 
 
+class Software(db.Model):
+    __tablename__ = 'software'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    version = db.Column(db.String(64), unique=True)
+
+    @staticmethod
+    def insert_softwares():
+        softwares = {
+            'es-tomcat': 'tomcat_7.0.68',
+            'es-nginx': 'nginx_1.8.1',
+            'es-python': 'python_2.7.11',
+            'es-jdk7': 'jdk1.7.0_67',
+            'es-jdk8': 'jdk1.8.0_77',
+            'es-haproxy': 'haproxy_1.6.4',
+            'bd-zabbix-agentd': 'zabbix-agentd_3.0.4',
+            'es-tomcatctl': 'tomcatctl',
+            'glusterfs': 'glusterfs_3.7.11',
+            'tinyproxy': 'tinyproxy_1.8.3',
+        }
+        for s in softwares:
+            software = Software.query.filter_by(name=s).first()
+            if software is None:
+                software = Role(name=s)
+            software.version = software[s]
+            db.session.add(software)
+        db.session.commit()
+
+    def __repr__(self):
+        return '<Software %r>' % self.name
+
+
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
         return False
