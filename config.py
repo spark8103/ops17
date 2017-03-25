@@ -22,6 +22,7 @@ class Config:
     SLOW_DB_QUERY_TIME = 0.5
     OPS_ADMIN = os.environ.get('OPS_ADMIN')
     OPS_USER_PER_PAGE = 3
+    OPS_Software_PER_PAGE = 3
 
     @staticmethod
     def init_app(app):

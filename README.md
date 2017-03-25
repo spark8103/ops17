@@ -35,5 +35,5 @@ db.session.commit()
 
 ### Run Server
 ```shell
-python manager.py runserver --threaded
+python manage.py runserver --threaded
 ```

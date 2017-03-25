@@ -187,8 +187,8 @@ class Software(db.Model):
         for s in softwares:
             software = Software.query.filter_by(name=s).first()
             if software is None:
-                software = Role(name=s)
-            software.version = software[s]
+                software = Software(name=s)
+            software.version = softwares[s]
             db.session.add(software)
         db.session.commit()
 

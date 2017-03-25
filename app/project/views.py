@@ -2,31 +2,31 @@ from flask import render_template, redirect, request, url_for, flash, \
     current_app, jsonify
 from flask_login import login_user, logout_user, login_required, \
     current_user
-from . import user
+from . import project
 from .. import db
-from ..models import User, Role
+from ..models import Software, Role
 from ..email import send_email
 from .forms import LoginForm, EditProfileForm, ChangePasswordForm, \
     EditUserAdminForm, PasswordResetRequestForm, PasswordResetForm, AddUserAdminForm
 from ..decorators import admin_required, permission_required
 
 
-@user.before_app_request
+@project.before_app_request
 def before_request():
     if current_user.is_authenticated:
         current_user.ping()
 
 
-@user.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        username = User.query.filter_by(username=form.username.data).first()
-        if username is not None and username.allow_login and username.verify_password(form.password.data):
-            login_user(username, form.remember_me.data)
-            return redirect(request.args.get('next') or url_for('main.index'))
-        flash('Invalid username or password.')
-    return render_template('user/login.html', form=form)
+@project.route('/software')
+@login_required
+def software_list():
+    page = request.args.get('page', 1, type=int)
+    query = Software.query
+    pagination = query.order_by(Software.id.asc()).paginate(
+        page, per_page=current_app.config['OPS_Software_PER_PAGE'],
+        error_out=False)
+    softwares = pagination.items
+    return render_template('project/software.html', softwares=softwares, pagination=pagination)
 
 
 @user.route('/user-list')
