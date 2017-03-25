@@ -37,3 +37,9 @@ db.session.commit()
 ```shell
 python manage.py runserver --threaded
 ```
+
+
+### api
+http://www.bradcypert.com/writing-a-restful-api-in-flask-sqlalchemy/
+
+https://blog.igevin.info/posts/flask-rest-serialize-deserialize/

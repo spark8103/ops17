@@ -1,14 +1,12 @@
 from flask import render_template, redirect, request, url_for, flash, \
-    current_app, jsonify
-from flask_login import login_user, logout_user, login_required, \
-    current_user
+    jsonify
+from flask_login import login_required, current_user
 from . import project
 from .. import db
-from ..models import Software, Role
-from ..email import send_email
-from .forms import LoginForm, EditProfileForm, ChangePasswordForm, \
-    EditUserAdminForm, PasswordResetRequestForm, PasswordResetForm, AddUserAdminForm
-from ..decorators import admin_required, permission_required
+from ..models import Software, SoftwareSchema
+
+software_schema = SoftwareSchema()
+softwares_schema = SoftwareSchema(many=True)
 
 
 @project.before_app_request
@@ -19,167 +17,58 @@ def before_request():
 
 @project.route('/software')
 @login_required
+def software():
+    return render_template('project/software.html')
+
+
+@project.route('/software-list')
+@login_required
 def software_list():
-    page = request.args.get('page', 1, type=int)
-    query = Software.query
-    pagination = query.order_by(Software.id.asc()).paginate(
-        page, per_page=current_app.config['OPS_Software_PER_PAGE'],
-        error_out=False)
-    softwares = pagination.items
-    return render_template('project/software.html', softwares=softwares, pagination=pagination)
+    softwares = Software.query.all()
+    # Serialize the queryset
+    result = softwares_schema.dump(softwares)
+    return jsonify(result.data)
 
 
-@user.route('/user-list')
+@project.route('/software-add', methods=['POST'])
 @login_required
-def user_list():
-    page = request.args.get('page', 1, type=int)
-    query = User.query
-    pagination = query.order_by(User.id.asc()).paginate(
-        page, per_page=current_app.config['OPS_USER_PER_PAGE'],
-        error_out=False)
-    users = pagination.items
-    return render_template('user/user_list.html', users=users, pagination=pagination)
-
-
-@user.route('/edit-profile', methods=['GET', 'POST'])
-@login_required
-def edit_profile():
-    form = EditProfileForm()
-    if form.validate_on_submit():
-        current_user.email = form.email.data
-        current_user.mobile = form.mobile.data
-        current_user.department = form.department.data
-        current_user.about_me = form.about_me.data
-        db.session.add(current_user)
-        flash('Your profile has been updated.')
-        return redirect(url_for('user.edit_profile'))
-    form.email.data = current_user.email
-    form.mobile.data = current_user.mobile
-    form.department.data = current_user.department
-    form.about_me.data = current_user.about_me
-    return render_template('user/edit_profile.html', form=form)
-
-
-@user.route('/change-password', methods=['GET', 'POST'])
-@login_required
-def change_password():
-    form = ChangePasswordForm()
-    if form.validate_on_submit():
-        if current_user.verify_password(form.old_password.data):
-            current_user.password = form.password.data
-            db.session.add(current_user)
-            flash('Your password has been updated.')
-            return redirect(url_for('main.index'))
-        else:
-            flash('Invalid password.')
-    return render_template("user/change_password.html", form=form)
-
-
-@user.route('/user-edit/<int:id>', methods=['GET', 'POST'])
-@login_required
-@admin_required
-def user_edit_admin(id):
-    user = User.query.get_or_404(id)
-    form = EditUserAdminForm(user=user)
-    print form.data
-    if form.validate_on_submit():
-        user.email = form.email.data
-        user.mobile = form.mobile.data
-        user.role = Role.query.get(form.role.data)
-        user.department = form.department.data
-        user.allow_login = form.allow_login.data == str(True)
-        print form.data
-#        print user.password_hash
-        if form.password.data:
-            user.password = form.password.data
-#        print user.password_hash
-        db.session.add(user)
-        flash('The profile has been updated.')
-        return redirect(url_for('.user_edit_admin',id = str(id)))
-    form.email.data = user.email
-    form.mobile.data = user.mobile
-    form.role.data = user.role_id
-    form.department.data = user.department
-    form.allow_login.data = user.allow_login
-    form.password = ''
-    return render_template('user/user_edit.html', form=form, user=user.username)
-
-
-@user.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    flash('You have been logged out.')
-    return redirect(url_for('main.index'))
-
-
-@user.route('/reset', methods=['GET', 'POST'])
-def password_reset_request():
-    if not current_user.is_anonymous:
-        return redirect(url_for('main.index'))
-    form = PasswordResetRequestForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user:
-            token = user.generate_reset_token()
-            send_email(user.email, 'Reset Your Password',
-                       'user/email/reset_password',
-                       user=user, token=token,
-                       next=request.args.get('next'))
-        flash('An email with instructions to reset your password has been '
-              'sent to you.')
-        return redirect(url_for('user.login'))
-    return render_template('user/reset_password.html', form=form)
-
-
-@user.route('/reset/<token>', methods=['GET', 'POST'])
-def password_reset(token):
-    if not current_user.is_anonymous:
-        return redirect(url_for('main.index'))
-    form = PasswordResetForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user is None:
-            return redirect(url_for('main.index'))
-        if user.reset_password(token, form.password.data):
-            flash('Your password has been updated.')
-            return redirect(url_for('user.login'))
-        else:
-            return redirect(url_for('main.index'))
-    return render_template('user/reset_password.html', form=form)
-
-
-@user.route('/del', methods=['POST'])
-@login_required
-@admin_required
-def user_del():
-    username = request.form.get('username')
-    user = User.query.filter_by(username=username).first()
-    if user is None:
-        flash('Non-existent user: ' + username, 'error')
-        response = {"success": "false"}
-        return jsonify(response)
-    db.session.delete(user)
-    db.session.commit()
-    response = {"success": "true"}
-    return jsonify(response)
-
-
-@user.route('/add', methods=['GET','POST'])
-@login_required
-@admin_required
-def user_add():
-    form = AddUserAdminForm()
-    if form.validate_on_submit():
-        user = User(username=form.username.data,
-                    email=form.email.data,
-                    mobile=form.mobile.data,
-                    role=Role.query.get(form.role.data),
-                    department=form.department.data,
-                    allow_login=(form.allow_login.data == str(True)),
-                    password=form.password.data)
-        db.session.add(user)
+def software_add():
+    if request.form.get('name') == '':
+        flash('Add software, name is not allow null.')
+    elif request.form.get('version') == '':
+        flash('Add software, version is not allow null.')
+    else:
+        software = Software(
+            name=request.form.get('name'),
+            version=request.form.get('version')
+        )
+        db.session.add(software)
         db.session.commit()
-        flash(form.username.data + 'is add.')
-        return redirect(url_for('user.user_add'))
-    return render_template('user/user_add.html', form=form)
+        flash('software: ' + request.form.get('name') + 'is add.')
+    return redirect(url_for('.software'))
+
+
+@project.route('/software-edit', methods=['POST'])
+@login_required
+def software_edit():
+    id = request.form.get('id')
+    software = Software.query.get_or_404(id)
+    software.name = request.form.get('name')
+    software.version = request.form.get('version')
+    db.session.add(software)
+    flash('Software: ' + request.form.get('name') + ' is update.')
+    return redirect(url_for('.software'))
+
+
+@project.route('/software-del', methods=['POST'])
+@login_required
+def software_del():
+    id = request.form.get('id')
+    software = Software.query.filter_by(id=id).first()
+    if software is None:
+        flash('Non-existent software: ' + software, 'error')
+        return render_template('project/software.html')
+    db.session.delete(software)
+    db.session.commit()
+    flash('Software: ' + request.form.get('name') + ' is del.')
+    return redirect(url_for('.software'))

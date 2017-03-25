@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}{{ config['SITENAME'] }} - Software Manager{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-table-1.11.1/bootstrap-table.min.css') }}">
+{% endblock %}
+
+{% block page_content %}
+    <h2>Software Manager</h2>
+    <div class="table-responsive">
+    </div>
+
+    <div id="toolbar" class="btn-group">
+        <button type="button" class="btn btn-default" id="software_add_button">
+            <i class="glyphicon glyphicon-plus"></i>
+        </button>
+    </div>
+
+    <table id="ListTable"
+           data-toggle="table"
+           data-url="{{ url_for('project.software_list') }}"
+           data-query-params="queryParams"
+           data-pagination="true"
+           data-page-size=5
+           data-page-list="[10, 25, 50, All]"
+           data-search="true"
+           data-sort-name="id"
+           data-sort-order="asc"
+           data-show-refresh="true"
+           data-show-toggle="true"
+           data-show-columns="true"
+           data-show-export="true"
+           data-striped="true"
+           data-toolbar="#toolbar">
+        <thead>
+        <tr>
+            <th data-field="id" data-sortable="true">ID</th>
+            <th data-field="name" data-sortable="true">Name</th>
+            <th data-field="version" data-sortable="true">Version</th>
+            <th data-field="action" data-formatter="actionFormatter" data-events="actionEvents">Action</th>
+        </tr>
+        </thead>
+    </table>
+
+<!-- Model software_add -->
+<div class="modal fade" id="software_add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="del_user_Label">Software Add</h4>
+            </div>
+            <div class="modal-body">
+                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.software_add') }}" method="POST" id="software-add">
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="software_add_name">Name:</label>
+                            <div class="col-sm-8">
+                                <input id="software_add_name" class="form-control" name="name" value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="software_add_version">Version:</label>
+                            <div class="col-sm-8">
+                                <input id="software_add_version" class="form-control" name="version" value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-8 col-sm-10">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- Model software_add -->
+
+<!-- Model software_edit -->
+<div class="modal fade" id="software_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="del_user_Label">Software Edit</h4>
+            </div>
+            <div class="modal-body">
+                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.software_edit') }}" method="POST" id="software_edit_form">
+                        <input id="software_edit_id" name="id" type="hidden" value="">
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="software_edit_name">Name:</label>
+                            <div class="col-sm-8">
+                                <input id="software_edit_name" class="form-control" name="name" value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="software_edit_version">Version:</label>
+                            <div class="col-sm-8">
+                                <input id="software_edit_version" class="form-control" name="version" value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-8 col-sm-10">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- Model software_edit -->
+
+<!-- Model software_del -->
+<div class="modal fade" id="software_del" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="del_user_Label">Software Del</h4>
+            </div>
+            <div class="modal-body">
+                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.software_del') }}" method="POST" id="software_del_form">
+                        <input id="software_del_id" name="id" type="hidden" value="">
+                        <div class="form-group">
+                            <label class="control-label col-sm-offset-1" id="software_del_label">Are you sure?</label>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-8 col-sm-10">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- Model software_edit -->
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='bootstrap-table-1.11.1/bootstrap-table.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap-table-1.11.1/locale/bootstrap-table-zh-CN.min.js') }}"></script>
+<script>
+$(function () {
+    $('#ListTable').bootstrapTable({
+    });
+});
+
+$(function () {
+    $("button#software_add_button").click(function(){
+        $('#software_add').modal('show');
+    });
+})
+
+function queryParams() {
+    return {
+        type: 'owner',
+        sort: 'updated',
+        direction: 'desc',
+        per_page: 100,
+        page: 1
+    };
+}
+
+function actionFormatter(value, row, index) {
+    return [
+        '<a class="edit ml10" href="javascript:void(0)" title="Edit">',
+        '<i class="glyphicon glyphicon-edit"></i>',
+        '</a>',
+        '<a class="remove ml10" href="javascript:void(0)" title="Remove">',
+        '<i class="glyphicon glyphicon-remove"></i>',
+        '</a>'
+    ].join('');
+}
+
+window.actionEvents = {
+    'click .edit': function (e, value, row, index) {
+        $('#software_edit_id').val(row.id);
+        $('#software_edit_name').val(row.name);
+        $('#software_edit_version').val(row.version);
+        $('#software_edit').modal('show');
+        //alert('You click edit icon, row: ' + $('#software_edit_name').val(row.name););
+        //console.log(value, row, index);
+    },
+    'click .remove': function (e, value, row, index) {
+        document.getElementById('software_del_label').innerHTML = 'Delete <font color=blue>' + row.name + "</font>, are you sure?";
+        $('#software_del_id').val(row.id);
+        $('#software_del').modal('show');
+        //alert('You click remove icon, row: ' + JSON.stringify(row));
+        //console.log(value, row, index);
+    }
+};
+</script>
+{% endblock %}

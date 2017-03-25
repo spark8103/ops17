@@ -40,6 +40,9 @@ def create_app(config_name):
     from .user import user as user_blueprint
     app.register_blueprint(user_blueprint, url_prefix='/user')
 
+    from .project import project as project_blueprint
+    app.register_blueprint(project_blueprint, url_prefix='/project')
+
  #   from .api_1_0 import api as api_1_0_blueprint
  #   app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
 

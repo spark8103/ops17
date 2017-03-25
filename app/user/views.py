@@ -81,14 +81,12 @@ def change_password():
 def user_edit_admin(id):
     user = User.query.get_or_404(id)
     form = EditUserAdminForm(user=user)
-    print form.data
     if form.validate_on_submit():
         user.email = form.email.data
         user.mobile = form.mobile.data
         user.role = Role.query.get(form.role.data)
         user.department = form.department.data
         user.allow_login = form.allow_login.data == str(True)
-        print form.data
 #        print user.password_hash
         if form.password.data:
             user.password = form.password.data

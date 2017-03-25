@@ -5,6 +5,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app, request, url_for
 from flask_login import UserMixin, AnonymousUserMixin
 from . import db, login_manager
+from marshmallow import Schema, fields, ValidationError, pre_load
 
 
 class Permission:
@@ -13,6 +14,7 @@ class Permission:
     ADMINISTER = 0x80
 
 
+# MODELS #####
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
@@ -209,3 +211,12 @@ login_manager.anonymous_user = AnonymousUser
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+# SCHEMAS #####
+
+
+class SoftwareSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
+    version = fields.Str()
