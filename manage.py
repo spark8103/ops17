@@ -14,19 +14,27 @@ if os.path.exists('.env'):
             os.environ[var[0]] = var[1]
 
 from app import create_app, db
-from app.models import User, Role, Software, Permission
+from app.models import User, Role, Permission, Software, Project
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
-from flask_marshmallow import Marshmallow
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)
 migrate = Migrate(app, db)
-ma = Marshmallow(app)
 
+# logger file setting
+if not app.debug:
+    import logging
+    from logging.handlers import RotatingFileHandler
+    file_handler = RotatingFileHandler('logs/ops.log', 'a', 1 * 1024 * 1024, 10)
+    file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
+    app.logger.setLevel(logging.INFO)
+    file_handler.setLevel(logging.INFO)
+    app.logger.addHandler(file_handler)
+    app.logger.info('dlop logging startup')
 
 def make_shell_context():
-    return dict(app=app, db=db, User=User, Role=Role, Software=Software, Permission=Permission)
+    return dict(app=app, db=db, User=User, Role=Role, Permission=Permission, Software=Software, Project=Project )
 manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}{{ config['SITENAME'] }} - Software Manager{% endblock %}
+{% block title %}{{ config['SITENAME'] }} - Project Manager{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -8,19 +9,19 @@
 {% endblock %}
 
 {% block page_content %}
-    <h2>Software Manager</h2>
+    <h2>Project Manager</h2>
     <div class="table-responsive">
     </div>
 
     <div id="toolbar" class="btn-group">
-        <button type="button" class="btn btn-default" id="software_add_button">
+        <button type="button" class="btn btn-default" id="project_add_button">
             <i class="glyphicon glyphicon-plus"></i>
         </button>
     </div>
 
     <table id="ListTable"
            data-toggle="table"
-           data-url="{{ url_for('project.software_list') }}"
+           data-url="{{ url_for('project.project_list') }}"
            data-query-params="queryParams"
            data-pagination="true"
            data-page-size=5
@@ -38,67 +39,52 @@
         <tr>
             <th data-field="id" data-sortable="true">ID</th>
             <th data-field="name" data-sortable="true">Name</th>
-            <th data-field="version" data-sortable="true">Version</th>
             <th data-field="action" data-formatter="actionFormatter" data-events="actionEvents">Action</th>
         </tr>
         </thead>
     </table>
 
-<!-- Model software_add -->
-<div class="modal fade" id="software_add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- Model project_add -->
+<div class="modal fade" id="project_add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="del_user_Label">Software Add</h4>
+                <h4 class="modal-title" id="del_user_Label">Project Add</h4>
             </div>
             <div class="modal-body">
-                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.software_add') }}" method="POST" id="software-add">
-                        <div class="form-group">
-                            <label class="control-label col-sm-2" for="software_add_name">Name:</label>
-                            <div class="col-sm-8">
-                                <input id="software_add_name" class="form-control" name="name" value="">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-2" for="software_add_version">Version:</label>
-                            <div class="col-sm-8">
-                                <input id="software_add_version" class="form-control" name="version" value="">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-offset-8 col-sm-10">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                        </div>
-                    </form>
+                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.project_add') }}" method="POST">
+                    {{ add_project_form.csrf_token }}
+                    {{ add_project_form.name }}
+                    {{ add_project_form.department }}
+                    {{ add_project_form.pm }}
+                    {{ add_project_form.sla }}
+                    {{ add_project_form.check_point }}
+                    {{ add_project_form.domain }}
+                    {{ add_project_form.description }}
+                    {{ add_project_form.submit }}
+                </form>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
-<!-- Model software_add -->
+<!-- Model project_add -->
 
-<!-- Model software_edit -->
+<!-- Model project_edit -->
 <div class="modal fade" id="software_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="del_user_Label">Software Edit</h4>
+                <h4 class="modal-title" id="del_user_Label">Project Edit</h4>
             </div>
             <div class="modal-body">
-                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.software_edit') }}" method="POST" id="software_edit_form">
+                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.project_edit') }}" method="POST">
                         <input id="software_edit_id" name="id" type="hidden" value="">
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="software_edit_name">Name:</label>
                             <div class="col-sm-8">
-                                <input id="software_edit_name" class="form-control" name="name" value="">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-2" for="software_edit_version">Version:</label>
-                            <div class="col-sm-8">
-                                <input id="software_edit_version" class="form-control" name="version" value="">
+                                <input id="project_edit_name" class="form-control" name="name" value="">
                             </div>
                         </div>
                         <div class="form-group">
@@ -111,21 +97,21 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
-<!-- Model software_edit -->
+<!-- Model project_edit -->
 
-<!-- Model software_del -->
-<div class="modal fade" id="software_del" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- Model project_del -->
+<div class="modal fade" id="project_del" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="del_user_Label">Software Del</h4>
+                <h4 class="modal-title" id="del_user_Label">Project Del</h4>
             </div>
             <div class="modal-body">
-                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.software_del') }}" method="POST" id="software_del_form">
+                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.project_del') }}" method="POST">
                         <input id="software_del_id" name="id" type="hidden" value="">
                         <div class="form-group">
-                            <label class="control-label col-sm-offset-1" id="software_del_label">Are you sure?</label>
+                            <label class="control-label col-sm-offset-1" id="project_del_label">Are you sure?</label>
                         </div>
                         <div class="form-group">
                             <div class="col-sm-offset-8 col-sm-10">
@@ -137,7 +123,7 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
-<!-- Model software_del -->
+<!-- Model project_del -->
 
 {% endblock %}
 
@@ -152,8 +138,8 @@ $(function () {
 });
 
 $(function () {
-    $("button#software_add_button").click(function(){
-        $('#software_add').modal('show');
+    $("button#project_add_button").click(function(){
+        $('#project_add').modal('show');
     });
 })
 
@@ -180,17 +166,16 @@ function actionFormatter(value, row, index) {
 
 window.actionEvents = {
     'click .edit': function (e, value, row, index) {
-        $('#software_edit_id').val(row.id);
-        $('#software_edit_name').val(row.name);
-        $('#software_edit_version').val(row.version);
-        $('#software_edit').modal('show');
+        $('#project_edit_id').val(row.id);
+        $('#project_edit_name').val(row.name);
+        $('#project_edit').modal('show');
         //alert('You click edit icon, row: ' + $('#software_edit_name').val(row.name););
         //console.log(value, row, index);
     },
     'click .remove': function (e, value, row, index) {
-        document.getElementById('software_del_label').innerHTML = 'Delete <font color=blue>' + row.name + "</font>, are you sure?";
-        $('#software_del_id').val(row.id);
-        $('#software_del').modal('show');
+        document.getElementById('project_del_label').innerHTML = 'Delete <font color=blue>' + row.name + "</font>, are you sure?";
+        $('#project_del_id').val(row.id);
+        $('#project_del').modal('show');
         //alert('You click remove icon, row: ' + JSON.stringify(row));
         //console.log(value, row, index);
     }

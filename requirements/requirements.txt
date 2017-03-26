@@ -1,4 +1,5 @@
 alembic==0.9.1
+aniso8601==1.2.0
 appdirs==1.4.3
 blinker==1.4
 click==6.7
@@ -14,6 +15,7 @@ flask-marshmallow==0.7.0
 Flask-Migrate==2.0.3
 Flask-Moment==0.5.1
 Flask-PageDown==0.2.2
+Flask-RESTful==0.3.5
 Flask-Script==2.0.5
 Flask-SQLAlchemy==2.2
 Flask-WTF==0.14.2
@@ -28,7 +30,9 @@ marshmallow-sqlalchemy==0.13.0
 packaging==16.8
 Pygments==2.2.0
 pyparsing==2.2.0
+python-dateutil==2.6.0
 python-editor==1.0.3
+pytz==2016.10
 requests==2.13.0
 selenium==3.3.1
 six==1.10.0

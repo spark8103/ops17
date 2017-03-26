@@ -1,3 +1,4 @@
+# coding: utf-8
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -7,7 +8,10 @@ class Config:
     SITENAME = "OPS"
     #APPLICATION_ROOT = "test" #prefix test
     BOOTSTRAP_SERVE_LOCAL =True
-    DEPARTMENT = ["admin", "dev", "qa", "ops", "user", "manager"]
+    DEPARTMENT = ["admin", "dev", "qa", "ops", "dba", "user", "manager"]
+    ENVIRONMENT = ["DEV", "QA", "STG", "PRD"]
+    SLA = ["99999", "999", "999"]
+    IDC = ["zp", "wpnl", "oyl"]
     SSL_DISABLE = False
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False

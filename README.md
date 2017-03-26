@@ -24,11 +24,13 @@ admin = User(username='admin', email='admin@example.com', password='admin', role
 ops = User(username='ops', email='ops@example.com', password='ops', role=Role.query.filter_by(name="User").first(), mobile=13854263519, department="ops")
 dev = User(username='dev', email='dev@example.com', password='dev', role=Role.query.filter_by(name="User").first(), mobile=13625486549, department="dev")
 qa = User(username='qa', email='qa@example.com', password='qa', role=Role.query.filter_by(name="User").first(), mobile=13752461259, department="qa")
+dba = User(username='dba', email='dba@example.com', password='dba', role=Role.query.filter_by(name="User").first(), mobile=15862315489, department="dba")
 user = User(username='user', email='user@example.com', password='user', role=Role.query.filter_by(name="User").first(), mobile=13245682136, department="user")
 db.session.add(admin)
 db.session.add(ops)
 db.session.add(dev)
 db.session.add(qa)
+db.session.add(dba)
 db.session.add(user)
 db.session.commit()
 ```

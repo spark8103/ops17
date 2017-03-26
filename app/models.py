@@ -1,3 +1,4 @@
+# coding: utf-8
 from datetime import datetime
 import hashlib
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -55,6 +56,8 @@ class User(UserMixin, db.Model):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     allow_login = db.Column(db.Boolean, default=False, index=True)
+    pm = db.relationship('Project',
+                         backref=db.backref('pm', lazy='joined'), lazy='dynamic')
 
     @staticmethod
     def generate_fake(count=100):
@@ -213,6 +216,20 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+class Project(db.Model):
+    __tablename__ = 'projects'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    department = db.Column(db.String(32), index=True, default="user")
+    pm_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    sla = db.Column(db.String(32))
+    check_point = db.Column(db.String(64))
+    domain = db.Column(db.String(64))
+    description = db.Column(db.String(128))
+
+    def __repr__(self):
+        return '<Project %r>' % self.name
+
 # SCHEMAS #####
 
 
@@ -220,3 +237,14 @@ class SoftwareSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
     version = fields.Str()
+
+
+class ProjectSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
+    department = fields.Str()
+    pm = fields.Str()
+    sla = fields.Str()
+    check_point = fields.Str()
+    domain = fields.Str()
+    description = fields.Str()
