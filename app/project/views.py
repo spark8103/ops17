@@ -2,12 +2,10 @@
 from flask import render_template, redirect, request, url_for, flash, \
     jsonify
 from flask_login import login_required, current_user
-from flask_restful import Api, Resource, abort
-from wtforms import Form, fields, validators
 from . import project
 from .. import db
 from ..models import User, Software, SoftwareSchema, Project, ProjectSchema
-from .forms import AddProjectForm
+from .forms import AddProjectForm, EditProjectForm, AddSoftwareForm, EditSoftwareForm
 
 software_schema = SoftwareSchema()
 softwares_schema = SoftwareSchema(many=True)
@@ -15,16 +13,13 @@ project_schema = ProjectSchema()
 projects_schema = ProjectSchema(many=True)
 
 
-@project.before_app_request
-def before_request():
-    if current_user.is_authenticated:
-        current_user.ping()
-
-
 @project.route('/software')
 @login_required
 def software():
-    return render_template('project/software.html')
+    add_software_form = AddSoftwareForm()
+    edit_software_form = EditSoftwareForm()
+    return render_template('project/software.html', add_software_form=add_software_form,
+                           edit_software_form=edit_software_form)
 
 
 @project.route('/software-list')
@@ -60,12 +55,12 @@ def software_add():
 @project.route('/software-edit', methods=['POST'])
 @login_required
 def software_edit():
-    id = request.form.get('id')
+    id = request.form.get('e_id')
     software = Software.query.get_or_404(id)
-    software.name = request.form.get('name')
-    software.version = request.form.get('version')
+    software.name = request.form.get('e_name')
+    software.version = request.form.get('e_version')
     db.session.add(software)
-    flash('Software: ' + request.form.get('name') + ' is update.')
+    flash('Software: ' + request.form.get('e_name') + ' is update.')
     return redirect(url_for('.software'))
 
 
@@ -87,7 +82,9 @@ def software_del():
 @login_required
 def project_main():
     add_project_form = AddProjectForm()
-    return render_template('project/project.html', add_project_form=add_project_form)
+    edit_project_form = EditProjectForm()
+    return render_template('project/project.html', add_project_form=add_project_form,
+                           edit_project_form=edit_project_form)
 
 
 @project.route('/list')
@@ -123,11 +120,18 @@ def project_add():
 @project.route('/edit', methods=['POST'])
 @login_required
 def project_edit():
-    id = request.form.get('id')
+    id = request.form.get('e_id')
     project = Project.query.get_or_404(id)
-    project.name = request.form.get('name')
-    db.session.add(software)
-    flash('project: ' + request.form.get('name') + ' is update.')
+    project.name = request.form.get('e_name')
+    project.department = request.form.get('e_department')
+    project.pm = User.query.get(request.form.get('e_pm'))
+    print request.form.get('e_pm')
+    project.sla = request.form.get('e_sla')
+    project.check_point = request.form.get('e_check_point')
+    project.domain = request.form.get('e_domain')
+    project.description = request.form.get('e_description')
+    db.session.add(project)
+    flash('project: ' + request.form.get('e_name') + ' is update.')
     return redirect(url_for('.project_main'))
 
 

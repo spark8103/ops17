@@ -233,6 +233,10 @@ class Project(db.Model):
 # SCHEMAS #####
 
 
+class UserSchema(Schema):
+    id = fields.Int(dump_only=True)
+    username = fields.Str()
+
 class SoftwareSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
@@ -243,7 +247,7 @@ class ProjectSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
     department = fields.Str()
-    pm = fields.Str()
+    pm = fields.Nested(UserSchema, only=["id", "username"])
     sla = fields.Str()
     check_point = fields.Str()
     domain = fields.Str()

@@ -10,7 +10,7 @@ class Config:
     BOOTSTRAP_SERVE_LOCAL =True
     DEPARTMENT = ["admin", "dev", "qa", "ops", "dba", "user", "manager"]
     ENVIRONMENT = ["DEV", "QA", "STG", "PRD"]
-    SLA = ["99999", "999", "999"]
+    SLA = ["99999", "9999", "999"]
     IDC = ["zp", "wpnl", "oyl"]
     SSL_DISABLE = False
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True

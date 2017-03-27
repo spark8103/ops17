@@ -14,7 +14,7 @@
     </div>
 
     <div id="toolbar" class="btn-group">
-        <button type="button" class="btn btn-default" id="project_add_button">
+        <button type="button" class="btn btn-default" id="project_add_button" title="Add">
             <i class="glyphicon glyphicon-plus"></i>
         </button>
     </div>
@@ -40,7 +40,7 @@
             <th data-field="id" data-sortable="true">ID</th>
             <th data-field="name" data-sortable="true">Name</th>
             <th data-field="department" data-sortable="true">Department</th>
-            <th data-field="pm" data-sortable="true">PM</th>
+            <th data-field="pm.username" data-sortable="true">PM</th>
             <th data-field="sla" data-sortable="true">SLA</th>
             <th data-field="check_point" data-sortable="true">check_point</th>
             <th data-field="domain" data-sortable="true">domain</th>
@@ -56,7 +56,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="del_user_Label">Project Add</h4>
+                <h4 class="modal-title">Project Add</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.project_add') }}" method="POST">
@@ -89,18 +89,19 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="del_user_Label">Project Edit</h4>
+                <h4 class="modal-title">Project Edit</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.project_edit') }}" method="POST">
-                    {{ add_project_form.csrf_token }}
-                    {{ render_field(add_project_form.name) }}
-                    {{ render_field(add_project_form.department) }}
-                    {{ render_field(add_project_form.pm) }}
-                    {{ render_field(add_project_form.sla) }}
-                    {{ render_field(add_project_form.check_point) }}
-                    {{ render_field(add_project_form.domain) }}
-                    {{ render_field(add_project_form.description) }}
+                    {{ edit_project_form.csrf_token }}
+                    {{ edit_project_form.e_id }}
+                    {{ render_field(edit_project_form.e_name) }}
+                    {{ render_field(edit_project_form.e_department) }}
+                    {{ render_field(edit_project_form.e_pm) }}
+                    {{ render_field(edit_project_form.e_sla) }}
+                    {{ render_field(edit_project_form.e_check_point) }}
+                    {{ render_field(edit_project_form.e_domain) }}
+                    {{ render_field(edit_project_form.e_description) }}
                     <div class="form-group">
                         <div class="col-sm-4">
                         </div>
@@ -122,11 +123,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="del_user_Label">Project Del</h4>
+                <h4 class="modal-title">Project Del</h4>
             </div>
             <div class="modal-body">
                     <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.project_del') }}" method="POST">
-                        <input id="software_del_id" name="id" type="hidden" value="">
+                        <input id="project_del_id" name="id" type="hidden" value="">
+                        <input id="project_del_name" name="name" type="hidden" value="">
                         <div class="form-group">
                             <label class="control-label col-sm-offset-1" id="project_del_label">Are you sure?</label>
                         </div>
@@ -183,22 +185,22 @@ function actionFormatter(value, row, index) {
 
 window.actionEvents = {
     'click .edit': function (e, value, row, index) {
-        $('#project_edit:#id').val(row.id);
-        $('#project_edit:#name').val(row.name);
-        $('#project_edit#department').val(row.department);
-        $('#project_edit#pm').val(row.pm);
-        $('#project_edit#sla').val(row.sla);
-        $('#project_edit#check_point').val(row.check_point);
-        $('#project_edit#domain').val(row.domain);
-        $('#project_edit#description').val(row.description);
+        $('#e_id').val(row.id);
+        $('#e_name').val(row.name);
+        $('#e_department').val(row.department);
+        $('#e_pm').val(row.pm.id);
+        $('#e_sla').val(row.sla);
+        $('#e_check_point').val(row.check_point);
+        $('#e_domain').val(row.domain);
+        $('#e_description').val(row.description);
         $('#project_edit').modal('show');
-        alert($('#project_edit:#id'))
-        //alert('You click edit icon, row: ' + $('#software_edit_name').val(row.name););
+        //alert('You click edit icon, row: ' + $('#e_name').val(row.name););
         //console.log(value, row, index);
     },
     'click .remove': function (e, value, row, index) {
         document.getElementById('project_del_label').innerHTML = 'Delete <font color=blue>' + row.name + "</font>, are you sure?";
         $('#project_del_id').val(row.id);
+        $('#project_del_name').val(row.name);
         $('#project_del').modal('show');
         //alert('You click remove icon, row: ' + JSON.stringify(row));
         //console.log(value, row, index);

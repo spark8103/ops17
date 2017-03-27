@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
 
 {% block title %}{{ config['SITENAME'] }} - Software Manager{% endblock %}
 
@@ -13,7 +14,7 @@
     </div>
 
     <div id="toolbar" class="btn-group">
-        <button type="button" class="btn btn-default" id="software_add_button">
+        <button type="button" class="btn btn-default" id="software_add_button" title="Add">
             <i class="glyphicon glyphicon-plus"></i>
         </button>
     </div>
@@ -53,25 +54,19 @@
                 <h4 class="modal-title" id="del_user_Label">Software Add</h4>
             </div>
             <div class="modal-body">
-                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.software_add') }}" method="POST" id="software-add">
-                        <div class="form-group">
-                            <label class="control-label col-sm-2" for="software_add_name">Name:</label>
-                            <div class="col-sm-8">
-                                <input id="software_add_name" class="form-control" name="name" value="">
-                            </div>
+                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.software_add') }}" method="POST">
+                    {{ add_software_form.csrf_token }}
+                    {{ render_field(add_software_form.name) }}
+                    {{ render_field(add_software_form.version) }}
+                    <div class="form-group">
+                        <div class="col-sm-4">
                         </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-2" for="software_add_version">Version:</label>
-                            <div class="col-sm-8">
-                                <input id="software_add_version" class="form-control" name="version" value="">
-                            </div>
+                        <div class="col-sm-8">
+                            <button type="submit" class="btn btn-default">submit</button>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="reset" class="btn btn-default">reset</button>
                         </div>
-                        <div class="form-group">
-                            <div class="col-sm-offset-8 col-sm-10">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                        </div>
-                    </form>
+                    </div>
+                </form>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
@@ -87,26 +82,20 @@
                 <h4 class="modal-title" id="del_user_Label">Software Edit</h4>
             </div>
             <div class="modal-body">
-                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.software_edit') }}" method="POST" id="software_edit_form">
-                        <input id="software_edit_id" name="id" type="hidden" value="">
-                        <div class="form-group">
-                            <label class="control-label col-sm-2" for="software_edit_name">Name:</label>
-                            <div class="col-sm-8">
-                                <input id="software_edit_name" class="form-control" name="name" value="">
-                            </div>
+                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.software_edit') }}" method="POST">
+                    {{ edit_software_form.csrf_token }}
+                    {{ edit_software_form.e_id }}
+                    {{ render_field(edit_software_form.e_name) }}
+                    {{ render_field(edit_software_form.e_version) }}
+                    <div class="form-group">
+                        <div class="col-sm-4">
                         </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-2" for="software_edit_version">Version:</label>
-                            <div class="col-sm-8">
-                                <input id="software_edit_version" class="form-control" name="version" value="">
-                            </div>
+                        <div class="col-sm-8">
+                            <button type="submit" class="btn btn-default">submit</button>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="reset" class="btn btn-default">reset</button>
                         </div>
-                        <div class="form-group">
-                            <div class="col-sm-offset-8 col-sm-10">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                        </div>
-                    </form>
+                    </div>
+                </form>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
@@ -119,11 +108,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="del_user_Label">Software Del</h4>
+                <h4 class="modal-title">Software Del</h4>
             </div>
             <div class="modal-body">
-                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.software_del') }}" method="POST" id="software_del_form">
+                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.software_del') }}" method="POST">
                         <input id="software_del_id" name="id" type="hidden" value="">
+                        <input id="software_del_name" name="name" type="hidden" value="">
                         <div class="form-group">
                             <label class="control-label col-sm-offset-1" id="software_del_label">Are you sure?</label>
                         </div>
@@ -180,9 +170,9 @@ function actionFormatter(value, row, index) {
 
 window.actionEvents = {
     'click .edit': function (e, value, row, index) {
-        $('#software_edit_id').val(row.id);
-        $('#software_edit_name').val(row.name);
-        $('#software_edit_version').val(row.version);
+        $('#e_id').val(row.id);
+        $('#e_name').val(row.name);
+        $('#e_version').val(row.version);
         $('#software_edit').modal('show');
         //alert('You click edit icon, row: ' + $('#software_edit_name').val(row.name););
         //console.log(value, row, index);
@@ -190,6 +180,7 @@ window.actionEvents = {
     'click .remove': function (e, value, row, index) {
         document.getElementById('software_del_label').innerHTML = 'Delete <font color=blue>' + row.name + "</font>, are you sure?";
         $('#software_del_id').val(row.id);
+        $('#software_del_name').val(row.name);
         $('#software_del').modal('show');
         //alert('You click remove icon, row: ' + JSON.stringify(row));
         //console.log(value, row, index);
