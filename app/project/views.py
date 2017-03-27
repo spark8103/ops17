@@ -6,7 +6,7 @@ from flask_restful import Api, Resource, abort
 from wtforms import Form, fields, validators
 from . import project
 from .. import db
-from ..models import Software, SoftwareSchema, Project, ProjectSchema
+from ..models import User, Software, SoftwareSchema, Project, ProjectSchema
 from .forms import AddProjectForm
 
 software_schema = SoftwareSchema()
@@ -98,7 +98,7 @@ def project_list():
         return jsonify({})
     else:
         # Serialize the queryset
-        result = ProjectSchema.dump(projects)
+        result = projects_schema.dump(projects)
         return jsonify(result.data)
 
 
@@ -106,13 +106,18 @@ def project_list():
 @login_required
 def project_add():
     form = AddProjectForm(data=request.get_json())
-    print form
-    if form.validate():
-        # Create the new user with form.populate_obj()
-        pass
-    else:
-        abort(400)
-    return "user representation", 201
+    if form.validate_on_submit():
+        project = Project(name=form.name.data,
+                          department=form.department.data,
+                          pm=User.query.get(form.pm.data),
+                          sla=form.sla.data,
+                          check_point=form.check_point.data,
+                          domain=form.domain.data,
+                          description=form.description.data)
+        db.session.add(project)
+        db.session.commit()
+        flash(form.name.data + 'is add.')
+    return redirect(url_for('.project_main'))
 
 
 @project.route('/edit', methods=['POST'])
