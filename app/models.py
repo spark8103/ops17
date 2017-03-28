@@ -58,6 +58,12 @@ class User(UserMixin, db.Model):
     allow_login = db.Column(db.Boolean, default=False, index=True)
     pm = db.relationship('Project',
                          backref=db.backref('pm', lazy='joined'), lazy='dynamic')
+    dev = db.relationship('Project',
+                         backref=db.backref('dev', lazy='joined'), lazy='dynamic')
+    qa = db.relationship('Project',
+                          backref=db.backref('qa', lazy='joined'), lazy='dynamic')
+    ops = db.relationship('Project',
+                          backref=db.backref('ops', lazy='joined'), lazy='dynamic')
 
     @staticmethod
     def generate_fake(count=100):
@@ -172,8 +178,10 @@ class User(UserMixin, db.Model):
 class Software(db.Model):
     __tablename__ = 'software'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    version = db.Column(db.String(64), unique=True)
+    name = db.Column(db.String(64), unique=True, index=True)
+    version = db.Column(db.String(64), unique=True, index=True)
+    software = db.relationship('Module',
+                         backref=db.backref('software', lazy='joined'), lazy='dynamic')
 
     @staticmethod
     def insert_softwares():
@@ -230,6 +238,24 @@ class Project(db.Model):
     def __repr__(self):
         return '<Project %r>' % self.name
 
+
+class Module(db.Model):
+    __tablename__ = 'modules'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    department = db.Column(db.String(32), index=True)
+    svn = db.Column(db.String(128))
+    parent_id = db.Column(db.Integer, db.ForeignKey('modules.id'))
+    dev_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    qa_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    ops_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    software_id = db.Column(db.Integer, db.ForeignKey('software.id'))
+    description = db.Column(db.String(128))
+    parent = db.relationship("Module", remote_side=[id, name])
+
+    def __repr__(self):
+        return '<Project %r>' % self.name
+
 # SCHEMAS #####
 
 
@@ -251,4 +277,17 @@ class ProjectSchema(Schema):
     sla = fields.Str()
     check_point = fields.Str()
     domain = fields.Str()
+    description = fields.Str()
+
+
+class ModuleSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
+    department = fields.Str()
+    svn = fields.Str()
+    modules = fields.Str()
+    dev = fields.Nested(UserSchema, only=["id", "username"])
+    qa = fields.Nested(UserSchema, only=["id", "username"])
+    ops = fields.Nested(UserSchema, only=["id", "username"])
+    software = fields.Nested(SoftwareSchema, only=["id", "username"])
     description = fields.Str()

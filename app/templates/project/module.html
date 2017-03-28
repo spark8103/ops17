@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block title %}{{ config['SITENAME'] }} - Module Manager{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-table-1.11.1/bootstrap-table.min.css') }}">
+{% endblock %}
+
+{% block page_content %}
+    <h2>Module Manager</h2>
+    <div class="table-responsive">
+    </div>
+
+    <div id="toolbar" class="btn-group">
+        <button type="button" class="btn btn-default" id="module_add_button" title="Add">
+            <i class="glyphicon glyphicon-plus"></i>
+        </button>
+    </div>
+
+    <table id="ListTable"
+           data-toggle="table"
+           data-url="{{ url_for('project.module_list') }}"
+           data-query-params="queryParams"
+           data-pagination="true"
+           data-page-size=5
+           data-page-list="[10, 25, 50, All]"
+           data-search="true"
+           data-sort-name="id"
+           data-sort-order="asc"
+           data-show-refresh="true"
+           data-show-toggle="true"
+           data-show-columns="true"
+           data-show-export="true"
+           data-striped="true"
+           data-toolbar="#toolbar">
+        <thead>
+        <tr>
+            <th data-field="id" data-sortable="true">ID</th>
+            <th data-field="name" data-sortable="true">Name</th>
+            <th data-field="department" data-sortable="true">Department</th>
+            <th data-field="svn" data-sortable="true">SVN</th>
+            <th data-field="dev.name" data-sortable="true">DEV</th>
+            <th data-field="qa.name" data-sortable="true">QA</th>
+            <th data-field="ops.name" data-sortable="true">OPS</th>
+            <th data-field="software.name" data-sortable="true">SOFTWARE</th>
+            <th data-field="description" data-sortable="true">description</th>
+            <th data-field="action" data-formatter="actionFormatter" data-events="actionEvents">Action</th>
+        </tr>
+        </thead>
+    </table>
+
+<!-- Model module_add -->
+<div class="modal fade" id="module_add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Module Add</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.module_add') }}" method="POST">
+                    {{ add_module_form.csrf_token }}
+                    {{ render_field(add_module_form.name) }}
+                    {{ render_field(add_module_form.department) }}
+                    {{ render_field(add_module_form.svn) }}
+                    {{ render_field(add_module_form.modules) }}
+                    {{ render_field(add_module_form.dev) }}
+                    {{ render_field(add_module_form.qa) }}
+                    {{ render_field(add_module_form.ops) }}
+                    {{ render_field(add_module_form.software) }}
+                    {{ render_field(add_module_form.description) }}
+                    <div class="form-group">
+                        <div class="col-sm-4">
+                        </div>
+                        <div class="col-sm-8">
+                            <button type="submit" class="btn btn-default">submit</button>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="reset" class="btn btn-default">reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- Model module_add -->
+
+<!-- Model module_edit -->
+<div class="modal fade" id="module_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Module Edit</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.module_edit') }}" method="POST">
+                    {{ edit_module_form.csrf_token }}
+                    {{ edit_module_form.e_id }}
+                    {{ render_field(edit_module_form.e_name) }}
+                    {{ render_field(edit_module_form.e_department) }}
+                    {{ render_field(edit_module_form.e_svn) }}
+                    {{ render_field(edit_module_form.e_modules) }}
+                    {{ render_field(edit_module_form.e_dev) }}
+                    {{ render_field(edit_module_form.e_qa) }}
+                    {{ render_field(edit_module_form.e_ops) }}
+                    {{ render_field(edit_module_form.e_software) }}
+                    {{ render_field(edit_module_form.e_description) }}
+                    <div class="form-group">
+                        <div class="col-sm-4">
+                        </div>
+                        <div class="col-sm-8">
+                            <button type="submit" class="btn btn-default">submit</button>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="reset" class="btn btn-default">reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- Model module_edit -->
+
+<!-- Model module_del -->
+<div class="modal fade" id="module_del" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Module Del</h4>
+            </div>
+            <div class="modal-body">
+                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.module_del') }}" method="POST">
+                        <input id="project_del_id" name="id" type="hidden" value="">
+                        <input id="project_del_name" name="name" type="hidden" value="">
+                        <div class="form-group">
+                            <label class="control-label col-sm-offset-1" id="module_del_label">Are you sure?</label>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-8 col-sm-10">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- Model module_del -->
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='bootstrap-table-1.11.1/bootstrap-table.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap-table-1.11.1/locale/bootstrap-table-zh-CN.min.js') }}"></script>
+<script>
+$(function () {
+    $('#ListTable').bootstrapTable({
+    });
+});
+
+$(function () {
+    $("button#module_add_button").click(function(){
+        $('#module_add').modal('show');
+    });
+})
+
+function queryParams() {
+    return {
+        type: 'owner',
+        sort: 'updated',
+        direction: 'desc',
+        per_page: 100,
+        page: 1
+    };
+}
+
+function actionFormatter(value, row, index) {
+    return [
+        '<a class="edit ml10" href="javascript:void(0)" title="Edit">',
+        '<i class="glyphicon glyphicon-edit"></i>',
+        '</a>',
+        '<a class="remove ml10" href="javascript:void(0)" title="Remove">',
+        '<i class="glyphicon glyphicon-remove"></i>',
+        '</a>'
+    ].join('');
+}
+
+window.actionEvents = {
+    'click .edit': function (e, value, row, index) {
+        $('#e_id').val(row.id);
+        $('#e_name').val(row.name);
+        $('#e_department').val(row.department);
+        $('#e_pm').val(row.pm.id);
+        $('#e_sla').val(row.sla);
+        $('#e_check_point').val(row.check_point);
+        $('#e_domain').val(row.domain);
+        $('#e_description').val(row.description);
+        $('#module_edit').modal('show');
+        //alert('You click edit icon, row: ' + $('#e_name').val(row.name););
+        //console.log(value, row, index);
+    },
+    'click .remove': function (e, value, row, index) {
+        document.getElementById('module_del_label').innerHTML = 'Delete <font color=blue>' + row.name + "</font>, are you sure?";
+        $('#module_del_id').val(row.id);
+        $('#module_del_name').val(row.name);
+        $('#module_del').modal('show');
+        //alert('You click remove icon, row: ' + JSON.stringify(row));
+        //console.log(value, row, index);
+    }
+};
+</script>
+{% endblock %}

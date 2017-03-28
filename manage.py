@@ -14,7 +14,7 @@ if os.path.exists('.env'):
             os.environ[var[0]] = var[1]
 
 from app import create_app, db
-from app.models import User, Role, Permission, Software, Project
+from app.models import User, Role, Permission, Software, Project, Module
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 
@@ -34,7 +34,7 @@ if not app.debug:
     app.logger.info('dlop logging startup')
 
 def make_shell_context():
-    return dict(app=app, db=db, User=User, Role=Role, Permission=Permission, Software=Software, Project=Project )
+    return dict(app=app, db=db, User=User, Role=Role, Permission=Permission, Software=Software, Project=Project, Module=Module )
 manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 
