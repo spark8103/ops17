@@ -39,11 +39,13 @@
         <tr>
             <th data-field="id" data-sortable="true">ID</th>
             <th data-field="name" data-sortable="true">Name</th>
+            <th data-field="project.name" data-sortable="true">Project</th>
             <th data-field="department" data-sortable="true">Department</th>
             <th data-field="svn" data-sortable="true">SVN</th>
-            <th data-field="dev.name" data-sortable="true">DEV</th>
-            <th data-field="qa.name" data-sortable="true">QA</th>
-            <th data-field="ops.name" data-sortable="true">OPS</th>
+            <th data-field="parent.name" data-sortable="true">PerModule</th>
+            <th data-field="dev.username" data-sortable="true">DEV</th>
+            <th data-field="qa.username" data-sortable="true">QA</th>
+            <th data-field="ops.username" data-sortable="true">OPS</th>
             <th data-field="software.name" data-sortable="true">SOFTWARE</th>
             <th data-field="description" data-sortable="true">description</th>
             <th data-field="action" data-formatter="actionFormatter" data-events="actionEvents">Action</th>
@@ -63,9 +65,10 @@
                 <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.module_add') }}" method="POST">
                     {{ add_module_form.csrf_token }}
                     {{ render_field(add_module_form.name) }}
+                    {{ render_field(add_module_form.project) }}
                     {{ render_field(add_module_form.department) }}
                     {{ render_field(add_module_form.svn) }}
-                    {{ render_field(add_module_form.modules) }}
+                    {{ render_field(add_module_form.parent) }}
                     {{ render_field(add_module_form.dev) }}
                     {{ render_field(add_module_form.qa) }}
                     {{ render_field(add_module_form.ops) }}
@@ -99,9 +102,10 @@
                     {{ edit_module_form.csrf_token }}
                     {{ edit_module_form.e_id }}
                     {{ render_field(edit_module_form.e_name) }}
+                    {{ render_field(edit_module_form.e_project) }}
                     {{ render_field(edit_module_form.e_department) }}
                     {{ render_field(edit_module_form.e_svn) }}
-                    {{ render_field(edit_module_form.e_modules) }}
+                    {{ render_field(edit_module_form.e_parent) }}
                     {{ render_field(edit_module_form.e_dev) }}
                     {{ render_field(edit_module_form.e_qa) }}
                     {{ render_field(edit_module_form.e_ops) }}
@@ -192,6 +196,7 @@ window.actionEvents = {
     'click .edit': function (e, value, row, index) {
         $('#e_id').val(row.id);
         $('#e_name').val(row.name);
+        $('#e_project').val(row.project);
         $('#e_department').val(row.department);
         $('#e_pm').val(row.pm.id);
         $('#e_sla').val(row.sla);

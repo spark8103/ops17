@@ -234,6 +234,8 @@ class Project(db.Model):
     check_point = db.Column(db.String(64))
     domain = db.Column(db.String(64))
     description = db.Column(db.String(128))
+    project = db.relationship('Module',
+                         backref=db.backref('project', lazy='joined'), lazy='dynamic')
 
     def __repr__(self):
         return '<Project %r>' % self.name
@@ -243,6 +245,7 @@ class Module(db.Model):
     __tablename__ = 'modules'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'))
     department = db.Column(db.String(32), index=True)
     svn = db.Column(db.String(128))
     parent_id = db.Column(db.Integer, db.ForeignKey('modules.id'))
@@ -256,12 +259,14 @@ class Module(db.Model):
     def __repr__(self):
         return '<Project %r>' % self.name
 
+
 # SCHEMAS #####
 
 
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
     username = fields.Str()
+
 
 class SoftwareSchema(Schema):
     id = fields.Int(dump_only=True)
@@ -283,9 +288,10 @@ class ProjectSchema(Schema):
 class ModuleSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
+    project = fields.Nested(ProjectSchema, only=["id", "name"])
     department = fields.Str()
     svn = fields.Str()
-    modules = fields.Str()
+    parent = fields.Nested('self', only=["id", "name"])
     dev = fields.Nested(UserSchema, only=["id", "username"])
     qa = fields.Nested(UserSchema, only=["id", "username"])
     ops = fields.Nested(UserSchema, only=["id", "username"])

@@ -3,7 +3,7 @@ from flask import render_template, redirect, request, url_for, flash, \
     jsonify
 from flask_login import login_required, current_user
 from . import project
-from .. import db
+from .. import db, flash_errors
 from ..models import User, Software, SoftwareSchema, Project, ProjectSchema, Module, ModuleSchema
 from .forms import AddProjectForm, EditProjectForm, AddSoftwareForm, EditSoftwareForm, AddModuleForm, EditModuleForm
 
@@ -176,11 +176,13 @@ def module_list():
 @login_required
 def module_add():
     form = AddModuleForm(data=request.get_json())
+    print form.data
     if form.validate_on_submit():
         module = Module(name=form.name.data,
+                        project=Project.query.get(form.project.data),
                         department=form.department.data,
                         svn=form.svn.data,
-                        modules=form.modules.data,
+                        parent=Module.query.get(form.parent.data),
                         dev=User.query.get(form.dev.data),
                         qa=User.query.get(form.qa.data),
                         ops=User.query.get(form.ops.data),
@@ -189,6 +191,8 @@ def module_add():
         db.session.add(module)
         db.session.commit()
         flash(form.name.data + 'is add.')
+    else:
+        flash_errors(form)
     return redirect(url_for('.module_main'))
 
 
@@ -198,9 +202,10 @@ def module_edit():
     id = request.form.get('e_id')
     module = Module.query.get_or_404(id)
     module.name = request.form.get('e_name')
+    module.project = Project.query.get(request.form.get('e_project')),
     module.department = request.form.get('e_department')
     module.svn = request.form.get('e_svn')
-    module.modules = request.form.get('e_modules')
+    module.parent = Project.query.get(request.form.get('e_parent'))
     module.dev = User.query.get(request.form.get('e_dev'))
     module.qa = User.query.get(request.form.get('e_qa'))
     module.ops = User.query.get(request.form.get('e_ops'))
@@ -211,9 +216,88 @@ def module_edit():
     return redirect(url_for('.module_main'))
 
 
-@project.route('/del', methods=['POST'])
+@project.route('/module-del', methods=['POST'])
 @login_required
 def module_del():
+    id = request.form.get('id')
+    module = Module.query.filter_by(id=id).first()
+    if module is None:
+        flash('Non-existent module: ' + request.form.get('name'), 'error')
+        return redirect(url_for('.module_main'))
+    db.session.delete(module)
+    db.session.commit()
+    flash('module: ' + request.form.get('name') + ' is del.')
+    return redirect(url_for('.module_main'))
+
+
+@project.route('/environment')
+@login_required
+def environment_main():
+    add_module_form = AddModuleForm()
+    edit_module_form = EditModuleForm()
+    return render_template('project/module.html', add_module_form=add_module_form,
+                           edit_module_form=edit_module_form)
+
+
+@project.route('/environment-list')
+@login_required
+def environment_list():
+    modules = Module.query.all()
+    if not modules:
+        return jsonify({})
+    else:
+        # Serialize the queryset
+        result = modules.dump(modules)
+        return jsonify(result.data)
+
+
+@project.route('/environment-add', methods=['POST'])
+@login_required
+def environment_add():
+    form = AddModuleForm(data=request.get_json())
+    print form.data
+    if form.validate_on_submit():
+        module = Module(name=form.name.data,
+                        project=Project.query.get(form.project.data),
+                        department=form.department.data,
+                        svn=form.svn.data,
+                        parent=Module.query.get(form.parent.data),
+                        dev=User.query.get(form.dev.data),
+                        qa=User.query.get(form.qa.data),
+                        ops=User.query.get(form.ops.data),
+                        software=Software.query.get(form.software.data),
+                        description=form.description.data)
+        db.session.add(module)
+        db.session.commit()
+        flash(form.name.data + 'is add.')
+    else:
+        flash_errors(form)
+    return redirect(url_for('.module_main'))
+
+
+@project.route('/environment-edit', methods=['POST'])
+@login_required
+def environment_edit():
+    id = request.form.get('e_id')
+    module = Module.query.get_or_404(id)
+    module.name = request.form.get('e_name')
+    module.project = Project.query.get(request.form.get('e_project')),
+    module.department = request.form.get('e_department')
+    module.svn = request.form.get('e_svn')
+    module.parent = Project.query.get(request.form.get('e_parent'))
+    module.dev = User.query.get(request.form.get('e_dev'))
+    module.qa = User.query.get(request.form.get('e_qa'))
+    module.ops = User.query.get(request.form.get('e_ops'))
+    module.software = Software.query.get(request.form.get('e_software'))
+    module.description = request.form.get('e_description')
+    db.session.add(module)
+    flash('module: ' + request.form.get('e_name') + ' is update.')
+    return redirect(url_for('.module_main'))
+
+
+@project.route('/environment-del', methods=['POST'])
+@login_required
+def environment_del():
     id = request.form.get('id')
     module = Module.query.filter_by(id=id).first()
     if module is None:

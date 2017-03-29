@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, flash
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_moment import Moment
@@ -17,6 +17,14 @@ login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'user.login'
 
+
+def flash_errors(form):
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(u"Error in the %s field - %s" % (
+                getattr(form, field).label.text,
+                error
+            ))
 
 def create_app(config_name):
     app = Flask(__name__)
