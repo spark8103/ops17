@@ -11,7 +11,7 @@ class Config:
     DEPARTMENT = ["admin", "dev", "qa", "ops", "dba", "user", "manager"]
     ENVIRONMENT = ["DEV", "QA", "STG", "PRD"]
     SLA = ["99999", "9999", "999"]
-    IDC = ["zp", "wpnl", "oyl"]
+    IDC = ["周浦", "宛平南路", "欧阳路"]
     SSL_DISABLE = False
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False

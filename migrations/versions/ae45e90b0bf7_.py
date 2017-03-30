@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 870e01321a28
+Revision ID: ae45e90b0bf7
 Revises: 
-Create Date: 2017-03-29 09:18:20.294000
+Create Date: 2017-03-30 15:49:54.244000
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '870e01321a28'
+revision = 'ae45e90b0bf7'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -72,6 +72,7 @@ def upgrade():
     op.create_table('modules',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=True),
+    sa.Column('project_id', sa.Integer(), nullable=True),
     sa.Column('department', sa.String(length=32), nullable=True),
     sa.Column('svn', sa.String(length=128), nullable=True),
     sa.Column('parent_id', sa.Integer(), nullable=True),
@@ -79,7 +80,6 @@ def upgrade():
     sa.Column('qa_id', sa.Integer(), nullable=True),
     sa.Column('ops_id', sa.Integer(), nullable=True),
     sa.Column('software_id', sa.Integer(), nullable=True),
-    sa.Column('project_id', sa.Integer(), nullable=True),
     sa.Column('description', sa.String(length=128), nullable=True),
     sa.ForeignKeyConstraint(['dev_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['ops_id'], ['users.id'], ),

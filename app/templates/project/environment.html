@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% from "_formhelpers.html" import render_field %}
 
-{% block title %}{{ config['SITENAME'] }} - Module Manager{% endblock %}
+{% block title %}{{ config['SITENAME'] }} - Environment Manager{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block page_content %}
-    <h2>Module Manager</h2>
+    <h2>Environment Manager</h2>
     <div class="table-responsive">
     </div>
 
@@ -21,7 +21,7 @@
 
     <table id="ListTable"
            data-toggle="table"
-           data-url="{{ url_for('project.module_list') }}"
+           data-url="{{ url_for('project.environment_list') }}"
            data-query-params="queryParams"
            data-pagination="true"
            data-page-size=5
@@ -53,27 +53,27 @@
         </thead>
     </table>
 
-<!-- Model module_add -->
-<div class="modal fade" id="module_add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- Model environment_add -->
+<div class="modal fade" id="environment_add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Module Add</h4>
+                <h4 class="modal-title">Environment Add</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.module_add') }}" method="POST">
-                    {{ add_module_form.csrf_token }}
-                    {{ render_field(add_module_form.name) }}
-                    {{ render_field(add_module_form.project) }}
-                    {{ render_field(add_module_form.department) }}
-                    {{ render_field(add_module_form.svn) }}
-                    {{ render_field(add_module_form.parent) }}
-                    {{ render_field(add_module_form.dev) }}
-                    {{ render_field(add_module_form.qa) }}
-                    {{ render_field(add_module_form.ops) }}
-                    {{ render_field(add_module_form.software) }}
-                    {{ render_field(add_module_form.description) }}
+                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.environment_add') }}" method="POST">
+                    {{ add_environment_form.csrf_token }}
+                    {{ render_field(add_environment_form.name) }}
+                    {{ render_field(add_environment_form.project) }}
+                    {{ render_field(add_environment_form.department) }}
+                    {{ render_field(add_environment_form.svn) }}
+                    {{ render_field(add_environment_form.parent) }}
+                    {{ render_field(add_environment_form.dev) }}
+                    {{ render_field(add_environment_form.qa) }}
+                    {{ render_field(add_environment_form.ops) }}
+                    {{ render_field(add_environment_form.software) }}
+                    {{ render_field(add_environment_form.description) }}
                     <div class="form-group">
                         <div class="col-sm-4">
                         </div>
@@ -87,30 +87,24 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
-<!-- Model module_add -->
+<!-- Model environment_add -->
 
-<!-- Model module_edit -->
+<!-- Model environment_edit -->
 <div class="modal fade" id="module_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Module Edit</h4>
+                <h4 class="modal-title">Environment Edit</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.module_edit') }}" method="POST">
-                    {{ edit_module_form.csrf_token }}
-                    {{ edit_module_form.e_id }}
-                    {{ render_field(edit_module_form.e_name) }}
-                    {{ render_field(edit_module_form.e_project) }}
-                    {{ render_field(edit_module_form.e_department) }}
-                    {{ render_field(edit_module_form.e_svn) }}
-                    {{ render_field(edit_module_form.e_parent) }}
-                    {{ render_field(edit_module_form.e_dev) }}
-                    {{ render_field(edit_module_form.e_qa) }}
-                    {{ render_field(edit_module_form.e_ops) }}
-                    {{ render_field(edit_module_form.e_software) }}
-                    {{ render_field(edit_module_form.e_description) }}
+                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.environment_edit') }}" method="POST">
+                    {{ edit_environment_form.csrf_token }}
+                    {{ edit_environment_form.e_id }}
+                    {{ render_field(edit_environment_form.e_name) }}
+                    {{ render_field(edit_environment_form.e_project) }}
+                    {{ render_field(edit_environment_form.e_department) }}
+                    {{ render_field(edit_environment_form.e_svn) }}
                     <div class="form-group">
                         <div class="col-sm-4">
                         </div>
@@ -124,20 +118,20 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
-<!-- Model module_edit -->
+<!-- Model environment_edit -->
 
-<!-- Model module_del -->
+<!-- Model environment_del -->
 <div class="modal fade" id="module_del" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Module Del</h4>
+                <h4 class="modal-title">Environment Del</h4>
             </div>
             <div class="modal-body">
-                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.module_del') }}" method="POST">
-                        <input id="module_del_id" name="id" type="hidden" value="">
-                        <input id="module_del_name" name="name" type="hidden" value="">
+                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.environment_del') }}" method="POST">
+                        <input id="environment_del_id" name="id" type="hidden" value="">
+                        <input id="environment_del_name" name="name" type="hidden" value="">
                         <div class="form-group">
                             <label class="control-label col-sm-offset-1" id="module_del_label">Are you sure?</label>
                         </div>
@@ -151,7 +145,7 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
-<!-- Model module_del -->
+<!-- Model environment_del -->
 
 {% endblock %}
 
@@ -166,8 +160,8 @@ $(function () {
 });
 
 $(function () {
-    $("button#module_add_button").click(function(){
-        $('#module_add').modal('show');
+    $("button#environment_add_button").click(function(){
+        $('#environment_add').modal('show');
     });
 })
 
@@ -209,15 +203,15 @@ window.actionEvents = {
         $('#e_ops').val(row.ops.id);
         $('#e_software').val(row.software.id);
         $('#e_description').val(row.description);
-        $('#module_edit').modal('show');
+        $('#environment_edit').modal('show');
         //alert('You click edit icon, row: ' + $('#e_name').val(row.name););
         //console.log(value, row, index);
     },
     'click .remove': function (e, value, row, index) {
         document.getElementById('module_del_label').innerHTML = 'Delete <font color=blue>' + row.name + "</font>, are you sure?";
-        $('#module_del_id').val(row.id);
-        $('#module_del_name').val(row.name);
-        $('#module_del').modal('show');
+        $('#environment_del_id').val(row.id);
+        $('#environment_del_name').val(row.name);
+        $('#environment_del').modal('show');
         //alert('You click remove icon, row: ' + JSON.stringify(row));
         //console.log(value, row, index);
     }

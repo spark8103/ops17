@@ -58,12 +58,35 @@ class User(UserMixin, db.Model):
     allow_login = db.Column(db.Boolean, default=False, index=True)
     pm = db.relationship('Project',
                          backref=db.backref('pm', lazy='joined'), lazy='dynamic')
-    dev = db.relationship('Project',
-                         backref=db.backref('dev', lazy='joined'), lazy='dynamic')
-    qa = db.relationship('Project',
-                          backref=db.backref('qa', lazy='joined'), lazy='dynamic')
-    ops = db.relationship('Project',
-                          backref=db.backref('ops', lazy='joined'), lazy='dynamic')
+    @staticmethod
+    def insert_users():
+        users = {
+            'admin': ('admin@example.com', 13465245521, "admin", Role.query.filter_by(name="Administrator").first(), 'admin', True),
+            'ops1': ('ops1@example.com', 13764110236, "ops", Role.query.filter_by(name="User").first(), 'ops1', False),
+            'ops2': ('ops2@example.com', 13764110238, "ops", Role.query.filter_by(name="User").first(), 'ops2', False),
+            'dev1': ('dev1@example.com', 13612451124, "dev", Role.query.filter_by(name="User").first(), 'dev1', False),
+            'dev2': ('dev2@example.com', 13625412214, "dev", Role.query.filter_by(name="User").first(), 'dev2', False),
+            'qa1': ('qa1@example.com', 13112453365, "qa", Role.query.filter_by(name="User").first(), 'qa1', False),
+            'qa2': ('qa2@example.com', 13124556847, "qa", Role.query.filter_by(name="User").first(), 'qa2', False),
+            'dba1': ('dba1@example.com', 13321542635, "dba", Role.query.filter_by(name="User").first(), 'dba1', False),
+            'dba2': ('dba2@example.com', 13214512245, "dba", Role.query.filter_by(name="User").first(), 'dba2', False),
+            'user1': ('user1@example.com', 13412115694, "user", Role.query.filter_by(name="User").first(), 'user1', False),
+            'user2': ('user2@example.com', 13451489521, "user", Role.query.filter_by(name="User").first(), 'user2', False),
+            'user3': ('user3@example.com', 13465218952, "manager", Role.query.filter_by(name="User").first(), 'user3', False),
+            'user4': ('user4@example.com', 13462548991, "manager", Role.query.filter_by(name="User").first(), 'user4', False),
+        }
+        for u in users:
+            user = User.query.filter_by(username=u).first()
+            if user is None:
+                user = User(username=u)
+            user.email = users[u][0]
+            user.mobile = users[u][1]
+            user.department = users[u][2]
+            user.role = users[u][3]
+            user.password = users[u][4]
+            user.allow_login = users[u][5]
+            db.session.add(user)
+            db.session.commit()
 
     @staticmethod
     def generate_fake(count=100):
@@ -256,9 +279,31 @@ class Module(db.Model):
     description = db.Column(db.String(128))
     parent = db.relationship("Module", remote_side=[id, name])
 
-    def __repr__(self):
-        return '<Project %r>' % self.name
+    dev = db.relationship('User', foreign_keys=[dev_id])
+    qa = db.relationship('User', foreign_keys=[qa_id])
+    ops = db.relationship('User', foreign_keys=[ops_id])
 
+    def __repr__(self):
+        return '<Module %r>' % self.name
+
+
+class Environment(db.Model):
+    __tablename__ = 'environments'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    module_id = db.Column(db.Integer, db.ForeignKey('modules.id'))
+    idc = db.Column(db.String(64))
+    env = db.Column(db.String(32))
+    check_point1 = db.Column(db.String(128))
+    check_point2 = db.Column(db.String(128))
+    check_point3 = db.Column(db.String(128))
+    deploy_path = db.Column(db.String(128))
+    server_ip = db.Column(db.String(128))
+    online_since = db.Column(db.DateTime(), default=datetime.utcnow)
+    domain = db.Column(db.String(64))
+
+    def __repr__(self):
+        return '<Environment %r>' % self.name
 
 # SCHEMAS #####
 
@@ -295,5 +340,18 @@ class ModuleSchema(Schema):
     dev = fields.Nested(UserSchema, only=["id", "username"])
     qa = fields.Nested(UserSchema, only=["id", "username"])
     ops = fields.Nested(UserSchema, only=["id", "username"])
-    software = fields.Nested(SoftwareSchema, only=["id", "username"])
+    software = fields.Nested(SoftwareSchema, only=["id", "version"])
     description = fields.Str()
+
+
+class EnvironmentSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
+    module = fields.Nested(ModuleSchema, only=["id", "name"])
+    idc = fields.Str()
+    env = fields.Str()
+    check_point1 = fields.Str()
+    check_point2 = fields.Str()
+    check_point3 = fields.Str()
+    deploy_path = fields.Str()
+    

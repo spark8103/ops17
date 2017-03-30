@@ -89,7 +89,7 @@ class AddModuleForm(FlaskForm):
         self.project.choices = [(project.id, project.name)
                             for project in Project.query.order_by(Project.name).all()]
         self.department.choices = [(i, i) for i in current_app.config['DEPARTMENT']]
-        self.parent.choices = [(parent.id, parent.name)
+        self.parent.choices = [(0, 'None')] + [(parent.id, parent.name)
                             for parent in Module.query.order_by(Module.name).all()]
         self.dev.choices = [(dev.id, dev.username)
                             for dev in User.query.filter_by(department="dev").order_by(User.username).all()]
@@ -124,7 +124,7 @@ class EditModuleForm(FlaskForm):
         self.e_project.choices = [(project.id, project.name)
                                 for project in Project.query.order_by(Project.name).all()]
         self.e_department.choices = [(i, i) for i in current_app.config['DEPARTMENT']]
-        self.e_parent.choices = [(parent.id, parent.name)
+        self.e_parent.choices = [(0, 'None')] + [(parent.id, parent.name)
                                for parent in Module.query.order_by(Module.name).all()]
         self.e_dev.choices = [(dev.id, dev.username)
                             for dev in User.query.filter_by(department="dev").order_by(User.username).all()]

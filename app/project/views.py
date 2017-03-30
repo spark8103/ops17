@@ -39,18 +39,17 @@ def software_list():
 @project.route('/software-add', methods=['POST'])
 @login_required
 def software_add():
-    if request.form.get('name') == '':
-        flash('Add software, name is not allow null.')
-    elif request.form.get('version') == '':
-        flash('Add software, version is not allow null.')
-    else:
+    form = AddSoftwareForm(data=request.get_json())
+    if form.validate_on_submit():
         software = Software(
-            name=request.form.get('name'),
-            version=request.form.get('version')
+            name=form.name.data,
+            version=form.version.data
         )
         db.session.add(software)
         db.session.commit()
-        flash('software: ' + request.form.get('name') + 'is add.')
+        flash('software: ' + request.form.get('name') + ' is add.')
+    else:
+        flash_errors(form)
     return redirect(url_for('.software'))
 
 
@@ -59,10 +58,14 @@ def software_add():
 def software_edit():
     id = request.form.get('e_id')
     software = Software.query.get_or_404(id)
-    software.name = request.form.get('e_name')
-    software.version = request.form.get('e_version')
-    db.session.add(software)
-    flash('Software: ' + request.form.get('e_name') + ' is update.')
+    form = EditSoftwareForm(id=id)
+    if form.validate_on_submit():
+        software.name = form.e_name.data
+        software.version = form.e_version.data
+        db.session.add(software)
+        flash('Software: ' + request.form.get('e_name') + ' is update.')
+    else:
+        flash_errors(form)
     return redirect(url_for('.software'))
 
 
@@ -73,10 +76,10 @@ def software_del():
     software = Software.query.filter_by(id=id).first()
     if software is None:
         flash('Non-existent software: ' + request.form.get('name'), 'error')
-        return redirect(url_for('.software'))
-    db.session.delete(software)
-    db.session.commit()
-    flash('Software: ' + request.form.get('name') + ' is del.')
+    else:
+        db.session.delete(software)
+        db.session.commit()
+        flash('Software: ' + request.form.get('name') + ' is del.')
     return redirect(url_for('.software'))
 
 
@@ -115,7 +118,9 @@ def project_add():
                           description=form.description.data)
         db.session.add(project)
         db.session.commit()
-        flash(form.name.data + 'is add.')
+        flash('project: ' + form.name.data + ' is add.')
+    else:
+        flash_errors(form)
     return redirect(url_for('.project_main'))
 
 
@@ -124,16 +129,19 @@ def project_add():
 def project_edit():
     id = request.form.get('e_id')
     project = Project.query.get_or_404(id)
-    project.name = request.form.get('e_name')
-    project.department = request.form.get('e_department')
-    project.pm = User.query.get(request.form.get('e_pm'))
-    print request.form.get('e_pm')
-    project.sla = request.form.get('e_sla')
-    project.check_point = request.form.get('e_check_point')
-    project.domain = request.form.get('e_domain')
-    project.description = request.form.get('e_description')
-    db.session.add(project)
-    flash('project: ' + request.form.get('e_name') + ' is update.')
+    form = EditProjectForm(id=id)
+    if form.validate_on_submit():
+        project.name = form.e_name.data
+        project.department = form.e_department.data
+        project.pm = User.query.get(form.e_pm.data)
+        project.sla = form.e_sla.data
+        project.check_point = form.e_check_point.data
+        project.domain = form.e_domain.data
+        project.description = form.e_description.data
+        db.session.add(project)
+        flash('project: ' + request.form.get('e_name') + ' is update.')
+    else:
+        flash_errors(form)
     return redirect(url_for('.project_main'))
 
 
@@ -144,10 +152,10 @@ def project_del():
     project = Project.query.filter_by(id=id).first()
     if project is None:
         flash('Non-existent project: ' + request.form.get('name'), 'error')
-        return redirect(url_for('.project_main'))
-    db.session.delete(project)
-    db.session.commit()
-    flash('project: ' + request.form.get('name') + ' is del.')
+    else:
+        db.session.delete(project)
+        db.session.commit()
+        flash('project: ' + request.form.get('name') + ' is del.')
     return redirect(url_for('.project_main'))
 
 
@@ -168,7 +176,7 @@ def module_list():
         return jsonify({})
     else:
         # Serialize the queryset
-        result = modules.dump(modules)
+        result = modules_schema.dump(modules)
         return jsonify(result.data)
 
 
@@ -176,7 +184,6 @@ def module_list():
 @login_required
 def module_add():
     form = AddModuleForm(data=request.get_json())
-    print form.data
     if form.validate_on_submit():
         module = Module(name=form.name.data,
                         project=Project.query.get(form.project.data),
@@ -190,7 +197,7 @@ def module_add():
                         description=form.description.data)
         db.session.add(module)
         db.session.commit()
-        flash(form.name.data + 'is add.')
+        flash('module: ' + form.name.data + 'is add.')
     else:
         flash_errors(form)
     return redirect(url_for('.module_main'))
@@ -201,18 +208,22 @@ def module_add():
 def module_edit():
     id = request.form.get('e_id')
     module = Module.query.get_or_404(id)
-    module.name = request.form.get('e_name')
-    module.project = Project.query.get(request.form.get('e_project')),
-    module.department = request.form.get('e_department')
-    module.svn = request.form.get('e_svn')
-    module.parent = Project.query.get(request.form.get('e_parent'))
-    module.dev = User.query.get(request.form.get('e_dev'))
-    module.qa = User.query.get(request.form.get('e_qa'))
-    module.ops = User.query.get(request.form.get('e_ops'))
-    module.software = Software.query.get(request.form.get('e_software'))
-    module.description = request.form.get('e_description')
-    db.session.add(module)
-    flash('module: ' + request.form.get('e_name') + ' is update.')
+    form = EditModuleForm(id=id)
+    if form.validate_on_submit():
+        module.name = form.e_name.data
+        module.project = Project.query.get(form.e_project.data)
+        module.department = form.e_department.data
+        module.svn = form.e_svn.data
+        module.parent = Module.query.get(form.e_parent.data)
+        module.dev = User.query.get(form.e_dev.data)
+        module.qa = User.query.get(form.e_qa.data)
+        module.ops = User.query.get(form.e_ops.data)
+        module.software = Software.query.get(form.e_software.data)
+        module.description = form.e_description.data
+        db.session.add(module)
+        flash('module: ' + form.e_name.data + ' is update.')
+    else:
+        flash_errors(form)
     return redirect(url_for('.module_main'))
 
 
@@ -223,10 +234,10 @@ def module_del():
     module = Module.query.filter_by(id=id).first()
     if module is None:
         flash('Non-existent module: ' + request.form.get('name'), 'error')
-        return redirect(url_for('.module_main'))
-    db.session.delete(module)
-    db.session.commit()
-    flash('module: ' + request.form.get('name') + ' is del.')
+    else:
+        db.session.delete(module)
+        db.session.commit()
+        flash('module: ' + request.form.get('name') + ' is del.')
     return redirect(url_for('.module_main'))
 
 
@@ -269,7 +280,7 @@ def environment_add():
                         description=form.description.data)
         db.session.add(module)
         db.session.commit()
-        flash(form.name.data + 'is add.')
+        flash('environment: ' + form.name.data + 'is add.')
     else:
         flash_errors(form)
     return redirect(url_for('.module_main'))
@@ -291,7 +302,7 @@ def environment_edit():
     module.software = Software.query.get(request.form.get('e_software'))
     module.description = request.form.get('e_description')
     db.session.add(module)
-    flash('module: ' + request.form.get('e_name') + ' is update.')
+    flash('environment: ' + request.form.get('e_name') + ' is update.')
     return redirect(url_for('.module_main'))
 
 
@@ -305,5 +316,5 @@ def environment_del():
         return redirect(url_for('.module_main'))
     db.session.delete(module)
     db.session.commit()
-    flash('module: ' + request.form.get('name') + ' is del.')
+    flash('environment: ' + request.form.get('name') + ' is del.')
     return redirect(url_for('.module_main'))
