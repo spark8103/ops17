@@ -282,6 +282,8 @@ class Module(db.Model):
     dev = db.relationship('User', foreign_keys=[dev_id])
     qa = db.relationship('User', foreign_keys=[qa_id])
     ops = db.relationship('User', foreign_keys=[ops_id])
+    module = db.relationship('Environment',
+                              backref=db.backref('module', lazy='joined'), lazy='dynamic')
 
     def __repr__(self):
         return '<Module %r>' % self.name
@@ -354,4 +356,6 @@ class EnvironmentSchema(Schema):
     check_point2 = fields.Str()
     check_point3 = fields.Str()
     deploy_path = fields.Str()
-    
+    server_ip = fields.Str()
+    online_since = fields.Str()
+    domain = fields.Str()

@@ -1,10 +1,11 @@
 # coding: utf-8
 from flask import current_app
 from flask_wtf import FlaskForm
-from wtforms import HiddenField, IntegerField, StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField, FloatField
-from wtforms.validators import Required, Length, Email, Regexp, EqualTo
+from wtforms import HiddenField, IntegerField, StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField, FloatField, DateTimeField
+from wtforms.validators import Required, Length, Email, Regexp, EqualTo, DataRequired
 from wtforms import ValidationError
-from ..models import User, Software, Project, Module
+from ..models import User, Software, Project, Module, Environment
+import datetime
 
 
 class AddSoftwareForm(FlaskForm):
@@ -138,3 +139,56 @@ class EditModuleForm(FlaskForm):
     def validate_name(self, field):
         if Module.query.filter_by(name=field.data).first():
             raise ValidationError('ModuleName already in use.')
+
+
+class AddEnvironmentForm(FlaskForm):
+    name = StringField('Name', validators=[Required()])
+    module = SelectField('Module', coerce=int, validators=[Required()])
+    idc = SelectField('IDC', coerce=str)
+    env = SelectField('ENV', coerce=str)
+    check_point1 = StringField('Check_Point1')
+    check_point2 = StringField('Check_Point2')
+    check_point3 = StringField('Check_Point3')
+    deploy_path = StringField('deploy_path')
+    server_ip = StringField('server_ip')
+    online_since = DateTimeField('Start at', format="%Y-%m-%d %H:%M")
+    domain = StringField('Domain')
+    submit = SubmitField('Submit')
+
+    def __init__(self, *args, **kwargs):
+        super(AddEnvironmentForm, self).__init__(*args, **kwargs)
+        self.module.choices = [(module.id, module.name)
+                            for module in Module.query.order_by(Module.name).all()]
+        self.idc.choices = [(i, i) for i in current_app.config['IDC']]
+        self.env.choices = [(i, i) for i in current_app.config['ENVIRONMENT']]
+
+    def validate_name(self, field):
+        if Environment.query.filter_by(name=field.data).first():
+            raise ValidationError('Environment already in use.')
+
+
+class EditEnvironmentForm(FlaskForm):
+    e_id = HiddenField('ID', validators=[Required()])
+    e_name = StringField('Name', validators=[Required()])
+    e_module = SelectField('Module', coerce=int, validators=[Required()])
+    e_idc = SelectField('IDC', coerce=str)
+    e_env = SelectField('ENV', coerce=str)
+    e_check_point1 = StringField('Check_Point1')
+    e_check_point2 = StringField('Check_Point2')
+    e_check_point3 = StringField('Check_Point3')
+    e_deploy_path = StringField('deploy_path')
+    e_server_ip = StringField('server_ip')
+    e_online_since = DateTimeField('Start at', format="%Y-%m-%d %H:%M")
+    e_domain = StringField('Domain')
+    submit = SubmitField('Submit')
+
+    def __init__(self, *args, **kwargs):
+        super(EditEnvironmentForm, self).__init__(*args, **kwargs)
+        self.e_module.choices = [(module.id, module.name)
+                            for module in Module.query.order_by(Module.name).all()]
+        self.e_idc.choices = [(i, i) for i in current_app.config['IDC']]
+        self.e_env.choices = [(i, i) for i in current_app.config['ENVIRONMENT']]
+
+    def validate_name(self, field):
+        if Environment.query.filter_by(name=field.data).first():
+            raise ValidationError('Environment already in use.')

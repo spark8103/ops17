@@ -9,9 +9,9 @@ class Config:
     #APPLICATION_ROOT = "test" #prefix test
     BOOTSTRAP_SERVE_LOCAL =True
     DEPARTMENT = ["admin", "dev", "qa", "ops", "dba", "user", "manager"]
-    ENVIRONMENT = ["DEV", "QA", "STG", "PRD"]
+    ENVIRONMENT = ["PRD", "DEV", "QA", "STG"]
     SLA = ["99999", "9999", "999"]
-    IDC = ["周浦", "宛平南路", "欧阳路"]
+    IDC = ["zp", "wpnl", "oyl"]
     SSL_DISABLE = False
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False

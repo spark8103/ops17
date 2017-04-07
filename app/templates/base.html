@@ -9,6 +9,8 @@
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='jquery-ui-1.12.1/jquery-ui.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='datetimepicker/css/bootstrap-datetimepicker.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font-awesome.min.css') }}">
 {% endblock %}
 
@@ -83,5 +85,8 @@
 
 {% block scripts %}
 {{ super() }}
+<script src="{{ url_for('static', filename='jquery-ui-1.12.1/jquery-ui.min.js') }}"></script>
+<script src="{{ url_for('static', filename='datetimepicker/js/bootstrap-datetimepicker.min.js') }}"></script>
+<script src="{{ url_for('static', filename='datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js') }}"></script>
 {{ moment.include_moment(local_js=url_for('static', filename='js/moment-with-locales.min.js')) }}
 {% endblock %}

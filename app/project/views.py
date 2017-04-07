@@ -4,8 +4,10 @@ from flask import render_template, redirect, request, url_for, flash, \
 from flask_login import login_required, current_user
 from . import project
 from .. import db, flash_errors
-from ..models import User, Software, SoftwareSchema, Project, ProjectSchema, Module, ModuleSchema
-from .forms import AddProjectForm, EditProjectForm, AddSoftwareForm, EditSoftwareForm, AddModuleForm, EditModuleForm
+from ..models import User, Software, SoftwareSchema, Project, ProjectSchema, Module, ModuleSchema, \
+    Environment, EnvironmentSchema
+from .forms import AddProjectForm, EditProjectForm, AddSoftwareForm, EditSoftwareForm, AddModuleForm, \
+    EditModuleForm, AddEnvironmentForm, EditEnvironmentForm
 
 software_schema = SoftwareSchema()
 softwares_schema = SoftwareSchema(many=True)
@@ -13,6 +15,8 @@ project_schema = ProjectSchema()
 projects_schema = ProjectSchema(many=True)
 module_schema = ModuleSchema()
 modules_schema = ModuleSchema(many=True)
+environment_schema = EnvironmentSchema()
+environments_schema = EnvironmentSchema(many=True)
 
 
 @project.route('/software')
@@ -244,77 +248,82 @@ def module_del():
 @project.route('/environment')
 @login_required
 def environment_main():
-    add_module_form = AddModuleForm()
-    edit_module_form = EditModuleForm()
-    return render_template('project/module.html', add_module_form=add_module_form,
-                           edit_module_form=edit_module_form)
+    add_environment_form = AddEnvironmentForm()
+    edit_environment_form = EditEnvironmentForm()
+    return render_template('project/environment.html', add_environment_form=add_environment_form,
+                           edit_environment_form=edit_environment_form)
 
 
 @project.route('/environment-list')
 @login_required
 def environment_list():
-    modules = Module.query.all()
-    if not modules:
+    environments = Environment.query.all()
+    if not environments:
         return jsonify({})
     else:
         # Serialize the queryset
-        result = modules.dump(modules)
+        result = environments_schema.dump(environments)
         return jsonify(result.data)
 
 
 @project.route('/environment-add', methods=['POST'])
 @login_required
 def environment_add():
-    form = AddModuleForm(data=request.get_json())
-    print form.data
+    form = AddEnvironmentForm(data=request.get_json())
     if form.validate_on_submit():
-        module = Module(name=form.name.data,
-                        project=Project.query.get(form.project.data),
-                        department=form.department.data,
-                        svn=form.svn.data,
-                        parent=Module.query.get(form.parent.data),
-                        dev=User.query.get(form.dev.data),
-                        qa=User.query.get(form.qa.data),
-                        ops=User.query.get(form.ops.data),
-                        software=Software.query.get(form.software.data),
-                        description=form.description.data)
-        db.session.add(module)
+        environment = Environment(name=form.name.data,
+                        module=Module.query.get(form.module.data),
+                        idc=form.idc.data,
+                        env=form.env.data,
+                        check_point1=form.check_point1.data,
+                        check_point2=form.check_point2.data,
+                        check_point3=form.check_point3.data,
+                        deploy_path=form.deploy_path.data,
+                        server_ip=form.server_ip.data,
+                        online_since=form.online_since.data,
+                        domain=form.domain.data)
+        db.session.add(environment)
         db.session.commit()
         flash('environment: ' + form.name.data + 'is add.')
     else:
         flash_errors(form)
-    return redirect(url_for('.module_main'))
+    return redirect(url_for('.environment_main'))
 
 
 @project.route('/environment-edit', methods=['POST'])
 @login_required
 def environment_edit():
     id = request.form.get('e_id')
-    module = Module.query.get_or_404(id)
-    module.name = request.form.get('e_name')
-    module.project = Project.query.get(request.form.get('e_project')),
-    module.department = request.form.get('e_department')
-    module.svn = request.form.get('e_svn')
-    module.parent = Project.query.get(request.form.get('e_parent'))
-    module.dev = User.query.get(request.form.get('e_dev'))
-    module.qa = User.query.get(request.form.get('e_qa'))
-    module.ops = User.query.get(request.form.get('e_ops'))
-    module.software = Software.query.get(request.form.get('e_software'))
-    module.description = request.form.get('e_description')
-    db.session.add(module)
-    flash('environment: ' + request.form.get('e_name') + ' is update.')
-    return redirect(url_for('.module_main'))
+    environment = Environment.query.get_or_404(id)
+    form = EditEnvironmentForm(id=id)
+    if form.validate_on_submit():
+        environment.name = form.e_name.data
+        environment.module = Module.query.get(form.e_module.data)
+        environment.idc = form.e_idc.data
+        environment.env = form.e_env.data
+        environment.check_point1 = form.e_check_point1.data
+        environment.check_point2 = form.e_check_point2.data
+        environment.check_point3 = form.e_check_point3.data
+        environment.deploy_path = form.e_deploy_path.data
+        environment.server_ip = form.e_server_ip.data
+        environment.online_since = form.e_online_since.data
+        environment.domain = form.e_domain.data
+        db.session.add(environment)
+        flash('environment: ' + form.e_name.data + ' is update.')
+    else:
+        flash_errors(form)
+    return redirect(url_for('.environment_main'))
 
 
 @project.route('/environment-del', methods=['POST'])
 @login_required
 def environment_del():
     id = request.form.get('id')
-    module = Module.query.filter_by(id=id).first()
-    if module is None:
-        flash('Non-existent module: ' + request.form.get('name'), 'error')
-        return redirect(url_for('.module_main'))
-    db.session.delete(module)
+    environment = Environment.query.filter_by(id=id).first()
+    if environment is None:
+        flash('Non-existent environment: ' + request.form.get('name'), 'error')
+        return redirect(url_for('.environment_main'))
+    db.session.delete(environment)
     db.session.commit()
     flash('environment: ' + request.form.get('name') + ' is del.')
-    return redirect(url_for('.module_main'))
+    return redirect(url_for('.environment_main'))
