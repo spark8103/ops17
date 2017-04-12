@@ -22,8 +22,10 @@ python manage.py shell
 from app import models
 Role.insert_roles()
 Department.insert_departments()
-Software.insert_softwares()
+Department.insert_departments()
 User.insert_users()
+Idc.insert_idcs()
+Software.insert_softwares()
 ```
 
 ### Run Server

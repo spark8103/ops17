@@ -75,10 +75,37 @@ class Department(db.Model):
                 department.parent = departments[r][0]
             department.description = departments[r][1]
             db.session.add(department)
-            db.session.commit()
+        db.session.commit()
 
     def __repr__(self):
         return '<Department %r>' % self.name
+
+
+class Idc(db.Model):
+    __tablename__ = 'ops_idcs'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), unique=True)
+    description = db.Column(db.String(256))
+
+    @staticmethod
+    def insert_idcs():
+        idcs = {
+            u'周浦': '',
+            u'宛平南路': '',
+            u'欧阳路': '',
+            u'万国数据中心': '',
+            u'Ucloud': '',
+        }
+        for s in idcs:
+            idc = Idc.query.filter_by(name=s).first()
+            if idc is None:
+                idc = Idc(name=s)
+            idc.description = idcs[s]
+            db.session.add(idc)
+        db.session.commit()
+
+    def __repr__(self):
+        return '<Idc %r>' % self.name
 
 
 class User(UserMixin, db.Model):
@@ -352,6 +379,13 @@ class DepartmentSchema(Schema):
     name = fields.Str()
     parent = fields.Nested('self', only=["id", "name"])
     description = fields.Str()
+
+
+class IdcSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
+    description = fields.Str()
+
 
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
