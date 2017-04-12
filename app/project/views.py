@@ -271,7 +271,7 @@ def environment_list():
 def environment_add():
     form = AddEnvironmentForm(data=request.get_json())
     if form.validate_on_submit():
-        environment = Environment(name=form.name.data,
+        environment = Environment(
                         module=Module.query.get(form.module.data),
                         idc=form.idc.data,
                         env=form.env.data,
@@ -284,7 +284,7 @@ def environment_add():
                         domain=form.domain.data)
         db.session.add(environment)
         db.session.commit()
-        flash('environment: ' + form.name.data + 'is add.')
+        flash('environment: ' + Module.query.get(form.module.data).name + ": " + form.env.data + ' is add.')
     else:
         flash_errors(form)
     return redirect(url_for('.environment_main'))
@@ -296,8 +296,9 @@ def environment_edit():
     id = request.form.get('e_id')
     environment = Environment.query.get_or_404(id)
     form = EditEnvironmentForm(id=id)
+    print "e_online_since: " + request.form.get('e_online_since')
+    print form.data
     if form.validate_on_submit():
-        environment.name = form.e_name.data
         environment.module = Module.query.get(form.e_module.data)
         environment.idc = form.e_idc.data
         environment.env = form.e_env.data
@@ -309,7 +310,7 @@ def environment_edit():
         environment.online_since = form.e_online_since.data
         environment.domain = form.e_domain.data
         db.session.add(environment)
-        flash('environment: ' + form.e_name.data + ' is update.')
+        flash('environment: ' + Module.query.get(form.e_module.data).name + ": " + form.e_env.data + ' is update.')
     else:
         flash_errors(form)
     return redirect(url_for('.environment_main'))
@@ -321,9 +322,9 @@ def environment_del():
     id = request.form.get('id')
     environment = Environment.query.filter_by(id=id).first()
     if environment is None:
-        flash('Non-existent environment: ' + request.form.get('name'), 'error')
+        flash('Non-existent environment: ' + + request.form.get('module') + ": " + request.form.get('env'), 'error')
         return redirect(url_for('.environment_main'))
     db.session.delete(environment)
     db.session.commit()
-    flash('environment: ' + request.form.get('name') + ' is del.')
+    flash('environment: ' + request.form.get('module') + ": " + request.form.get('env') + ' is del.')
     return redirect(url_for('.environment_main'))

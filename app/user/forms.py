@@ -1,10 +1,10 @@
 # coding: utf-8
 from flask import current_app
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField, FloatField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField, FloatField, HiddenField
 from wtforms.validators import Required, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
-from ..models import User, Role
+from ..models import User, Department, Role
 
 
 class LoginForm(FlaskForm):
@@ -108,3 +108,34 @@ class AddUserAdminForm(FlaskForm):
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():
             raise ValidationError('Username already in use.')
+
+
+class AddDepartmentForm(FlaskForm):
+    name = StringField('Name', validators=[Required()])
+    parent = SelectField('PerDepartment', coerce=int, default=0)
+    description = TextAreaField('Description')
+
+    def __init__(self, *args, **kwargs):
+        super(AddDepartmentForm, self).__init__(*args, **kwargs)
+        self.parent.choices = [(0, 'None')] + [(parent.id, parent.name)
+                            for parent in Department.query.order_by(Department.name).all()]
+
+    def validate_name(self, field):
+        if Department.query.filter_by(name=field.data).first():
+            raise ValidationError('Department already in use.')
+
+
+class EditDepartmentForm(FlaskForm):
+    e_id = HiddenField('ID', validators=[Required()])
+    e_name = StringField('Name', validators=[Required()])
+    e_parent = SelectField('PerDepartment', coerce=int)
+    e_description = TextAreaField('Description')
+
+    def __init__(self, *args, **kwargs):
+        super(EditDepartmentForm, self).__init__(*args, **kwargs)
+        self.e_parent.choices = [(0, 'None')] + [(parent.id, parent.name)
+                                             for parent in Department.query.order_by(Department.name).all()]
+
+    def validate_name(self, field):
+        if Department.query.filter_by(name=field.data).first():
+            raise ValidationError('Department already in use.')

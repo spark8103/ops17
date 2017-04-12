@@ -142,7 +142,6 @@ class EditModuleForm(FlaskForm):
 
 
 class AddEnvironmentForm(FlaskForm):
-    name = StringField('Name', validators=[Required()])
     module = SelectField('Module', coerce=int, validators=[Required()])
     idc = SelectField('IDC', coerce=str)
     env = SelectField('ENV', coerce=str)
@@ -169,7 +168,6 @@ class AddEnvironmentForm(FlaskForm):
 
 class EditEnvironmentForm(FlaskForm):
     e_id = HiddenField('ID', validators=[Required()])
-    e_name = StringField('Name', validators=[Required()])
     e_module = SelectField('Module', coerce=int, validators=[Required()])
     e_idc = SelectField('IDC', coerce=str)
     e_env = SelectField('ENV', coerce=str)

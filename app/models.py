@@ -17,7 +17,7 @@ class Permission:
 
 # MODELS #####
 class Role(db.Model):
-    __tablename__ = 'roles'
+    __tablename__ = 'ops_roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
     default = db.Column(db.Boolean, default=False, index=True)
@@ -43,14 +43,52 @@ class Role(db.Model):
         return '<Role %r>' % self.name
 
 
+class Department(db.Model):
+    __tablename__ = 'ops_departments'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('ops_departments.id'))
+    description = db.Column(db.String(128))
+
+    parent = db.relationship("Department", remote_side=[id, name])
+
+    @staticmethod
+    def insert_departments():
+        departments = {
+            u'管理中心': (0,''),
+            u'技术中心': (0, ''),
+            u'营销中心': (0, ''),
+            u'行政部': (Department.query.filter_by(name=u"管理中心").first(),''),
+            u'财务部': (Department.query.filter_by(name=u"管理中心").first(), ''),
+            u'运维部': (Department.query.filter_by(name=u"技术中心").first(), ''),
+            u'开发部': (Department.query.filter_by(name=u"技术中心").first(), ''),
+            u'市场部': (Department.query.filter_by(name=u"营销中心").first(), ''),
+            u'活动部': (Department.query.filter_by(name=u"营销中心").first(), ''),
+        }
+        for r in departments:
+            department = Department.query.filter_by(name=r).first()
+            if department is None:
+                department = Department(name=r)
+            if isinstance(departments[r][0], int):
+                department.parent_id = departments[r][0]
+            else:
+                department.parent = departments[r][0]
+            department.description = departments[r][1]
+            db.session.add(department)
+            db.session.commit()
+
+    def __repr__(self):
+        return '<Department %r>' % self.name
+
+
 class User(UserMixin, db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'ops_users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
     email = db.Column(db.String(64), index=True)
     mobile = db.Column(db.INTEGER, index=True)
     department = db.Column(db.String(32), index=True, default="user")
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    role_id = db.Column(db.Integer, db.ForeignKey('ops_roles.id'))
     password_hash = db.Column(db.String(128))
     about_me = db.Column(db.Text())
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
@@ -86,7 +124,7 @@ class User(UserMixin, db.Model):
             user.password = users[u][4]
             user.allow_login = users[u][5]
             db.session.add(user)
-            db.session.commit()
+        db.session.commit()
 
     @staticmethod
     def generate_fake(count=100):
@@ -199,7 +237,7 @@ class User(UserMixin, db.Model):
 
 
 class Software(db.Model):
-    __tablename__ = 'software'
+    __tablename__ = 'ops_software'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True, index=True)
     version = db.Column(db.String(64), unique=True, index=True)
@@ -248,11 +286,11 @@ def load_user(user_id):
 
 
 class Project(db.Model):
-    __tablename__ = 'projects'
+    __tablename__ = 'ops_projects'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
     department = db.Column(db.String(32), index=True, default="user")
-    pm_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    pm_id = db.Column(db.Integer, db.ForeignKey('ops_users.id'))
     sla = db.Column(db.String(32))
     check_point = db.Column(db.String(64))
     domain = db.Column(db.String(64))
@@ -265,17 +303,17 @@ class Project(db.Model):
 
 
 class Module(db.Model):
-    __tablename__ = 'modules'
+    __tablename__ = 'ops_modules'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'))
+    project_id = db.Column(db.Integer, db.ForeignKey('ops_projects.id'))
     department = db.Column(db.String(32), index=True)
     svn = db.Column(db.String(128))
-    parent_id = db.Column(db.Integer, db.ForeignKey('modules.id'))
-    dev_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    qa_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    ops_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    software_id = db.Column(db.Integer, db.ForeignKey('software.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('ops_modules.id'))
+    dev_id = db.Column(db.Integer, db.ForeignKey('ops_users.id'))
+    qa_id = db.Column(db.Integer, db.ForeignKey('ops_users.id'))
+    ops_id = db.Column(db.Integer, db.ForeignKey('ops_users.id'))
+    software_id = db.Column(db.Integer, db.ForeignKey('ops_software.id'))
     description = db.Column(db.String(128))
     parent = db.relationship("Module", remote_side=[id, name])
 
@@ -290,12 +328,11 @@ class Module(db.Model):
 
 
 class Environment(db.Model):
-    __tablename__ = 'environments'
+    __tablename__ = 'ops_environments'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    module_id = db.Column(db.Integer, db.ForeignKey('modules.id'))
-    idc = db.Column(db.String(64))
+    module_id = db.Column(db.Integer, db.ForeignKey('ops_modules.id'))
     env = db.Column(db.String(32))
+    idc = db.Column(db.String(64))
     check_point1 = db.Column(db.String(128))
     check_point2 = db.Column(db.String(128))
     check_point3 = db.Column(db.String(128))
@@ -309,6 +346,12 @@ class Environment(db.Model):
 
 # SCHEMAS #####
 
+
+class DepartmentSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
+    parent = fields.Nested('self', only=["id", "name"])
+    description = fields.Str()
 
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
@@ -348,7 +391,6 @@ class ModuleSchema(Schema):
 
 class EnvironmentSchema(Schema):
     id = fields.Int(dump_only=True)
-    name = fields.Str()
     module = fields.Nested(ModuleSchema, only=["id", "name"])
     idc = fields.Str()
     env = fields.Str()

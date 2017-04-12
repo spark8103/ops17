@@ -38,10 +38,9 @@
         <thead>
         <tr>
             <th data-field="id" data-sortable="true">ID</th>
-            <th data-field="name" data-sortable="true">Name</th>
             <th data-field="module.name" data-sortable="true">Module</th>
-            <th data-field="idc" data-sortable="true">IDC</th>
             <th data-field="env" data-sortable="true">ENV</th>
+            <th data-field="idc" data-sortable="true">IDC</th>
             <th data-field="check_point1" data-sortable="true">Check_Point1</th>
             <th data-field="check_point2" data-sortable="true">Check_Point2</th>
             <th data-field="check_point3" data-sortable="true">check_point3</th>
@@ -65,7 +64,6 @@
             <div class="modal-body">
                 <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.environment_add') }}" method="POST">
                     {{ add_environment_form.csrf_token }}
-                    {{ render_field(add_environment_form.name) }}
                     {{ render_field(add_environment_form.module) }}
                     {{ render_field(add_environment_form.idc) }}
                     {{ render_field(add_environment_form.env) }}
@@ -112,7 +110,6 @@
                 <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.environment_edit') }}" method="POST">
                     {{ edit_environment_form.csrf_token }}
                     {{ edit_environment_form.e_id }}
-                    {{ render_field(edit_environment_form.e_name) }}
                     {{ render_field(edit_environment_form.e_module) }}
                     {{ render_field(edit_environment_form.e_idc) }}
                     {{ render_field(edit_environment_form.e_env) }}
@@ -158,7 +155,8 @@
             <div class="modal-body">
                     <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('project.environment_del') }}" method="POST">
                         <input id="environment_del_id" name="id" type="hidden" value="">
-                        <input id="environment_del_name" name="name" type="hidden" value="">
+                        <input id="environment_del_module" name="module" type="hidden" value="">
+                        <input id="environment_del_env" name="env" type="hidden" value="">
                         <div class="form-group">
                             <label class="control-label col-sm-offset-1" id="environment_del_label">Are you sure?</label>
                         </div>
@@ -229,7 +227,6 @@ function actionFormatter(value, row, index) {
 window.actionEvents = {
     'click .edit': function (e, value, row, index) {
         $('#e_id').val(row.id);
-        $('#e_name').val(row.name);
         $('#e_module').val(row.module.id);
         $('#e_idc').val(row.idc);
         $('#e_env').val(row.env);
@@ -245,9 +242,10 @@ window.actionEvents = {
         //console.log(value, row, index);
     },
     'click .remove': function (e, value, row, index) {
-        document.getElementById('environment_del_label').innerHTML = 'Delete <font color=blue>' + row.name + "</font>, are you sure?";
+        document.getElementById('environment_del_label').innerHTML = 'Delete <font color=blue>' + row.module.name + ": " + row.env + "</font>, are you sure?";
         $('#environment_del_id').val(row.id);
-        $('#environment_del_name').val(row.name);
+        $('#environment_del_module').val(row.module);
+        $('#environment_del_env').val(row.env);
         $('#environment_del').modal('show');
         //alert('You click remove icon, row: ' + JSON.stringify(row));
         //console.log(value, row, index);

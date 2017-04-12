@@ -10,6 +10,7 @@
 ## Init
 ### Install requirements
 pip install -r requirements/requirements.txt
+python manage.py db init
 
 ### Create db file
 python manage.py db upgrade
@@ -20,6 +21,7 @@ python manage.py shell
 
 from app import models
 Role.insert_roles()
+Department.insert_departments()
 Software.insert_softwares()
 User.insert_users()
 ```

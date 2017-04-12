@@ -4,12 +4,16 @@ from flask import render_template, redirect, request, url_for, flash, \
 from flask_login import login_user, logout_user, login_required, \
     current_user
 from . import user
-from .. import db
-from ..models import User, Role
+from .. import db, flash_errors
+from ..models import User, Department, DepartmentSchema, Role
 from ..email import send_email
 from .forms import LoginForm, EditProfileForm, ChangePasswordForm, \
-    EditUserAdminForm, PasswordResetRequestForm, PasswordResetForm, AddUserAdminForm
+    EditUserAdminForm, PasswordResetRequestForm, PasswordResetForm, AddUserAdminForm, \
+    AddDepartmentForm, EditDepartmentForm
 from ..decorators import admin_required, permission_required
+
+department_schema = DepartmentSchema()
+departments_schema = DepartmentSchema(many=True)
 
 
 @user.before_app_request
@@ -182,3 +186,73 @@ def user_add():
         flash(form.username.data + 'is add.')
         return redirect(url_for('user.user_add'))
     return render_template('user/user_add.html', form=form)
+
+
+@user.route('/department')
+@login_required
+def department():
+    add_department_form = AddDepartmentForm()
+    edit_department_form = EditDepartmentForm()
+    return render_template('user/department.html', add_department_form=add_department_form,
+                           edit_department_form=edit_department_form)
+
+
+@user.route('/department-list')
+@login_required
+def department_list():
+    departments = Department.query.all()
+    if not departments:
+        return jsonify({})
+    else:
+        # Serialize the queryset
+        result = departments_schema.dump(departments)
+        return jsonify(result.data)
+
+
+@user.route('/department-add', methods=['POST'])
+@login_required
+def department_add():
+    form = AddDepartmentForm(data=request.get_json())
+    if form.validate_on_submit():
+        department = Department(
+            name=form.name.data,
+            parent=Department.query.get(form.parent.data),
+            description=form.description.data
+        )
+        db.session.add(department)
+        db.session.commit()
+        flash('Department: ' + request.form.get('name') + ' is add.')
+    else:
+        flash_errors(form)
+    return redirect(url_for('.department'))
+
+
+@user.route('/department-edit', methods=['POST'])
+@login_required
+def department_edit():
+    id = request.form.get('e_id')
+    department = Department.query.get_or_404(id)
+    form = EditDepartmentForm(id=id)
+    if form.validate_on_submit():
+        department.name = form.e_name.data
+        department.parent = Department.query.get(form.e_parent.data)
+        department.description = form.e_description.data
+        db.session.add(department)
+        flash('Department: ' + request.form.get('e_name') + ' is update.')
+    else:
+        flash_errors(form)
+    return redirect(url_for('.department'))
+
+
+@user.route('/department-del', methods=['POST'])
+@login_required
+def department_del():
+    id = request.form.get('id')
+    software = Department.query.filter_by(id=id).first()
+    if department is None:
+        flash('Non-existent software: ' + request.form.get('name'), 'error')
+    else:
+        db.session.delete(department)
+        db.session.commit()
+        flash('Department: ' + request.form.get('name') + ' is del.')
+    return redirect(url_for('.department'))
