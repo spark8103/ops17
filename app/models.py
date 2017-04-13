@@ -22,6 +22,7 @@ class Role(db.Model):
     name = db.Column(db.String(64), unique=True)
     default = db.Column(db.Boolean, default=False, index=True)
     permissions = db.Column(db.Integer)
+
     users = db.relationship('User', backref='role', lazy='dynamic')
 
     @staticmethod
@@ -87,6 +88,8 @@ class Idc(db.Model):
     name = db.Column(db.String(128), unique=True)
     description = db.Column(db.String(256))
 
+    servers = db.relationship('Server', backref='servers', lazy='dynamic')
+
     @staticmethod
     def insert_idcs():
         idcs = {
@@ -106,6 +109,54 @@ class Idc(db.Model):
 
     def __repr__(self):
         return '<Idc %r>' % self.name
+
+
+class Server(db.Model):
+    __tablename__ = 'ops_cmdbs'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), unique=True)   # server name
+    idc_id = db.Column(db.Integer, db.ForeignKey('ops_idcs.id'))  # idc info
+    rack = db.Column(db.String(64))  # rack info
+    private_ip = db.Column(db.String(128))  # private_ip
+    public_ip = db.Column(db.String(128))  # public_ip
+    category = db.Column(db.String(128))  # 大数据 征信
+    env = db.Column(db.String(64))  # prd stg dev qa
+    type = db.Column(db.String(128))  # server vserver
+    status = db.Column(db.String(128))  # 在线 备用 维修
+    description = db.Column(db.String(256))   # 备注说明
+
+    @staticmethod
+    def insert_cmdbs():
+        servers = {
+            u'zp-prd-app-10': (
+            Idc.query.filter_by(name=u"周浦").first(), "K1", '10.10.10.10', '', '大数据', "prd", "server", "在线", ""),
+            u'zp-prd-app-11': (
+            Idc.query.filter_by(name=u"周浦").first(), "K2", '10.10.10.11', '', '大数据', "prd", "server", "在线", ""),
+            u'oyl-stg-app-101': (
+                Idc.query.filter_by(name=u"欧阳路").first(), "R11", '10.18.23.101', '', '征信', "stg", "server", "在线", ""),
+            u'wpn-dev-oracle-21': (
+                Idc.query.filter_by(name=u"宛平南路").first(), "A01", '172.16.11.21', '', '大数据', "dev", "vserver", "在线", ""),
+            u'wpn-dev-oracle-22': (
+                Idc.query.filter_by(name=u"宛平南路").first(), "A01", '172.16.11.22', '', '大数据', "dev", "vserver", "在线", ""),
+        }
+        for s in servers:
+            server = Server.query.filter_by(name=s).first()
+            if server is None:
+                server = server(name=s)
+            server.idc = servers[s][0]
+            server.rack = servers[s][1]
+            server.private_ip = servers[s][2]
+            server.public_ip = servers[s][3]
+            server.category = servers[s][4]
+            server.env = servers[s][5]
+            server.type = servers[s][6]
+            server.status = servers[s][7]
+            server.description = servers[s][8]
+            db.session.add(server)
+        db.session.commit()
+
+    def __repr__(self):
+        return '<Server %r>' % self.name
 
 
 class User(UserMixin, db.Model):
@@ -342,8 +393,8 @@ class Module(db.Model):
     ops_id = db.Column(db.Integer, db.ForeignKey('ops_users.id'))
     software_id = db.Column(db.Integer, db.ForeignKey('ops_software.id'))
     description = db.Column(db.String(128))
-    parent = db.relationship("Module", remote_side=[id, name])
 
+    parent = db.relationship("Module", remote_side=[id, name])
     dev = db.relationship('User', foreign_keys=[dev_id])
     qa = db.relationship('User', foreign_keys=[qa_id])
     ops = db.relationship('User', foreign_keys=[ops_id])
@@ -384,6 +435,20 @@ class DepartmentSchema(Schema):
 class IdcSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
+    description = fields.Str()
+
+
+class ServerSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
+    idc = fields.Nested(IdcSchema, only=["id", "name"])
+    rack = fields.Str()
+    private_ip = fields.Str()
+    public_ip = fields.Str()
+    category = fields.Str()
+    env = fields.Str()
+    type = fields.Str()
+    status = fields.Str()
     description = fields.Str()
 
 
