@@ -55,7 +55,7 @@ def idc_add():
 @login_required
 def idc_edit():
     id = request.form.get('e_id')
-    id = Idc.query.get_or_404(id)
+    idc = Idc.query.get_or_404(id)
     form = EditIdcForm(id=id)
     if form.validate_on_submit():
         idc.name = form.e_name.data
@@ -109,41 +109,57 @@ def server_add():
     if form.validate_on_submit():
         server = Server(
             name=form.name.data,
-            description=form.description.data
+            idc=Idc.query.get(form.idc.data),
+            rack=form.rack.data,
+            private_ip=form.private_ip.data,
+            public_ip=form.private_ip.data,
+            category=form.category.data,
+            env=form.env.data,
+            type=form.type.data,
+            status=form.status.data,
+            description=form.description.data,
         )
         db.session.add(server)
         db.session.commit()
         flash('server: ' + request.form.get('name') + ' is add.')
     else:
         flash_errors(form)
-    return redirect(url_for('.idc'))
+    return redirect(url_for('.server'))
 
 
 @cmdb.route('/server-edit', methods=['POST'])
 @login_required
 def server_edit():
     id = request.form.get('e_id')
-    id = Server.query.get_or_404(id)
+    server = Server.query.get_or_404(id)
     form = EditServerForm(id=id)
     if form.validate_on_submit():
         server.name = form.e_name.data
+        server.idc = Idc.query.get(form.e_idc.data)
+        server.rack = form.e_rack.data
+        server.private_ip = form.e_private_ip.data
+        server.public_ip = form.e_public_ip.data
+        server.category = form.e_category.data
+        server.env = form.e_env.data
+        server.type = form.e_type.data
+        server.status = form.e_status.data
         server.description = form.e_description.data
         db.session.add(server)
         flash('server: ' + request.form.get('e_name') + ' is update.')
     else:
         flash_errors(form)
-    return redirect(url_for('.idc'))
+    return redirect(url_for('.server'))
 
 
-@cmdb.route('/idc-del', methods=['POST'])
+@cmdb.route('/server-del', methods=['POST'])
 @login_required
-def idc_del():
+def server_del():
     id = request.form.get('id')
-    idc = Idc.query.filter_by(id=id).first()
+    server = Server.query.filter_by(id=id).first()
     if idc is None:
-        flash('Non-existent idc: ' + request.form.get('name'), 'error')
+        flash('Non-existent server: ' + request.form.get('name'), 'error')
     else:
-        db.session.delete(idc)
+        db.session.delete(server)
         db.session.commit()
-        flash('idc: ' + request.form.get('name') + ' is del.')
-    return redirect(url_for('.idc'))
+        flash('server: ' + request.form.get('name') + ' is del.')
+    return redirect(url_for('.server'))

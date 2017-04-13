@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 2bb6eb0c5af2
+Revision ID: 85bc952e4dd6
 Revises: 
-Create Date: 2017-04-13 06:41:42.292000
+Create Date: 2017-04-14 06:56:12.972000
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '2bb6eb0c5af2'
+revision = '85bc952e4dd6'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -29,8 +29,8 @@ def upgrade():
     )
     op.create_table('ops_idcs',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=64), nullable=True),
-    sa.Column('description', sa.String(length=128), nullable=True),
+    sa.Column('name', sa.String(length=128), nullable=True),
+    sa.Column('description', sa.String(length=256), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
@@ -51,6 +51,22 @@ def upgrade():
     )
     op.create_index(op.f('ix_ops_software_name'), 'ops_software', ['name'], unique=True)
     op.create_index(op.f('ix_ops_software_version'), 'ops_software', ['version'], unique=True)
+    op.create_table('ops_servers',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=128), nullable=True),
+    sa.Column('idc_id', sa.Integer(), nullable=True),
+    sa.Column('rack', sa.String(length=64), nullable=True),
+    sa.Column('private_ip', sa.String(length=128), nullable=True),
+    sa.Column('public_ip', sa.String(length=128), nullable=True),
+    sa.Column('category', sa.String(length=128), nullable=True),
+    sa.Column('env', sa.String(length=64), nullable=True),
+    sa.Column('type', sa.String(length=128), nullable=True),
+    sa.Column('status', sa.String(length=128), nullable=True),
+    sa.Column('description', sa.String(length=256), nullable=True),
+    sa.ForeignKeyConstraint(['idc_id'], ['ops_idcs.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
+    )
     op.create_table('ops_users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=64), nullable=True),
@@ -138,6 +154,7 @@ def downgrade():
     op.drop_index(op.f('ix_ops_users_department'), table_name='ops_users')
     op.drop_index(op.f('ix_ops_users_allow_login'), table_name='ops_users')
     op.drop_table('ops_users')
+    op.drop_table('ops_servers')
     op.drop_index(op.f('ix_ops_software_version'), table_name='ops_software')
     op.drop_index(op.f('ix_ops_software_name'), table_name='ops_software')
     op.drop_table('ops_software')

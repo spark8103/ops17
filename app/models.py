@@ -88,7 +88,8 @@ class Idc(db.Model):
     name = db.Column(db.String(128), unique=True)
     description = db.Column(db.String(256))
 
-    servers = db.relationship('Server', backref='servers', lazy='dynamic')
+    idc = db.relationship('Server',
+                         backref=db.backref('idc', lazy='joined'), lazy='dynamic')
 
     @staticmethod
     def insert_idcs():
@@ -112,7 +113,7 @@ class Idc(db.Model):
 
 
 class Server(db.Model):
-    __tablename__ = 'ops_cmdbs'
+    __tablename__ = 'ops_servers'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), unique=True)   # server name
     idc_id = db.Column(db.Integer, db.ForeignKey('ops_idcs.id'))  # idc info
@@ -126,23 +127,23 @@ class Server(db.Model):
     description = db.Column(db.String(256))   # 备注说明
 
     @staticmethod
-    def insert_cmdbs():
+    def insert_servers():
         servers = {
             u'zp-prd-app-10': (
-            Idc.query.filter_by(name=u"周浦").first(), "K1", '10.10.10.10', '', '大数据', "prd", "server", "在线", ""),
+            Idc.query.filter_by(name=u"周浦").first(), "K1", '10.10.10.10', '', u'大数据', "prd", "server", u"在线", ""),
             u'zp-prd-app-11': (
-            Idc.query.filter_by(name=u"周浦").first(), "K2", '10.10.10.11', '', '大数据', "prd", "server", "在线", ""),
+            Idc.query.filter_by(name=u"周浦").first(), "K2", '10.10.10.11', '', u'大数据', "prd", "server", u"在线", ""),
             u'oyl-stg-app-101': (
-                Idc.query.filter_by(name=u"欧阳路").first(), "R11", '10.18.23.101', '', '征信', "stg", "server", "在线", ""),
+                Idc.query.filter_by(name=u"欧阳路").first(), "R11", '10.18.23.101', '', u'征信', "stg", "server", u"在线", ""),
             u'wpn-dev-oracle-21': (
-                Idc.query.filter_by(name=u"宛平南路").first(), "A01", '172.16.11.21', '', '大数据', "dev", "vserver", "在线", ""),
+                Idc.query.filter_by(name=u"宛平南路").first(), "A01", '172.16.11.21', '', u'大数据', "dev", "vserver", u"在线", ""),
             u'wpn-dev-oracle-22': (
-                Idc.query.filter_by(name=u"宛平南路").first(), "A01", '172.16.11.22', '', '大数据', "dev", "vserver", "在线", ""),
+                Idc.query.filter_by(name=u"宛平南路").first(), "A01", '172.16.11.22', '', u'大数据', "dev", "vserver", u"在线", ""),
         }
         for s in servers:
             server = Server.query.filter_by(name=s).first()
             if server is None:
-                server = server(name=s)
+                server = Server(name=s)
             server.idc = servers[s][0]
             server.rack = servers[s][1]
             server.private_ip = servers[s][2]

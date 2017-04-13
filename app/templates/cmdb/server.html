@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% from "_formhelpers.html" import render_field %}
 
-{% block title %}{{ config['SITENAME'] }} - IDC Manager{% endblock %}
+{% block title %}{{ config['SITENAME'] }} - Server Manager{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block page_content %}
-    <h2>IDC Manager</h2>
+    <h2>Server Manager</h2>
     <div class="table-responsive">
     </div>
 
@@ -21,7 +21,7 @@
 
     <table id="ListTable"
            data-toggle="table"
-           data-url="{{ url_for('cmdb.idc_list') }}"
+           data-url="{{ url_for('cmdb.server_list') }}"
            data-query-params="queryParams"
            data-pagination="true"
            data-page-size=5
@@ -39,25 +39,41 @@
         <tr>
             <th data-field="id" data-sortable="true">ID</th>
             <th data-field="name" data-sortable="true">Name</th>
-            <th data-field="description" data-sortable="true">description</th>
+            <th data-field="idc.name" data-sortable="true">IDC</th>
+            <th data-field="rack" data-sortable="true">Rack</th>
+            <th data-field="private_ip" data-sortable="true">Private ip</th>
+            <th data-field="public_ip" data-sortable="true">Public ip</th>
+            <th data-field="category" data-sortable="true">Category</th>
+            <th data-field="env" data-sortable="true">Env</th>
+            <th data-field="type" data-sortable="true">Type</th>
+            <th data-field="status" data-sortable="true">status</th>
+            <th data-field="description" data-sortable="false">description</th>
             <th data-field="action" data-formatter="actionFormatter" data-events="actionEvents">Action</th>
         </tr>
         </thead>
     </table>
 
-<!-- Model idc_add -->
-<div class="modal fade" id="idc_add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- Model server_add -->
+<div class="modal fade" id="server_add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">IDC Add</h4>
+                <h4 class="modal-title">Server Add</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('cmdb.idc_add') }}" method="POST">
-                    {{ add_idc_form.csrf_token }}
-                    {{ render_field(add_idc_form.name) }}
-                    {{ render_field(add_idc_form.description) }}
+                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('cmdb.server_add') }}" method="POST">
+                    {{ AddServerForm.csrf_token }}
+                    {{ render_field(AddServerForm.name) }}
+                    {{ render_field(AddServerForm.idc) }}
+                    {{ render_field(AddServerForm.rack) }}
+                    {{ render_field(AddServerForm.private_ip) }}
+                    {{ render_field(AddServerForm.public_ip) }}
+                    {{ render_field(AddServerForm.category) }}
+                    {{ render_field(AddServerForm.env) }}
+                    {{ render_field(AddServerForm.type) }}
+                    {{ render_field(AddServerForm.status) }}
+                    {{ render_field(AddServerForm.description) }}
                     <div class="form-group">
                         <div class="col-sm-4">
                         </div>
@@ -71,28 +87,35 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
-<!-- Model idc_add -->
+<!-- Model server_add -->
 
-<!-- Model idc_edit -->
-<div class="modal fade" id="idc_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- Model server_edit -->
+<div class="modal fade" id="server_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">IDC Edit</h4>
+                <h4 class="modal-title">Server Edit</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('cmdb.idc_edit') }}" method="POST">
-                    {{ edit_idc_form.csrf_token }}
-                    {{ edit_idc_form.e_id }}
-                    {{ render_field(edit_idc_form.e_name) }}
-                    {{ render_field(edit_idc_form.e_description) }}
+                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('cmdb.server_edit') }}" method="POST">
+                    {{ EditServerForm.csrf_token }}
+                    {{ EditServerForm.e_id }}
+                    {{ render_field(EditServerForm.e_name) }}
+                    {{ render_field(EditServerForm.e_idc) }}
+                    {{ render_field(EditServerForm.e_rack) }}
+                    {{ render_field(EditServerForm.e_private_ip) }}
+                    {{ render_field(EditServerForm.e_public_ip) }}
+                    {{ render_field(EditServerForm.e_category) }}
+                    {{ render_field(EditServerForm.e_env) }}
+                    {{ render_field(EditServerForm.e_type) }}
+                    {{ render_field(EditServerForm.e_status) }}
+                    {{ render_field(EditServerForm.e_description) }}
                     <div class="form-group">
                         <div class="col-sm-4">
                         </div>
                         <div class="col-sm-8">
-                            <button type="submit" class="btn btn-default">submit</button>&nbsp;&nbsp;&nbsp;&nbsp;
-                            <button type="reset" class="btn btn-default">reset</button>
+                            <button type="submit" class="btn btn-default">submit</button>
                         </div>
                     </div>
                 </form>
@@ -100,22 +123,22 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
-<!-- Model idc_edit -->
+<!-- Model server_edit -->
 
-<!-- Model idc_del -->
-<div class="modal fade" id="idc_del" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- Model server_del -->
+<div class="modal fade" id="server_del" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">IDC Del</h4>
+                <h4 class="modal-title">Server Del</h4>
             </div>
             <div class="modal-body">
-                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('cmdb.idc_del') }}" method="POST">
-                        <input id="idc_del_id" name="id" type="hidden" value="">
-                        <input id="idc_del_name" name="name" type="hidden" value="">
+                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('cmdb.server_del') }}" method="POST">
+                        <input id="server_del_id" name="id" type="hidden" value="">
+                        <input id="server_del_name" name="name" type="hidden" value="">
                         <div class="form-group">
-                            <label class="control-label col-sm-offset-1" id="idc_del_label">Are you sure?</label>
+                            <label class="control-label col-sm-offset-1" id="server_del_label">Are you sure?</label>
                         </div>
                         <div class="form-group">
                             <div class="col-sm-offset-8 col-sm-10">
@@ -127,7 +150,7 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
-<!-- Model idc_del -->
+<!-- Model server_del -->
 
 {% endblock %}
 
@@ -142,8 +165,8 @@ $(function () {
 });
 
 $(function () {
-    $("button#idc_add_button").click(function(){
-        $('#idc_add').modal('show');
+    $("button#server_add_button").click(function(){
+        $('#server_add').modal('show');
     });
 })
 
@@ -172,16 +195,24 @@ window.actionEvents = {
     'click .edit': function (e, value, row, index) {
         $('#e_id').val(row.id);
         $('#e_name').val(row.name);
+        $('#e_idc').val(row.idc);
+        $('#e_rack').val(row.rack);
+        $('#e_private_ip').val(row.private_ip);
+        $('#e_public_ip').val(row.public_ip);
+        $('#e_category').val(row.category);
+        $('#e_env').val(row.env);
+        $('#e_type').val(row.type);
+        $('#e_status').val(row.status);
         $('#e_description').val(row.description);
-        $('#idc_edit').modal('show');
+        $('#server_edit').modal('show');
         //alert('You click edit icon, row: ' + $('#e_name').val(row.name););
         //console.log(value, row, index);
     },
     'click .remove': function (e, value, row, index) {
-        document.getElementById('idc_del_label').innerHTML = 'Delete <font color=blue>' + row.name + "</font>, are you sure?";
-        $('#idc_del_id').val(row.id);
-        $('#idc_del_name').val(row.name);
-        $('#idc_del').modal('show');
+        document.getElementById('server_del_label').innerHTML = 'Delete <font color=blue>' + row.name + "</font>, are you sure?";
+        $('#server_del_id').val(row.id);
+        $('#server_del_name').val(row.name);
+        $('#server_del').modal('show');
         //alert('You click remove icon, row: ' + JSON.stringify(row));
         //console.log(value, row, index);
     }

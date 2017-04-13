@@ -12,6 +12,9 @@
 pip install -r requirements/requirements.txt
 python manage.py db init
 
+### Migrate db
+python manage.py db migrate
+
 ### Create db file
 python manage.py db upgrade
 
@@ -25,6 +28,7 @@ Department.insert_departments()
 Department.insert_departments()
 User.insert_users()
 Idc.insert_idcs()
+Server.insert_servers()
 Software.insert_softwares()
 ```
 
