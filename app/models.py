@@ -95,7 +95,7 @@ class Idc(db.Model):
     def insert_idcs():
         idcs = {
             u'周浦': '',
-            u'宛平南路': '',
+            u'北京南路': '',
             u'欧阳路': '',
             u'万国数据中心': '',
             u'Ucloud': '',
@@ -130,15 +130,17 @@ class Server(db.Model):
     def insert_servers():
         servers = {
             u'zp-prd-app-10': (
-            Idc.query.filter_by(name=u"周浦").first(), "K1", '10.10.10.10', '', u'大数据', "prd", "server", u"在线", ""),
+            Idc.query.filter_by(name=u"周浦").first(), "K1", '10.10.10.10', '', u'大数据', "PRD", "server", u"Online", ""),
             u'zp-prd-app-11': (
-            Idc.query.filter_by(name=u"周浦").first(), "K2", '10.10.10.11', '', u'大数据', "prd", "server", u"在线", ""),
+            Idc.query.filter_by(name=u"周浦").first(), "K2", '10.10.10.11', '', u'大数据', "PRD", "server", u"Online", ""),
             u'oyl-stg-app-101': (
-                Idc.query.filter_by(name=u"欧阳路").first(), "R11", '10.18.23.101', '', u'征信', "stg", "server", u"在线", ""),
-            u'wpn-dev-oracle-21': (
-                Idc.query.filter_by(name=u"宛平南路").first(), "A01", '172.16.11.21', '', u'大数据', "dev", "vserver", u"在线", ""),
-            u'wpn-dev-oracle-22': (
-                Idc.query.filter_by(name=u"宛平南路").first(), "A01", '172.16.11.22', '', u'大数据', "dev", "vserver", u"在线", ""),
+                Idc.query.filter_by(name=u"欧阳路").first(), "R11", '10.18.23.101', '', u'网站部', "STG", "server", u"Online", ""),
+            u'oyl-stg-app-102': (
+                Idc.query.filter_by(name=u"欧阳路").first(), "R11", '10.18.23.102', '', u'网站部', "STG", "server", u"Online", ""),
+            u'dev-oracle-21': (
+                Idc.query.filter_by(name=u"北京南路").first(), "A01", '172.16.11.21', '', u'IT部', "DEV", "vserver", u"Online", ""),
+            u'dev-oracle-22': (
+                Idc.query.filter_by(name=u"北京南路").first(), "A01", '172.16.11.22', '', u'IT据', "DEV", "vserver", u"Online", ""),
         }
         for s in servers:
             server = Server.query.filter_by(name=s).first()

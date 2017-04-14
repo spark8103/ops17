@@ -10,6 +10,8 @@ class Config:
     BOOTSTRAP_SERVE_LOCAL =True
     DEPARTMENT = ["admin", "dev", "qa", "ops", "dba", "user", "manager"]
     ENVIRONMENT = ["PRD", "DEV", "QA", "STG"]
+    SERVER_TYPE = ["server", "vserver"]
+    SERVER_STATUS = ["Online", "Backup", "Maintenance"]
     SLA = ["99999", "9999", "999"]
     IDC = ["zp", "wpnl", "oyl"]
     SSL_DISABLE = False

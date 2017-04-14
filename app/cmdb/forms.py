@@ -43,8 +43,8 @@ class AddServerForm(FlaskForm):
         self.idc.choices = [(idc.id, idc.name)
                             for idc in Idc.query.order_by(Idc.name).all()]
         self.env.choices = [(i, i) for i in current_app.config['ENVIRONMENT']]
-        self.type.choices = [("server", "server"),("vserver","vserver")]
-        self.status.choices = [(u"在线", u"在线"), (u"备用", u"备用"), (u"维修", u"维修")]
+        self.type.choices = [(i, i) for i in current_app.config['SERVER_TYPE']]
+        self.status.choices = [(i, i) for i in current_app.config['SERVER_STATUS']]
 
     def validate_name(self, field):
         if Idc.query.filter_by(name=field.data).first():
@@ -66,11 +66,11 @@ class EditServerForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(EditServerForm, self).__init__(*args, **kwargs)
-        self.idc.choices = [(idc.id, idc.name)
+        self.e_idc.choices = [(idc.id, idc.name)
                             for idc in Idc.query.order_by(Idc.name).all()]
-        self.env.choices = [(i, i) for i in current_app.config['ENVIRONMENT']]
-        self.type.choices = [("server", "server"),("vserver","vserver")]
-        self.status.choices = [(u"在线", u"在线"), (u"备用", u"备用"), (u"维修", u"维修")]
+        self.e_env.choices = [(i, i) for i in current_app.config['ENVIRONMENT']]
+        self.e_type.choices = [(i, i) for i in current_app.config['SERVER_TYPE']]
+        self.e_status.choices = [(i, i) for i in current_app.config['SERVER_STATUS']]
 
     def validate_name(self, field):
         if Idc.query.filter_by(name=field.data).first():
