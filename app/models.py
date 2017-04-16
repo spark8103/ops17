@@ -167,7 +167,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
     email = db.Column(db.String(64), index=True)
-    mobile = db.Column(db.INTEGER, index=True)
+    mobile = db.Column(db.String(11), index=True)
     department = db.Column(db.String(32), index=True, default="user")
     role_id = db.Column(db.Integer, db.ForeignKey('ops_roles.id'))
     password_hash = db.Column(db.String(128))
@@ -175,6 +175,7 @@ class User(UserMixin, db.Model):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     allow_login = db.Column(db.Boolean, default=False, index=True)
+    type = db.Column(db.String(32), index=True, default="user")
     pm = db.relationship('Project',
                          backref=db.backref('pm', lazy='joined'), lazy='dynamic')
     @staticmethod

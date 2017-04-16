@@ -16,7 +16,7 @@ if os.path.exists('.env'):
 
 from app import create_app, db
 from app.models import User, Role, Department, Idc, Server, Permission, Software, Project, Module
-from flask_script import Manager, Shell
+from flask_script import Manager, Shell, prompt_bool
 from flask_migrate import Migrate, MigrateCommand
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
@@ -82,6 +82,34 @@ def deploy():
 
     # create user roles
     Role.insert_roles()
+
+
+
+@manager.command
+def init_db():
+    """Init db and insert test data."""
+    from flask_migrate import init, migrate, upgrade
+    if prompt_bool(
+            'Are you sure you want to init your data'):
+        # migrate database to latest revision
+        upgrade()
+        Role.insert_roles()
+        Department.insert_departments()
+        Department.insert_departments()
+        Software.insert_softwares()
+        Idc.insert_idcs()
+        User.insert_users()
+        Server.insert_servers()
+
+
+@manager.command
+def drop_db():
+    """Drop all db tables"""
+    if prompt_bool(
+            'Are you sure you want to lose all your data'):
+        db.drop_all()
+        result = db.engine.execute("DROP TABLE IF EXISTS `ops`.`alembic_version`")
+        print "delete version table: " + str(result)
 
 
 if __name__ == '__main__':
