@@ -57,6 +57,7 @@ class EditProfileForm(FlaskForm):
         self.department.choices = [(i, i) for i in current_app.config['DEPARTMENT']]
 
 
+'''
 class EditUserAdminForm(FlaskForm):
     email = StringField('New Email', validators=[Required(), Length(1, 64),
                                                  Email()])
@@ -83,6 +84,7 @@ class EditUserAdminForm(FlaskForm):
         if field.data != self.user.username and \
                 User.query.filter_by(username=field.data).first():
             raise ValidationError('Username already in use.')
+'''
 
 
 class AddUserAdminForm(FlaskForm):
@@ -93,17 +95,47 @@ class AddUserAdminForm(FlaskForm):
     email = StringField('Email', validators=[Required(), Length(1, 64),
                                                  Email()])
     mobile = FloatField("Mobile", validators=[Required()])
+    department = SelectField('Department', coerce=int)
     role = SelectField('Role', coerce=int, default=2)
-    department = SelectField('Department', coerce=str, default = "user")
     allow_login = SelectField('Allow_login', choices=[("True", "True"),('False','False')], default="False")
+    type = SelectField('Type', coerce=str)
     password = PasswordField('Password', validators=[Required()])
-    submit = SubmitField('Submit')
 
     def __init__(self, *args, **kwargs):
         super(AddUserAdminForm, self).__init__(*args, **kwargs)
+        self.department.choices = [(department.id, department.name)
+                                   for department in Department.query.order_by(Department.name).all()]
         self.role.choices = [(role.id, role.name)
                              for role in Role.query.order_by(Role.name).all()]
-        self.department.choices = [(i, i) for i in current_app.config['DEPARTMENT']]
+        self.type.choices = [(i, i) for i in current_app.config['USER_TYPE']]
+
+    def validate_username(self, field):
+        if User.query.filter_by(username=field.data).first():
+            raise ValidationError('Username already in use.')
+
+
+class EditUserAdminForm(FlaskForm):
+    e_id = HiddenField('ID', validators=[Required()])
+    e_username = StringField('Username', validators=[
+        Required(), Length(3, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+                                          'Usernames must have only letters, '
+                                          'numbers, dots or underscores')])
+    e_email = StringField('Email', validators=[Required(), Length(1, 64),
+                                                 Email()])
+    e_mobile = FloatField("Mobile", validators=[Required()])
+    e_department = SelectField('Department', coerce=int)
+    e_role = SelectField('Role', coerce=int)
+    e_allow_login = SelectField('Allow_login', choices=[("True", "True"),('False','False')])
+    e_type = SelectField('Type', coerce=str)
+    e_password = PasswordField('Password')
+
+    def __init__(self, *args, **kwargs):
+        super(EditUserAdminForm, self).__init__(*args, **kwargs)
+        self.e_department.choices = [(department.id, department.name)
+                                   for department in Department.query.order_by(Department.name).all()]
+        self.e_role.choices = [(role.id, role.name)
+                             for role in Role.query.order_by(Role.name).all()]
+        self.e_type.choices = [(i, i) for i in current_app.config['USER_TYPE']]
 
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():

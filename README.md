@@ -26,10 +26,10 @@ from app import models
 Role.insert_roles()
 Department.insert_departments()
 Department.insert_departments()
-User.insert_users()
-Idc.insert_idcs()
-Server.insert_servers()
 Software.insert_softwares()
+Idc.insert_idcs()
+User.insert_users()
+Server.insert_servers()
 ```
 
 ### Run Server

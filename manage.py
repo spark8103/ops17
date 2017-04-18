@@ -15,8 +15,8 @@ if os.path.exists('.env'):
             os.environ[var[0]] = var[1]
 
 from app import create_app, db
-from app.models import User, Role, Department, Idc, Server, Permission, Software, Project, Module
-from flask_script import Manager, Shell
+from app.models import User, Role, Department, Idc, Server, Permission, Software, Project, Module, Environment
+from flask_script import Manager, Shell, prompt_bool
 from flask_migrate import Migrate, MigrateCommand
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
@@ -27,15 +27,16 @@ migrate = Migrate(app, db)
 if not app.debug:
     import logging
     from logging.handlers import RotatingFileHandler
-    file_handler = RotatingFileHandler('logs/ops.log', 'a', 1 * 1024 * 1024, 10)
+    file_handler = RotatingFileHandler('logs/bd-cmdb.log', 'a', 1 * 1024 * 1024, 10)
     file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
     app.logger.setLevel(logging.INFO)
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
-    app.logger.info('dlop logging startup')
+    app.logger.info('bd-cmdb logging startup')
 
 def make_shell_context():
-    return dict(app=app, db=db, User=User, Role=Role, Department=Department, Idc=Idc, Server=Server, Permission=Permission, Software=Software, Project=Project, Module=Module )
+    return dict(app=app, db=db, User=User, Role=Role, Department=Department, Idc=Idc, Server=Server,
+                Permission=Permission, Software=Software, Project=Project, Module=Module, Environment=Environment)
 manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 
@@ -75,13 +76,39 @@ def profile(length=25, profile_dir=None):
 def deploy():
     """Run deployment tasks."""
     from flask_migrate import upgrade
-    from app.models import Role, User
 
     # migrate database to latest revision
     upgrade()
 
     # create user roles
     Role.insert_roles()
+
+
+@manager.command
+def init_db():
+    """Init db and insert test data."""
+    from flask_migrate import init, migrate, upgrade
+    if prompt_bool(
+            'Are you sure you want to init your data'):
+        # migrate database to latest revision
+        upgrade()
+        Role.insert_roles()
+        Department.insert_departments()
+        Department.insert_departments()
+        Software.insert_softwares()
+        Idc.insert_idcs()
+        User.insert_users()
+        Server.insert_servers()
+
+
+@manager.command
+def drop_db():
+    """Drop all db tables"""
+    if prompt_bool(
+            'Are you sure you want to lose all your data'):
+        db.drop_all()
+        result = db.engine.execute("DROP TABLE IF EXISTS `ops`.`alembic_version`")
+        print "delete version table: " + str(result)
 
 
 if __name__ == '__main__':

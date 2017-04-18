@@ -1,17 +1,42 @@
 # coding: utf-8
 from flask import render_template, redirect, request, url_for, flash, \
-    jsonify
+    jsonify, current_app
 from flask_login import login_required, current_user
 from . import cmdb
 from .. import db, flash_errors
 from ..models import Idc, IdcSchema, Server, ServerSchema
 from .forms import AddIdcForm, EditIdcForm, AddServerForm, EditServerForm
+from werkzeug.utils import secure_filename
+import os, csv
+from HTMLParser import HTMLParser
 
 idc_schema = IdcSchema()
 idcs_schema = IdcSchema(many=True)
 server_schema = ServerSchema()
 servers_schema = ServerSchema(many=True)
 
+ALLOWED_EXTENSIONS = set(['csv'])
+
+
+class MLStripper(HTMLParser):
+    def __init__(self):
+        self.reset()
+        self.fed = []
+    def handle_data(self, d):
+        self.fed.append(d)
+    def get_data(self):
+        return ''.join(self.fed)
+
+
+def strip_tags(html):
+    s = MLStripper()
+    s.feed(html)
+    return s.get_data()
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 @cmdb.route('/idc')
 @login_required
@@ -163,3 +188,42 @@ def server_del():
         db.session.commit()
         flash('server: ' + request.form.get('name') + ' is del.')
     return redirect(url_for('.server'))
+
+
+@cmdb.route('/server-import', methods=['GET', 'POST'])
+@login_required
+def server_import():
+    if request.method == 'POST':
+        upload_file = request.files['file']
+        if upload_file and allowed_file(upload_file.filename):
+            filename = secure_filename(upload_file.filename)
+            upload_file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+
+            with open(os.path.join(current_app.config['UPLOAD_FOLDER'], filename), 'rb') as csv_file:
+                reader = csv.DictReader(csv_file)
+                column = [row for row in reader]
+                for line in column:
+                    server = Server.query.filter_by(name=strip_tags(line["name"])).first()
+                    if server is None:
+                        server = Server(name=strip_tags(line["name"]))
+                    server.idc = Idc.query.filter_by(name=strip_tags(line["idc"])).first()
+                    server.rack = strip_tags(line["rack"])
+                    server.private_ip = strip_tags(line["private_ip"])
+                    server.public_ip = strip_tags(line["public_ip"])
+                    server.category = strip_tags(line["category"])
+                    server.env = strip_tags(line["env"])
+                    server.type = strip_tags(line["type"])
+                    server.status = strip_tags(line["status"])
+                    server.description = strip_tags(line["description"])
+                    db.session.add(server)
+                    db.session.commit()
+
+            os.remove(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+            flash('upload file: ' + filename + ' is ok.')
+            data = column
+        else:
+            flash("upload file:" + upload_file.filename + " is error.")
+            data = ''
+    else:
+        data = ''
+    return render_template('cmdb/server_import.html', data=data)

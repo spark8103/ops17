@@ -5,10 +5,12 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
-    SITENAME = "OPS"
-    #APPLICATION_ROOT = "test" #prefix test
+    SITENAME = "bd-cmdb"
+    #APPLICATION_ROOT = "bd-cmdb" #prefix test
     BOOTSTRAP_SERVE_LOCAL =True
+    UPLOAD_FOLDER = 'd:\\spark\\'
     DEPARTMENT = ["admin", "dev", "qa", "ops", "dba", "user", "manager"]
+    USER_TYPE = ["admin", "dev", "qa", "ops", "dba", "user", "manager"]
     ENVIRONMENT = ["PRD", "DEV", "QA", "STG"]
     SERVER_TYPE = ["server", "vserver"]
     SERVER_STATUS = ["Online", "Backup", "Maintenance"]
@@ -27,8 +29,8 @@ class Config:
     MAIL_SENDER = 'Ops Admin <ops@example.com>'
     SLOW_DB_QUERY_TIME = 0.5
     OPS_ADMIN = os.environ.get('OPS_ADMIN')
-    OPS_USER_PER_PAGE = 5
-    OPS_Software_PER_PAGE = 5
+    OPS_USER_PER_PAGE = 10
+    OPS_Software_PER_PAGE = 10
 
     @staticmethod
     def init_app(app):
@@ -38,7 +40,8 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
+        'mysql://root:wmah9xmbj2PdsWNLde@172.31.217.201/ops?charset=utf8'
+        # 'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
 
 
 class TestingConfig(Config):

@@ -24,7 +24,7 @@
            data-url="{{ url_for('user.department_list') }}"
            data-query-params="queryParams"
            data-pagination="true"
-           data-page-size=5
+           data-page-size=10
            data-page-list="[10, 25, 50, All]"
            data-search="true"
            data-sort-name="id"
@@ -115,7 +115,7 @@
             <div class="modal-body">
                     <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('user.department_del') }}" method="POST">
                         <input id="department_del_id" name="id" type="hidden" value="">
-                        <input id="mdepartment_del_name" name="name" type="hidden" value="">
+                        <input id="department_del_name" name="name" type="hidden" value="">
                         <div class="form-group">
                             <label class="control-label col-sm-offset-1" id="department_del_label">Are you sure?</label>
                         </div>

@@ -40,7 +40,7 @@
             <th data-field="id" data-sortable="true">ID</th>
             <th data-field="module.name" data-sortable="true">Module</th>
             <th data-field="env" data-sortable="true">ENV</th>
-            <th data-field="idc" data-sortable="true">IDC</th>
+            <th data-field="idc.name" data-sortable="true">IDC</th>
             <th data-field="check_point1" data-sortable="true">Check_Point1</th>
             <th data-field="check_point2" data-sortable="true">Check_Point2</th>
             <th data-field="check_point3" data-sortable="true">check_point3</th>
@@ -133,8 +133,7 @@
                         <div class="col-sm-4">
                         </div>
                         <div class="col-sm-8">
-                            <button type="submit" class="btn btn-default">submit</button>&nbsp;&nbsp;&nbsp;&nbsp;
-                            <button type="reset" class="btn btn-default">reset</button>
+                            <button type="submit" class="btn btn-default">submit</button>
                         </div>
                     </div>
                 </form>
@@ -192,6 +191,7 @@ $(function () {
 
 $(function() {
     $( ".dtpick" ).datetimepicker({
+        format: "yyyy-mm-dd hh:ii:ss",
         language: 'zh-CN',
         weekStart: 1,
         todayBtn:  1,
@@ -228,7 +228,7 @@ window.actionEvents = {
     'click .edit': function (e, value, row, index) {
         $('#e_id').val(row.id);
         $('#e_module').val(row.module.id);
-        $('#e_idc').val(row.idc);
+        $('#e_idc').val(row.idc.id);
         $('#e_env').val(row.env);
         $('#e_check_point1').val(row.check_point1);
         $('#e_check_point2').val(row.check_point2);
@@ -244,7 +244,7 @@ window.actionEvents = {
     'click .remove': function (e, value, row, index) {
         document.getElementById('environment_del_label').innerHTML = 'Delete <font color=blue>' + row.module.name + ": " + row.env + "</font>, are you sure?";
         $('#environment_del_id').val(row.id);
-        $('#environment_del_module').val(row.module);
+        $('#environment_del_module').val(row.module.name);
         $('#environment_del_env').val(row.env);
         $('#environment_del').modal('show');
         //alert('You click remove icon, row: ' + JSON.stringify(row));

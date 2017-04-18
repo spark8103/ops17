@@ -39,7 +39,7 @@
         <tr>
             <th data-field="id" data-sortable="true">ID</th>
             <th data-field="name" data-sortable="true">Name</th>
-            <th data-field="department" data-sortable="true">Department</th>
+            <th data-field="department.name" data-sortable="true">Department</th>
             <th data-field="pm.username" data-sortable="true">PM</th>
             <th data-field="sla" data-sortable="true">SLA</th>
             <th data-field="check_point" data-sortable="true">check_point</th>
@@ -106,8 +106,7 @@
                         <div class="col-sm-4">
                         </div>
                         <div class="col-sm-8">
-                            <button type="submit" class="btn btn-default">submit</button>&nbsp;&nbsp;&nbsp;&nbsp;
-                            <button type="reset" class="btn btn-default">reset</button>
+                            <button type="submit" class="btn btn-default">submit</button>
                         </div>
                     </div>
                 </form>
@@ -187,7 +186,7 @@ window.actionEvents = {
     'click .edit': function (e, value, row, index) {
         $('#e_id').val(row.id);
         $('#e_name').val(row.name);
-        $('#e_department').val(row.department);
+        $('#e_department').val(row.department.id);
         $('#e_pm').val(row.pm.id);
         $('#e_sla').val(row.sla);
         $('#e_check_point').val(row.check_point);

@@ -4,7 +4,7 @@ from flask import render_template, redirect, request, url_for, flash, \
 from flask_login import login_required, current_user
 from . import project
 from .. import db, flash_errors
-from ..models import User, Software, SoftwareSchema, Project, ProjectSchema, Module, ModuleSchema, \
+from ..models import User, Department, Idc, Software, SoftwareSchema, Project, ProjectSchema, Module, ModuleSchema, \
     Environment, EnvironmentSchema
 from .forms import AddProjectForm, EditProjectForm, AddSoftwareForm, EditSoftwareForm, AddModuleForm, \
     EditModuleForm, AddEnvironmentForm, EditEnvironmentForm
@@ -114,7 +114,7 @@ def project_add():
     form = AddProjectForm(data=request.get_json())
     if form.validate_on_submit():
         project = Project(name=form.name.data,
-                          department=form.department.data,
+                          department=Department.query.get(form.department.data),
                           pm=User.query.get(form.pm.data),
                           sla=form.sla.data,
                           check_point=form.check_point.data,
@@ -136,7 +136,7 @@ def project_edit():
     form = EditProjectForm(id=id)
     if form.validate_on_submit():
         project.name = form.e_name.data
-        project.department = form.e_department.data
+        project.department = Department.query.get(form.e_department.data)
         project.pm = User.query.get(form.e_pm.data)
         project.sla = form.e_sla.data
         project.check_point = form.e_check_point.data
@@ -191,7 +191,7 @@ def module_add():
     if form.validate_on_submit():
         module = Module(name=form.name.data,
                         project=Project.query.get(form.project.data),
-                        department=form.department.data,
+                        department=Department.query.get(form.department.data),
                         svn=form.svn.data,
                         parent=Module.query.get(form.parent.data),
                         dev=User.query.get(form.dev.data),
@@ -216,7 +216,7 @@ def module_edit():
     if form.validate_on_submit():
         module.name = form.e_name.data
         module.project = Project.query.get(form.e_project.data)
-        module.department = form.e_department.data
+        module.department = Department.query.get(form.e_department.data)
         module.svn = form.e_svn.data
         module.parent = Module.query.get(form.e_parent.data)
         module.dev = User.query.get(form.e_dev.data)
@@ -270,10 +270,12 @@ def environment_list():
 @login_required
 def environment_add():
     form = AddEnvironmentForm(data=request.get_json())
+    print form.data
+    print "online_since: " + request.form.get('online_since')
     if form.validate_on_submit():
         environment = Environment(
                         module=Module.query.get(form.module.data),
-                        idc=form.idc.data,
+                        idc=Idc.query.get(form.idc.data),
                         env=form.env.data,
                         check_point1=form.check_point1.data,
                         check_point2=form.check_point2.data,
@@ -296,11 +298,9 @@ def environment_edit():
     id = request.form.get('e_id')
     environment = Environment.query.get_or_404(id)
     form = EditEnvironmentForm(id=id)
-    print "e_online_since: " + request.form.get('e_online_since')
-    print form.data
     if form.validate_on_submit():
         environment.module = Module.query.get(form.e_module.data)
-        environment.idc = form.e_idc.data
+        environment.idc = Idc.query.get(form.e_idc.data)
         environment.env = form.e_env.data
         environment.check_point1 = form.e_check_point1.data
         environment.check_point2 = form.e_check_point2.data

@@ -40,7 +40,7 @@
             <th data-field="id" data-sortable="true">ID</th>
             <th data-field="name" data-sortable="true">Name</th>
             <th data-field="project.name" data-sortable="true">Project</th>
-            <th data-field="department" data-sortable="true">Department</th>
+            <th data-field="department.name" data-sortable="true">Department</th>
             <th data-field="svn" data-sortable="true">SVN</th>
             <th data-field="parent.name" data-sortable="true">PerModule</th>
             <th data-field="dev.username" data-sortable="true">DEV</th>
@@ -115,8 +115,7 @@
                         <div class="col-sm-4">
                         </div>
                         <div class="col-sm-8">
-                            <button type="submit" class="btn btn-default">submit</button>&nbsp;&nbsp;&nbsp;&nbsp;
-                            <button type="reset" class="btn btn-default">reset</button>
+                            <button type="submit" class="btn btn-default">submit</button>
                         </div>
                     </div>
                 </form>
@@ -197,7 +196,7 @@ window.actionEvents = {
         $('#e_id').val(row.id);
         $('#e_name').val(row.name);
         $('#e_project').val(row.project.id);
-        $('#e_department').val(row.department);
+        $('#e_department').val(row.department.id);
         $('#e_svn').val(row.svn);
         if(row.parent==null){
             $('#e_parent').val(0)

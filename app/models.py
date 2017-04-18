@@ -6,6 +6,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app, request, url_for
 from flask_login import UserMixin, AnonymousUserMixin
 from . import db, login_manager
+from sqlalchemy.dialects.mysql import INTEGER
 from marshmallow import Schema, fields, ValidationError, pre_load
 
 
@@ -19,7 +20,7 @@ class Permission:
 class Role(db.Model):
     __tablename__ = 'ops_roles'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
+    name = db.Column(db.String(64), unique=True, index=True)
     default = db.Column(db.Boolean, default=False, index=True)
     permissions = db.Column(db.Integer)
 
@@ -28,7 +29,7 @@ class Role(db.Model):
     @staticmethod
     def insert_roles():
         roles = {
-            'User': (Permission.WRITE_ARTICLES, True),
+            'User': (Permission.USER, True),
             'Administrator': (0xff, False)
         }
         for r in roles:
@@ -47,22 +48,27 @@ class Role(db.Model):
 class Department(db.Model):
     __tablename__ = 'ops_departments'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
+    name = db.Column(db.String(64), unique=True, index=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('ops_departments.id'))
     description = db.Column(db.String(128))
 
     parent = db.relationship("Department", remote_side=[id, name])
+    users = db.relationship('User', backref='department')
+    projects = db.relationship('Project', backref='department')
+    modules = db.relationship('Module', backref='department')
 
     @staticmethod
     def insert_departments():
         departments = {
-            u'管理中心': (0,''),
-            u'技术中心': (0, ''),
-            u'营销中心': (0, ''),
+            u'管理中心': (None,''),
+            u'技术中心': (None, ''),
+            u'营销中心': (None, ''),
             u'行政部': (Department.query.filter_by(name=u"管理中心").first(),''),
             u'财务部': (Department.query.filter_by(name=u"管理中心").first(), ''),
             u'运维部': (Department.query.filter_by(name=u"技术中心").first(), ''),
+            u'DBA部': (Department.query.filter_by(name=u"技术中心").first(), ''),
             u'开发部': (Department.query.filter_by(name=u"技术中心").first(), ''),
+            u'测试部': (Department.query.filter_by(name=u"技术中心").first(), ''),
             u'市场部': (Department.query.filter_by(name=u"营销中心").first(), ''),
             u'活动部': (Department.query.filter_by(name=u"营销中心").first(), ''),
         }
@@ -85,11 +91,12 @@ class Department(db.Model):
 class Idc(db.Model):
     __tablename__ = 'ops_idcs'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(128), unique=True)
+    name = db.Column(db.String(128), unique=True, index=True)
     description = db.Column(db.String(256))
 
     idc = db.relationship('Server',
-                         backref=db.backref('idc', lazy='joined'), lazy='dynamic')
+                          backref=db.backref('idc', lazy='joined'), lazy='dynamic')
+    environments = db.relationship('Environment', backref='idc')
 
     @staticmethod
     def insert_idcs():
@@ -115,13 +122,13 @@ class Idc(db.Model):
 class Server(db.Model):
     __tablename__ = 'ops_servers'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(128), unique=True)   # server name
-    idc_id = db.Column(db.Integer, db.ForeignKey('ops_idcs.id'))  # idc info
+    name = db.Column(db.String(128), unique=True, index=True)   # server name
+    idc_id = db.Column(db.Integer, db.ForeignKey('ops_idcs.id'), index=True)  # idc info
     rack = db.Column(db.String(64))  # rack info
     private_ip = db.Column(db.String(128))  # private_ip
     public_ip = db.Column(db.String(128))  # public_ip
-    category = db.Column(db.String(128))  # 大数据 征信
-    env = db.Column(db.String(64))  # prd stg dev qa
+    category = db.Column(db.String(128), index=True)  # 大数据 征信
+    env = db.Column(db.String(64), index=True)  # prd stg dev qa
     type = db.Column(db.String(128))  # server vserver
     status = db.Column(db.String(128))  # 在线 备用 维修
     description = db.Column(db.String(256))   # 备注说明
@@ -166,33 +173,36 @@ class User(UserMixin, db.Model):
     __tablename__ = 'ops_users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
-    email = db.Column(db.String(64), index=True)
-    mobile = db.Column(db.INTEGER, index=True)
-    department = db.Column(db.String(32), index=True, default="user")
+    email = db.Column(db.String(64))
+    mobile = db.Column(db.String(11))
+    department_id = db.Column(db.Integer, db.ForeignKey('ops_departments.id'))
     role_id = db.Column(db.Integer, db.ForeignKey('ops_roles.id'))
-    password_hash = db.Column(db.String(128))
     about_me = db.Column(db.Text())
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     allow_login = db.Column(db.Boolean, default=False, index=True)
+    type = db.Column(db.String(32), index=True, default="user")
+    password_hash = db.Column(db.String(128))
+
     pm = db.relationship('Project',
                          backref=db.backref('pm', lazy='joined'), lazy='dynamic')
+
     @staticmethod
     def insert_users():
         users = {
-            'admin': ('admin@example.com', 13465245521, "admin", Role.query.filter_by(name="Administrator").first(), 'admin', True),
-            'ops1': ('ops1@example.com', 13764110236, "ops", Role.query.filter_by(name="User").first(), 'ops1', False),
-            'ops2': ('ops2@example.com', 13764110238, "ops", Role.query.filter_by(name="User").first(), 'ops2', False),
-            'dev1': ('dev1@example.com', 13612451124, "dev", Role.query.filter_by(name="User").first(), 'dev1', False),
-            'dev2': ('dev2@example.com', 13625412214, "dev", Role.query.filter_by(name="User").first(), 'dev2', False),
-            'qa1': ('qa1@example.com', 13112453365, "qa", Role.query.filter_by(name="User").first(), 'qa1', False),
-            'qa2': ('qa2@example.com', 13124556847, "qa", Role.query.filter_by(name="User").first(), 'qa2', False),
-            'dba1': ('dba1@example.com', 13321542635, "dba", Role.query.filter_by(name="User").first(), 'dba1', False),
-            'dba2': ('dba2@example.com', 13214512245, "dba", Role.query.filter_by(name="User").first(), 'dba2', False),
-            'user1': ('user1@example.com', 13412115694, "user", Role.query.filter_by(name="User").first(), 'user1', False),
-            'user2': ('user2@example.com', 13451489521, "user", Role.query.filter_by(name="User").first(), 'user2', False),
-            'user3': ('user3@example.com', 13465218952, "manager", Role.query.filter_by(name="User").first(), 'user3', False),
-            'user4': ('user4@example.com', 13462548991, "manager", Role.query.filter_by(name="User").first(), 'user4', False),
+            'admin': ('admin@example.com', 13465245521, Department.query.filter_by(name=u"管理中心").first(), Role.query.filter_by(name="Administrator").first(), 'admin', True, "admin"),
+            'ops1': ('ops1@example.com', 13764110236, Department.query.filter_by(name=u"运维部").first(), Role.query.filter_by(name="User").first(), 'ops1', False, "ops"),
+            'ops2': ('ops2@example.com', 13764110238, Department.query.filter_by(name=u"运维部").first(), Role.query.filter_by(name="User").first(), 'ops2', False, "ops"),
+            'dev1': ('dev1@example.com', 13612451124, Department.query.filter_by(name=u"开发部").first(), Role.query.filter_by(name="User").first(), 'dev1', False, "dev"),
+            'dev2': ('dev2@example.com', 13625412214, Department.query.filter_by(name=u"开发部").first(), Role.query.filter_by(name="User").first(), 'dev2', False, "dev"),
+            'qa1': ('qa1@example.com', 13112453365, Department.query.filter_by(name=u"测试部").first(), Role.query.filter_by(name="User").first(), 'qa1', False, "qa"),
+            'qa2': ('qa2@example.com', 13124556847, Department.query.filter_by(name=u"测试部").first(), Role.query.filter_by(name="User").first(), 'qa2', False, "qa"),
+            'dba1': ('dba1@example.com', 13321542635, Department.query.filter_by(name=u"DBA部").first(), Role.query.filter_by(name="User").first(), 'dba1', False, "dba"),
+            'dba2': ('dba2@example.com', 13214512245, Department.query.filter_by(name=u"DBA部").first(), Role.query.filter_by(name="User").first(), 'dba2', False, "dba"),
+            'user1': ('user1@example.com', 13412115694, Department.query.filter_by(name=u"活动部").first(), Role.query.filter_by(name="User").first(), 'user1', False, "user"),
+            'user2': ('user2@example.com', 13451489521, Department.query.filter_by(name=u"行政部").first(), Role.query.filter_by(name="User").first(), 'user2', False, "user"),
+            'user3': ('user3@example.com', 13465218952, Department.query.filter_by(name=u"营销中心").first(), Role.query.filter_by(name="User").first(), 'user3', False, "manager"),
+            'user4': ('user4@example.com', 13462548991, Department.query.filter_by(name=u"管理中心").first(), Role.query.filter_by(name="User").first(), 'user4', False, "manager"),
         }
         for u in users:
             user = User.query.filter_by(username=u).first()
@@ -204,6 +214,7 @@ class User(UserMixin, db.Model):
             user.role = users[u][3]
             user.password = users[u][4]
             user.allow_login = users[u][5]
+            user.type = users[u][6]
             db.session.add(user)
         db.session.commit()
 
@@ -317,12 +328,28 @@ class User(UserMixin, db.Model):
         return '<User %r>' % self.username
 
 
+class AnonymousUser(AnonymousUserMixin):
+    def can(self, permissions):
+        return False
+
+    def is_administrator(self):
+        return False
+
+login_manager.anonymous_user = AnonymousUser
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
 class Software(db.Model):
     __tablename__ = 'ops_software'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True, index=True)
     version = db.Column(db.String(64), unique=True, index=True)
-    software = db.relationship('Module',
+
+    modules = db.relationship('Module',
                          backref=db.backref('software', lazy='joined'), lazy='dynamic')
 
     @staticmethod
@@ -351,31 +378,18 @@ class Software(db.Model):
         return '<Software %r>' % self.name
 
 
-class AnonymousUser(AnonymousUserMixin):
-    def can(self, permissions):
-        return False
-
-    def is_administrator(self):
-        return False
-
-login_manager.anonymous_user = AnonymousUser
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-
 class Project(db.Model):
     __tablename__ = 'ops_projects'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    department = db.Column(db.String(32), index=True, default="user")
+    name = db.Column(db.String(64), unique=True, index=True)
+    # department = db.Column(db.String(32), index=True, default="user")
+    department_id = db.Column(db.Integer, db.ForeignKey('ops_departments.id'))
     pm_id = db.Column(db.Integer, db.ForeignKey('ops_users.id'))
     sla = db.Column(db.String(32))
     check_point = db.Column(db.String(64))
     domain = db.Column(db.String(64))
     description = db.Column(db.String(128))
+
     project = db.relationship('Module',
                          backref=db.backref('project', lazy='joined'), lazy='dynamic')
 
@@ -386,9 +400,10 @@ class Project(db.Model):
 class Module(db.Model):
     __tablename__ = 'ops_modules'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
+    name = db.Column(db.String(64), unique=True, index=True)
     project_id = db.Column(db.Integer, db.ForeignKey('ops_projects.id'))
-    department = db.Column(db.String(32), index=True)
+    # department = db.Column(db.String(32), index=True)
+    department_id = db.Column(db.Integer, db.ForeignKey('ops_departments.id'))
     svn = db.Column(db.String(128))
     parent_id = db.Column(db.Integer, db.ForeignKey('ops_modules.id'))
     dev_id = db.Column(db.Integer, db.ForeignKey('ops_users.id'))
@@ -413,7 +428,7 @@ class Environment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     module_id = db.Column(db.Integer, db.ForeignKey('ops_modules.id'))
     env = db.Column(db.String(32))
-    idc = db.Column(db.String(64))
+    idc_id = db.Column(db.Integer, db.ForeignKey('ops_idcs.id'))
     check_point1 = db.Column(db.String(128))
     check_point2 = db.Column(db.String(128))
     check_point3 = db.Column(db.String(128))
@@ -428,11 +443,29 @@ class Environment(db.Model):
 # SCHEMAS #####
 
 
+class RoleSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
+
+
 class DepartmentSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
     parent = fields.Nested('self', only=["id", "name"])
     description = fields.Str()
+
+
+class UserSchema(Schema):
+    id = fields.Int(dump_only=True)
+    username = fields.Str()
+    email = fields.Str()
+    mobile = fields.Str()
+    department = fields.Nested(DepartmentSchema, only=["id", "name"])
+    role = fields.Nested(RoleSchema, only=["id", "name"])
+    allow_login = fields.Boolean()
+    type = fields.Str()
+    member_since = fields.DateTime()
+    last_seen = fields.DateTime()
 
 
 class IdcSchema(Schema):
@@ -455,11 +488,6 @@ class ServerSchema(Schema):
     description = fields.Str()
 
 
-class UserSchema(Schema):
-    id = fields.Int(dump_only=True)
-    username = fields.Str()
-
-
 class SoftwareSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
@@ -469,7 +497,7 @@ class SoftwareSchema(Schema):
 class ProjectSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
-    department = fields.Str()
+    department = fields.Nested(DepartmentSchema, only=["id", "name"])
     pm = fields.Nested(UserSchema, only=["id", "username"])
     sla = fields.Str()
     check_point = fields.Str()
@@ -481,7 +509,7 @@ class ModuleSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
     project = fields.Nested(ProjectSchema, only=["id", "name"])
-    department = fields.Str()
+    department = fields.Nested(DepartmentSchema, only=["id", "name"])
     svn = fields.Str()
     parent = fields.Nested('self', only=["id", "name"])
     dev = fields.Nested(UserSchema, only=["id", "username"])
@@ -494,7 +522,7 @@ class ModuleSchema(Schema):
 class EnvironmentSchema(Schema):
     id = fields.Int(dump_only=True)
     module = fields.Nested(ModuleSchema, only=["id", "name"])
-    idc = fields.Str()
+    idc = fields.Nested(IdcSchema, only=["id", "name"])
     env = fields.Str()
     check_point1 = fields.Str()
     check_point2 = fields.Str()
