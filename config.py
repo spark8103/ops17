@@ -5,11 +5,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
-    SITENAME = "bd-cmdb"
-    #APPLICATION_ROOT = "bd-cmdb" #prefix test
+    SITENAME = "ops"
+    #APPLICATION_ROOT = "ops" #prefix test
     BOOTSTRAP_SERVE_LOCAL =True
     UPLOAD_FOLDER = 'd:\\spark\\'
-    DEPARTMENT = ["admin", "dev", "qa", "ops", "dba", "user", "manager"]
     USER_TYPE = ["admin", "dev", "qa", "ops", "dba", "user", "manager"]
     ENVIRONMENT = ["PRD", "DEV", "QA", "STG"]
     SERVER_TYPE = ["server", "vserver"]
