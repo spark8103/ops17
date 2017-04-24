@@ -458,14 +458,14 @@ class DepartmentSchema(Schema):
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
     username = fields.Str()
-    email = fields.Str()
+    email = fields.Email()
     mobile = fields.Str()
     department = fields.Nested(DepartmentSchema, only=["id", "name"])
     role = fields.Nested(RoleSchema, only=["id", "name"])
     allow_login = fields.Boolean()
     type = fields.Str()
-    member_since = fields.DateTime()
-    last_seen = fields.DateTime()
+    member_since = fields.DateTime('%Y-%m-%d %H:%M:%S')
+    last_seen = fields.DateTime('%Y-%m-%d %H:%M:%S')
 
 
 class IdcSchema(Schema):
@@ -529,5 +529,5 @@ class EnvironmentSchema(Schema):
     check_point3 = fields.Str()
     deploy_path = fields.Str()
     server_ip = fields.Str()
-    online_since = fields.Str()
+    online_since = fields.Str('%Y-%m-%d %H:%M:%S')
     domain = fields.Str()

@@ -33,6 +33,7 @@
            data-show-toggle="true"
            data-show-columns="true"
            data-show-export="true"
+           data-show-pagination-switch="true"
            data-striped="true"
            data-toolbar="#toolbar">
         <thead>
@@ -177,10 +178,10 @@ function queryParams() {
 
 function actionFormatter(value, row, index) {
     return [
-        '<a class="edit ml10" href="javascript:void(0)" title="Edit">',
+        '<a class="edit ml10" href="javascript:void(0)" title="编辑">',
         '<i class="glyphicon glyphicon-edit"></i>',
         '</a>',
-        '<a class="remove ml10" href="javascript:void(0)" title="Remove">',
+        '<a class="remove ml10" href="javascript:void(0)" title="删除">',
         '<i class="glyphicon glyphicon-remove"></i>',
         '</a>'
     ].join('');
