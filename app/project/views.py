@@ -191,7 +191,6 @@ def module_add():
     if form.validate_on_submit():
         module = Module(name=form.name.data,
                         project=Project.query.get(form.project.data),
-                        department=Department.query.get(form.department.data),
                         svn=form.svn.data,
                         parent=Module.query.get(form.parent.data),
                         dev=User.query.get(form.dev.data),
@@ -216,7 +215,6 @@ def module_edit():
     if form.validate_on_submit():
         module.name = form.e_name.data
         module.project = Project.query.get(form.e_project.data)
-        module.department = Department.query.get(form.e_department.data)
         module.svn = form.e_svn.data
         module.parent = Module.query.get(form.e_parent.data)
         module.dev = User.query.get(form.e_dev.data)

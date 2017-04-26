@@ -41,7 +41,6 @@
             <th data-field="id" data-sortable="true">ID</th>
             <th data-field="name" data-sortable="true">Name</th>
             <th data-field="project.name" data-sortable="true">Project</th>
-            <th data-field="department.name" data-sortable="true">Department</th>
             <th data-field="svn" data-sortable="true">SVN</th>
             <th data-field="parent.name" data-sortable="true">PerModule</th>
             <th data-field="dev.username" data-sortable="true">DEV</th>
@@ -67,7 +66,6 @@
                     {{ add_module_form.csrf_token }}
                     {{ render_field(add_module_form.name) }}
                     {{ render_field(add_module_form.project) }}
-                    {{ render_field(add_module_form.department) }}
                     {{ render_field(add_module_form.svn) }}
                     {{ render_field(add_module_form.parent) }}
                     {{ render_field(add_module_form.dev) }}
@@ -104,7 +102,6 @@
                     {{ edit_module_form.e_id }}
                     {{ render_field(edit_module_form.e_name) }}
                     {{ render_field(edit_module_form.e_project) }}
-                    {{ render_field(edit_module_form.e_department) }}
                     {{ render_field(edit_module_form.e_svn) }}
                     {{ render_field(edit_module_form.e_parent) }}
                     {{ render_field(edit_module_form.e_dev) }}
@@ -197,7 +194,6 @@ window.actionEvents = {
         $('#e_id').val(row.id);
         $('#e_name').val(row.name);
         $('#e_project').val(row.project.id);
-        $('#e_department').val(row.department.id);
         $('#e_svn').val(row.svn);
         if(row.parent==null){
             $('#e_parent').val(0)

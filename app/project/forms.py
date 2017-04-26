@@ -74,7 +74,6 @@ class EditProjectForm(FlaskForm):
 class AddModuleForm(FlaskForm):
     name = StringField('Name', validators=[Required()])
     project = SelectField('Project', coerce=int, validators=[Required()])
-    department = SelectField('Department', coerce=int)
     svn = StringField('SVN')
     parent = SelectField('PerModule', coerce=int, default=0)
     dev = SelectField('DEV', coerce=int)
@@ -87,8 +86,6 @@ class AddModuleForm(FlaskForm):
         super(AddModuleForm, self).__init__(*args, **kwargs)
         self.project.choices = [(project.id, project.name)
                             for project in Project.query.order_by(Project.name).all()]
-        self.department.choices = [(department.id, department.name)
-                                   for department in Department.query.order_by(Department.name).all()]
         self.parent.choices = [(0, 'None')] + [(parent.id, parent.name)
                             for parent in Module.query.order_by(Module.name).all()]
         self.dev.choices = [(0, 'None')] + [(dev.id, dev.username)
@@ -109,7 +106,6 @@ class EditModuleForm(FlaskForm):
     e_id = HiddenField('ID', validators=[Required()])
     e_name = StringField('Name', validators=[Required()])
     e_project = SelectField('Project', coerce=int, validators=[Required()])
-    e_department = SelectField('Department', coerce=int)
     e_svn = StringField('SVN')
     e_parent = SelectField('PerModule', coerce=int)
     e_dev = SelectField('DEV', coerce=int)
@@ -122,8 +118,6 @@ class EditModuleForm(FlaskForm):
         super(EditModuleForm, self).__init__(*args, **kwargs)
         self.e_project.choices = [(project.id, project.name)
                                 for project in Project.query.order_by(Project.name).all()]
-        self.e_department.choices = [(department.id, department.name)
-                                   for department in Department.query.order_by(Department.name).all()]
         self.e_parent.choices = [(0, 'None')] + [(parent.id, parent.name)
                                for parent in Module.query.order_by(Module.name).all()]
         self.e_dev.choices = [(0, 'None')] + [(dev.id, dev.username)
