@@ -5,7 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
-    SITENAME = "ops"
+    SITENAME = "OPS"
     #APPLICATION_ROOT = "ops" #prefix test
     BOOTSTRAP_SERVE_LOCAL =True
     UPLOAD_FOLDER = 'd:\\spark\\'

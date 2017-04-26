@@ -43,7 +43,7 @@ def edit_profile():
     if form.validate_on_submit():
         current_user.email = form.email.data
         current_user.mobile = form.mobile.data
-        current_user.department = form.department.data
+        current_user.department = Department.query.get(form.department.data)
         current_user.about_me = form.about_me.data
         db.session.add(current_user)
         flash('Your profile has been updated.')
@@ -113,80 +113,6 @@ def password_reset(token):
             return redirect(url_for('main.index'))
     return render_template('user/reset_password.html', form=form)
 
-''' old code
-@user.route('/user-list')
-@login_required
-def user_list():
-    page = request.args.get('page', 1, type=int)
-    query = User.query
-    pagination = query.order_by(User.id.asc()).paginate(
-        page, per_page=current_app.config['OPS_USER_PER_PAGE'],
-        error_out=False)
-    users = pagination.items
-    return render_template('user/user_list.html', users=users, pagination=pagination)
-
-
-@user.route('/user-edit/<int:id>', methods=['GET', 'POST'])
-@login_required
-@admin_required
-def user_edit_admin(id):
-    user = User.query.get_or_404(id)
-    form = EditUserAdminForm(user=user)
-    if form.validate_on_submit():
-        user.email = form.email.data
-        user.mobile = form.mobile.data
-        user.role = Role.query.get(form.role.data)
-        user.department = form.department.data
-        user.allow_login = form.allow_login.data == str(True)
-        if form.password.data:
-            user.password = form.password.data
-        db.session.add(user)
-        flash('The profile has been updated.')
-        return redirect(url_for('.user_edit_admin',id = str(id)))
-    form.email.data = user.email
-    form.mobile.data = user.mobile
-    form.role.data = user.role_id
-    form.department.data = user.department
-    form.allow_login.data = user.allow_login
-    form.password = ''
-    return render_template('user/user_edit.html', form=form, user=user.username)
-
-
-@user.route('/del', methods=['POST'])
-@login_required
-@admin_required
-def user_del():
-    username = request.form.get('username')
-    user = User.query.filter_by(username=username).first()
-    if user is None:
-        flash('Non-existent user: ' + username, 'error')
-        response = {"success": "false"}
-        return jsonify(response)
-    db.session.delete(user)
-    db.session.commit()
-    response = {"success": "true"}
-    return jsonify(response)
-
-
-@user.route('/add', methods=['GET','POST'])
-@login_required
-@admin_required
-def user_add():
-    form = AddUserAdminForm()
-    if form.validate_on_submit():
-        user = User(username=form.username.data,
-                    email=form.email.data,
-                    mobile=form.mobile.data,
-                    role=Role.query.get(form.role.data),
-                    department=form.department.data,
-                    allow_login=(form.allow_login.data == str(True)),
-                    password=form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash(form.username.data + 'is add.')
-        return redirect(url_for('user.user_add'))
-    return render_template('user/user_add.html', form=form)
-'''
 
 @user.route('/useradmin')
 @login_required
