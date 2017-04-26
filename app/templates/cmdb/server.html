@@ -33,11 +33,13 @@
            data-show-toggle="true"
            data-show-columns="true"
            data-show-export="true"
+           data-show-pagination-switch="true"
            data-striped="true"
            data-toolbar="#toolbar">
         <thead>
         <tr>
-            <th data-field="id" data-sortable="true">ID</th>
+            <th data-field="state" data-checkbox="true"></th>
+            <th data-field="id" data-sortable="true" data-switchable="false" data-visible="false">ID</th>
             <th data-field="name" data-sortable="true">Name</th>
             <th data-field="idc.name" data-sortable="true">IDC</th>
             <th data-field="rack" data-sortable="true">Rack</th>
@@ -45,10 +47,10 @@
             <th data-field="public_ip" data-sortable="true">Public ip</th>
             <th data-field="category" data-sortable="true">Category</th>
             <th data-field="env" data-sortable="true">Env</th>
-            <th data-field="type" data-sortable="true">Type</th>
+            <th data-field="type" data-sortable="true" data-visible="false">Type</th>
             <th data-field="status" data-sortable="true">status</th>
-            <th data-field="description" data-sortable="false">description</th>
-            <th data-field="action" data-formatter="actionFormatter" data-events="actionEvents">Action</th>
+            <th data-field="description" data-sortable="false" data-visible="false">description</th>
+            <th data-field="action" data-formatter="actionFormatter" data-events="actionEvents" data-switchable="false">Action</th>
         </tr>
         </thead>
     </table>
