@@ -82,6 +82,7 @@ def deploy():
 
     # create user roles
     Role.insert_roles()
+    Software.insert_softwares()
 
 
 @manager.command
@@ -92,13 +93,19 @@ def init_db():
             'Are you sure you want to init your data'):
         # migrate database to latest revision
         upgrade()
+        print "db upgrade."
         Role.insert_roles()
-        Department.insert_departments()
-        Department.insert_departments()
+        print "Insert role data."
         Software.insert_softwares()
-        Idc.insert_idcs()
-        User.insert_users()
-        Server.insert_servers()
+        print "Insert software data."
+        from tools import test_init
+        test_init.department_insert_data()
+        test_init.user_insert_data()
+        test_init.idc_insert_data()
+        test_init.server_insert_data()
+        test_init.project_insert_data()
+        test_init.module_insert_data()
+        print "All end."
 
 
 @manager.command

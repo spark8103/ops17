@@ -19,6 +19,7 @@ python manage.py db migrate
 python manage.py db upgrade
 
 ### init db
+python manage.py init_db
 ```shell
 python manage.py shell   
 

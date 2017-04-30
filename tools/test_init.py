@@ -49,7 +49,7 @@ def department_insert_data():
         department.description = departments[r][1]
         db.session.add(department)
     db.session.commit()
-    print "Insert department data."
+    print "Insert department test data."
 
 
 def user_insert_data():
@@ -94,7 +94,7 @@ def user_insert_data():
         user.type = users[u][6]
         db.session.add(user)
     db.session.commit()
-    print "Insert user data."
+    print "Insert user test data."
 
 
 def idc_insert_data():
@@ -119,6 +119,7 @@ def idc_insert_data():
         idc.description = idcs[s]
         db.session.add(idc)
     db.session.commit()
+    print "Insert idc test data."
 
 
 def server_insert_data():
@@ -175,30 +176,33 @@ def server_insert_data():
         server.description = servers[s][8]
         db.session.add(server)
     db.session.commit()
+    print "Insert server test data."
 
 
 def project_insert_data():
     projects = {
         u'bd-blink': (Department.query.filter_by(name=u"管理中心").first(),
-                             User.query.filter_by(name=u'user1').first(), '99999'),
+                             User.query.filter_by(username=u'user1').first(), '99999'),
         u'bd-tiger': (Department.query.filter_by(name=u"管理中心").first(),
-                             User.query.filter_by(name=u'user2').first(), '99999'),
+                             User.query.filter_by(username=u'user2').first(), '99999'),
         u'bd-cmdb': (Department.query.filter_by(name=u"运维部").first(),
-                             User.query.filter_by(name=u'ops1').first(), '999'),
+                             User.query.filter_by(username=u'ops1').first(), '999'),
         u'bd-bdmp': (Department.query.filter_by(name=u"运维部").first(),
-                     User.query.filter_by(name=u'ops2').first(), '999'),
+                     User.query.filter_by(username=u'ops2').first(), '999'),
         u'bd-test': (Department.query.filter_by(name=u"开发部").first(),
-                     User.query.filter_by(name=u'dev1').first(), '999'),
+                     User.query.filter_by(username=u'dev1').first(), '999'),
         u'bd-test2': (Department.query.filter_by(name=u"开发部").first(),
-                     User.query.filter_by(name=u'dev2').first(), '999'),
+                     User.query.filter_by(username=u'dev2').first(), '999'),
+        u'bd-test3': (Department.query.filter_by(name=u"开发部").first(),
+                      User.query.filter_by(username=u'dev1').first(), '999'),
         u'bd-jenkins': (Department.query.filter_by(name=u"测试部").first(),
-                     User.query.filter_by(name=u'qa1').first(), '999'),
+                     User.query.filter_by(username=u'qa1').first(), '999'),
         u'bd-qa': (Department.query.filter_by(name=u"测试部").first(),
-                        User.query.filter_by(name=u'qa2').first(), '999'),
+                        User.query.filter_by(username=u'qa2').first(), '999'),
         u'bd-oracle': (Department.query.filter_by(name=u"DBA部").first(),
-                        User.query.filter_by(name=u'dba1').first(), '999'),
+                        User.query.filter_by(username=u'dba1').first(), '999'),
         u'bd-mongodb': (Department.query.filter_by(name=u"DBA部").first(),
-                       User.query.filter_by(name=u'dba2').first(), '999'),
+                       User.query.filter_by(username=u'dba2').first(), '999'),
     }
     for s in projects:
         project = Project.query.filter_by(name=s).first()
@@ -209,40 +213,76 @@ def project_insert_data():
         project.sla = projects[s][2]
         db.session.add(project)
     db.session.commit()
+    print "Insert project test data."
 
 
 def module_insert_data():
     modules = {
         u'bd-blink-server': (Project.query.filter_by(name=u"bd-blink").first(), 'http://10.10.10.5/svn/bd-blink/',
-                             User.query.filter_by(name=u'dev1').first(), User.query.filter_by(name=u'qa1').first(),
-                             User.query.filter_by(name=u'ops1').first(),
+                             User.query.filter_by(username=u'dev1').first(), User.query.filter_by(username=u'qa1').first(),
+                             User.query.filter_by(username=u'ops1').first(),
                              Software.query.filter_by(version=u'tomcat_7.0.68').first()),
-        u'bd-tiger': (Project.query.filter_by(name=u"管理中心").first(),
-                             User.query.filter_by(name=u'user2').first(), '99999'),
-        u'bd-cmdb': (Project.query.filter_by(name=u"运维部").first(),
-                             User.query.filter_by(name=u'ops1').first(), '999'),
-        u'bd-bdmp': (Project.query.filter_by(name=u"运维部").first(),
-                     User.query.filter_by(name=u'ops2').first(), '999'),
-        u'bd-test': (Project.query.filter_by(name=u"开发部").first(),
-                     User.query.filter_by(name=u'dev1').first(), '999'),
-        u'bd-test2': (Project.query.filter_by(name=u"开发部").first(),
-                     User.query.filter_by(name=u'dev2').first(), '999'),
-        u'bd-jenkins': (Project.query.filter_by(name=u"测试部").first(),
-                     User.query.filter_by(name=u'qa1').first(), '999'),
-        u'bd-qa': (Project.query.filter_by(name=u"测试部").first(),
-                        User.query.filter_by(name=u'qa2').first(), '999'),
-        u'bd-oracle': (Project.query.filter_by(name=u"DBA部").first(),
-                        User.query.filter_by(name=u'dba1').first(), '999'),
-        u'bd-mongodb': (Project.query.filter_by(name=u"DBA部").first(),
-                       User.query.filter_by(name=u'dba2').first(), '999'),
+
+        u'bd-tiger-web': (Project.query.filter_by(name=u"bd-tiger").first(), 'http://10.10.10.5/svn/bd-tiger/',
+                          User.query.filter_by(username=u'dev2').first(), User.query.filter_by(username=u'qa2').first(),
+                          User.query.filter_by(username=u'ops2').first(),
+                          Software.query.filter_by(version=u'tomcat_7.0.68').first()),
+
+        u'bd-cmdb': (Project.query.filter_by(name=u"bd-cmdb").first(), 'http://10.10.10.5/svn/bd-cmdb/',
+                     User.query.filter_by(username=u'dev2').first(), User.query.filter_by(username=u'qa2').first(),
+                     User.query.filter_by(username=u'ops2').first(),
+                     Software.query.filter_by(version=u'tomcat_7.0.68').first()),
+
+        u'bd-bdmp': (Project.query.filter_by(name=u"bd-bdmp").first(), 'http://10.10.10.5/svn/bd-bdmp/',
+                     User.query.filter_by(username=u'dev1').first(), User.query.filter_by(username=u'qa1').first(),
+                     User.query.filter_by(username=u'ops2').first(),
+                     Software.query.filter_by(version=u'tomcat_7.0.68').first()),
+
+        u'bd-test': (Project.query.filter_by(name=u"bd-test").first(), 'http://10.10.10.5/svn/bd-test/',
+                     User.query.filter_by(username=u'dev1').first(), User.query.filter_by(username=u'qa1').first(),
+                     User.query.filter_by(username=u'ops2').first(),
+                     Software.query.filter_by(version=u'tomcat_7.0.68').first()),
+
+        u'bd-test2': (Project.query.filter_by(name=u"bd-test2").first(), 'http://10.10.10.5/svn/bd-test2/',
+                     User.query.filter_by(username=u'dev1').first(), User.query.filter_by(username=u'qa1').first(),
+                     User.query.filter_by(username=u'ops2').first(),
+                     Software.query.filter_by(version=u'tomcat_7.0.68').first()),
+
+        u'bd-test3': (Project.query.filter_by(name=u"bd-test3").first(), 'http://10.10.10.5/svn/bd-test3/',
+                     User.query.filter_by(username=u'dev1').first(), User.query.filter_by(username=u'qa1').first(),
+                     User.query.filter_by(username=u'ops2').first(),
+                     Software.query.filter_by(version=u'tomcat_7.0.68').first()),
+
+        u'bd-jenkins': (Project.query.filter_by(name=u"bd-jenkins").first(), 'http://10.10.10.5/svn/bd-jenkins/',
+                     User.query.filter_by(username=u'dev1').first(), User.query.filter_by(username=u'qa1').first(),
+                     User.query.filter_by(username=u'ops2').first(),
+                     Software.query.filter_by(version=u'tomcat_7.0.68').first()),
+
+        u'bd-qa': (Project.query.filter_by(name=u"bd-qa").first(), 'http://10.10.10.5/svn/bd-qa/',
+                     User.query.filter_by(username=u'dev1').first(), User.query.filter_by(username=u'qa1').first(),
+                     User.query.filter_by(username=u'ops2').first(),
+                     Software.query.filter_by(version=u'tomcat_7.0.68').first()),
+
+        u'bd-oracle': (Project.query.filter_by(name=u"bd-oracle").first(), 'http://10.10.10.5/svn/bd-oracle/',
+                     User.query.filter_by(username=u'dev1').first(), User.query.filter_by(username=u'qa1').first(),
+                     User.query.filter_by(username=u'ops2').first(),
+                     Software.query.filter_by(version=u'tomcat_7.0.68').first()),
+
+        u'bd-mongodb': (Project.query.filter_by(name=u"bd-mongodb").first(), 'http://10.10.10.5/svn/bd-mongodb/',
+                     User.query.filter_by(username=u'dev1').first(), User.query.filter_by(username=u'qa1').first(),
+                     User.query.filter_by(username=u'ops2').first(),
+                     Software.query.filter_by(version=u'tomcat_7.0.68').first()),
     }
     for m in modules:
         module = Module.query.filter_by(name=m).first()
         if module is None:
             module = Module(name=m)
-        module.description = modules[m]
+        module.project = modules[m][0]
+        module.svn = modules[m][1]
+        module.dev = modules[m][2]
+        module.qa = modules[m][3]
+        module.ops = modules[m][4]
+        module.software = modules[m][5]
         db.session.add(module)
     db.session.commit()
-
-if __name__ == '__main__':
-    print "."
+    print "Insert module test data."
