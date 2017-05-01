@@ -32,7 +32,6 @@ class AddProjectForm(FlaskForm):
     pm = SelectField('ProjectManager', coerce=int, default=2)
     sla = SelectField('SLA', coerce=str)
     check_point = StringField('CheckPoint')
-    domain = StringField('DomainName')
     description = TextAreaField('Description')
 
     def __init__(self, *args, **kwargs):
@@ -55,7 +54,6 @@ class EditProjectForm(FlaskForm):
     e_pm = SelectField('ProjectManager', coerce=int, default=2)
     e_sla = SelectField('SLA', coerce=str)
     e_check_point = StringField('CheckPoint')
-    e_domain = StringField('DomainName')
     e_description = TextAreaField('Description')
 
     def __init__(self, *args, **kwargs):

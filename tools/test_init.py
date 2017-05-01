@@ -38,17 +38,6 @@ def department_insert_data():
         department.description = departments[r][1]
         db.session.add(department)
     db.session.commit()
-    for r in departments:
-        department = Department.query.filter_by(name=r).first()
-        if department is None:
-            department = Department(name=r)
-        if isinstance(departments[r][0], int):
-            department.parent_id = departments[r][0]
-        else:
-            department.parent = departments[r][0]
-        department.description = departments[r][1]
-        db.session.add(department)
-    db.session.commit()
     print "Insert department test data."
 
 
@@ -286,3 +275,62 @@ def module_insert_data():
         db.session.add(module)
     db.session.commit()
     print "Insert module test data."
+
+
+def environment_insert_data():
+    environments = {
+        u'bd-blink-server': (Module.query.filter_by(name=u"bd-blink-server").first(), 'PRD',
+                             Idc.query.filter_by(name=u'周浦').first(), "http://www.blink.com/status",
+                             "/opt/app/bd-blink-server/", "www.blink.com"),
+
+        u'bd-tiger-web': (Module.query.filter_by(name=u"bd-tiger-web").first(), 'PRD',
+                          Idc.query.filter_by(name=u'周浦').first(), "http://www.tiger.com/status",
+                          "/opt/app/bd-tiger-web/", "www.tiger.com"),
+
+        u'bd-cmdb': (Module.query.filter_by(name=u"bd-cmdb").first(), 'PRD',
+                     Idc.query.filter_by(name=u'周浦').first(), "http://www.cmdb.com/status",
+                     "/opt/app/bd-cmdb/", "www.cmdb.com"),
+
+        u'bd-bdmp': (Module.query.filter_by(name=u"bd-bdmp").first(), 'PRD',
+                     Idc.query.filter_by(name=u'周浦').first(), "http://www.bdmp.com/status",
+                     "/opt/app/bd-bdmp/", "www.bdmp.com"),
+
+        u'bd-test': (Module.query.filter_by(name=u"bd-test").first(), 'DEV',
+                     Idc.query.filter_by(name=u'周浦').first(), "http://www.test.com/status",
+                     "/opt/app/bd-test/", "www.test.com"),
+
+        u'bd-test2': (Module.query.filter_by(name=u"bd-test2").first(), 'DEV',
+                     Idc.query.filter_by(name=u'周浦').first(), "http://www.test2.com/status",
+                     "/opt/app/bd-test2/", "www.test2.com"),
+
+        u'bd-test3': (Module.query.filter_by(name=u"bd-test3").first(), 'DEV',
+                     Idc.query.filter_by(name=u'周浦').first(), "http://www.test3.com/status",
+                     "/opt/app/bd-test3/", "www.test3.com"),
+
+        u'bd-jenkins': (Module.query.filter_by(name=u"bd-jenkins").first(), 'QA',
+                     Idc.query.filter_by(name=u'周浦').first(), "http://www.jenkins.com/status",
+                     "/opt/app/bd-jenkins/", "www.jenkins.com"),
+
+        u'bd-qa': (Module.query.filter_by(name=u"bd-qa").first(), 'QA',
+                     Idc.query.filter_by(name=u'周浦').first(), "http://www.qa.com/status",
+                     "/opt/app/bd-qa/", "www.qa.com"),
+
+        u'bd-oracle': (Module.query.filter_by(name=u"bd-oracle").first(), 'STG',
+                     Idc.query.filter_by(name=u'周浦').first(), "http://www.oracle.com/status",
+                     "/opt/app/bd-oracle/", "www.oracle.com"),
+
+        u'bd-mongodb': (Module.query.filter_by(name=u"bd-mongodb").first(),  'STG',
+                     Idc.query.filter_by(name=u'周浦').first(), "http://www.mongodb.com/status",
+                     "/opt/app/bd-mongodb/", "www.mongodb.com"),
+    }
+    for e in environments:
+        environment = Environment(
+            module=environments[e][0],
+            env=environments[e][1],
+            idc=environments[e][2],
+            check_point1=environments[e][3],
+            deploy_path=environments[e][4],
+            domain=environments[e][5])
+        db.session.add(environment)
+        db.session.commit()
+    print "Insert environment test data."

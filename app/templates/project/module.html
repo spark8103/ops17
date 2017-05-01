@@ -34,15 +34,17 @@
            data-show-columns="true"
            data-show-export="true"
            data-show-pagination-switch="true"
+           data-detail-view="true"
+           data-detail-formatter="detailFormatter"
            data-striped="true"
            data-toolbar="#toolbar">
         <thead>
         <tr>
-            <th data-field="id" data-sortable="true">ID</th>
+            <th data-field="id" data-sortable="true" data-switchable="false" data-visible="false">ID</th>
             <th data-field="name" data-sortable="true">Name</th>
             <th data-field="project.name" data-sortable="true">Project</th>
             <th data-field="svn" data-sortable="true">SVN</th>
-            <th data-field="parent.name" data-sortable="true">PerModule</th>
+            <th data-field="parent.name" data-sortable="true" data-visible="false">PerModule</th>
             <th data-field="dev.username" data-sortable="true">DEV</th>
             <th data-field="qa.username" data-sortable="true">QA</th>
             <th data-field="ops.username" data-sortable="true">OPS</th>
@@ -217,6 +219,37 @@ window.actionEvents = {
         //alert('You click remove icon, row: ' + JSON.stringify(row));
         //console.log(value, row, index);
     }
+};
+
+function detailFormatter(index, row, $detail) {
+    var cur_table = $detail.html('<table></table>').find('table');
+    $(cur_table).bootstrapTable({
+            url: "{{ url_for('project.environment_list') }}" + "?module=" +  row.name,
+            method: 'get',
+            uniqueId: "id",
+            columns: [{
+                field: 'env',
+                title: 'env'
+            }, {
+                field: 'server_ip',
+                title: 'server_ip'
+            }, {
+                field: 'idc.name',
+                title: 'idc'
+            }, {
+                field: 'deploy_path',
+                title: 'deploy_path'
+            }, {
+                field: 'check_point1',
+                title: 'check_point1'
+            }, {
+                field: 'check_point2',
+                title: 'check_point2'
+            }, {
+                field: 'check_point3',
+                title: 'check_point3'
+            }, ],
+        });
 };
 </script>
 {% endblock %}

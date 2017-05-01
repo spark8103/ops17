@@ -118,7 +118,6 @@ def project_add():
                           pm=User.query.get(form.pm.data),
                           sla=form.sla.data,
                           check_point=form.check_point.data,
-                          domain=form.domain.data,
                           description=form.description.data)
         db.session.add(project)
         db.session.commit()
@@ -140,7 +139,6 @@ def project_edit():
         project.pm = User.query.get(form.e_pm.data)
         project.sla = form.e_sla.data
         project.check_point = form.e_check_point.data
-        project.domain = form.e_domain.data
         project.description = form.e_description.data
         db.session.add(project)
         flash('project: ' + request.form.get('e_name') + ' is update.')
@@ -175,7 +173,10 @@ def module_main():
 @project.route('/module-list')
 @login_required
 def module_list():
-    modules = Module.query.all()
+    if request.args.get('project'):
+        modules = Module.query.filter_by(project=Project.query.filter_by(name=request.args.get('project')).first())
+    else:
+        modules = Module.query.all()
     if not modules:
         return jsonify({})
     else:
@@ -255,7 +256,10 @@ def environment_main():
 @project.route('/environment-list')
 @login_required
 def environment_list():
-    environments = Environment.query.all()
+    if request.args.get('module'):
+        environments = Environment.query.filter_by(module=Module.query.filter_by(name=request.args.get('module')).first())
+    else:
+        environments = Environment.query.all()
     if not environments:
         return jsonify({})
     else:
@@ -268,8 +272,6 @@ def environment_list():
 @login_required
 def environment_add():
     form = AddEnvironmentForm(data=request.get_json())
-    print form.data
-    print "online_since: " + request.form.get('online_since')
     if form.validate_on_submit():
         environment = Environment(
                         module=Module.query.get(form.module.data),

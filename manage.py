@@ -93,18 +93,20 @@ def init_db():
             'Are you sure you want to init your data'):
         # migrate database to latest revision
         upgrade()
-        print "db upgrade."
+        print "DB Upgrade."
         Role.insert_roles()
         print "Insert role data."
         Software.insert_softwares()
         print "Insert software data."
         from tools import test_init
         test_init.department_insert_data()
+        test_init.department_insert_data()
         test_init.user_insert_data()
         test_init.idc_insert_data()
         test_init.server_insert_data()
         test_init.project_insert_data()
         test_init.module_insert_data()
+        test_init.environment_insert_data()
         print "All end."
 
 

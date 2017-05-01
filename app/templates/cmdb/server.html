@@ -33,6 +33,7 @@
            data-show-toggle="true"
            data-show-columns="true"
            data-show-export="true"
+           data-export-data-type="selected"
            data-show-pagination-switch="true"
            data-striped="true"
            data-toolbar="#toolbar">
@@ -160,6 +161,9 @@
 {{ super() }}
 <script src="{{ url_for('static', filename='bootstrap-table-1.11.1/bootstrap-table.min.js') }}"></script>
 <script src="{{ url_for('static', filename='bootstrap-table-1.11.1/locale/bootstrap-table-zh-CN.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap-table-1.11.1/extensions/export/bootstrap-table-export.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/tableExport.js') }}"></script>
+
 <script>
 $(function () {
     $('#ListTable').bootstrapTable({

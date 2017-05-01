@@ -20,17 +20,13 @@ python manage.py db upgrade
 
 ### init db
 python manage.py init_db
+
 ```shell
 python manage.py shell   
 
 from app import models
 Role.insert_roles()
-Department.insert_departments()
-Department.insert_departments()
 Software.insert_softwares()
-Idc.insert_idcs()
-User.insert_users()
-Server.insert_servers()
 ```
 
 ### Run Server

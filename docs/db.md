@@ -57,3 +57,4 @@ python manage.py shell
 >>> db.session.delete(user)
 >>> db.session.commit()
 ```
+

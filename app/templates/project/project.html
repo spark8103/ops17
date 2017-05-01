@@ -34,17 +34,18 @@
            data-show-columns="true"
            data-show-export="true"
            data-show-pagination-switch="true"
+           data-detail-view="true"
+           data-detail-formatter="moduleFormatter"
            data-striped="true"
            data-toolbar="#toolbar">
         <thead>
         <tr>
-            <th data-field="id" data-sortable="true">ID</th>
+            <th data-field="id" data-sortable="true" data-switchable="false" data-visible="false">ID</th>
             <th data-field="name" data-sortable="true">Name</th>
             <th data-field="department.name" data-sortable="true">Department</th>
             <th data-field="pm.username" data-sortable="true">PM</th>
             <th data-field="sla" data-sortable="true">SLA</th>
             <th data-field="check_point" data-sortable="true">check_point</th>
-            <th data-field="domain" data-sortable="true">domain</th>
             <th data-field="description" data-sortable="true">description</th>
             <th data-field="action" data-formatter="actionFormatter" data-events="actionEvents">Action</th>
         </tr>
@@ -67,7 +68,6 @@
                     {{ render_field(add_project_form.pm) }}
                     {{ render_field(add_project_form.sla) }}
                     {{ render_field(add_project_form.check_point) }}
-                    {{ render_field(add_project_form.domain) }}
                     {{ render_field(add_project_form.description) }}
                     <div class="form-group">
                         <div class="col-sm-4">
@@ -101,7 +101,6 @@
                     {{ render_field(edit_project_form.e_pm) }}
                     {{ render_field(edit_project_form.e_sla) }}
                     {{ render_field(edit_project_form.e_check_point) }}
-                    {{ render_field(edit_project_form.e_domain) }}
                     {{ render_field(edit_project_form.e_description) }}
                     <div class="form-group">
                         <div class="col-sm-4">
@@ -191,7 +190,6 @@ window.actionEvents = {
         $('#e_pm').val(row.pm.id);
         $('#e_sla').val(row.sla);
         $('#e_check_point').val(row.check_point);
-        $('#e_domain').val(row.domain);
         $('#e_description').val(row.description);
         $('#project_edit').modal('show');
         //alert('You click edit icon, row: ' + $('#e_name').val(row.name););
@@ -205,6 +203,70 @@ window.actionEvents = {
         //alert('You click remove icon, row: ' + JSON.stringify(row));
         //console.log(value, row, index);
     }
+};
+
+function moduleFormatter(index, row, $detail) {
+    var cur_table = $detail.html('<table></table>').find('table');
+    $(cur_table).bootstrapTable({
+            url: "{{ url_for('project.module_list') }}" + "?project=" +  row.name,
+            method: 'get',
+            uniqueId: "id",
+            detailView: true,
+            detailFormatter: "environmentFormatter",
+            columns: [{
+                field: 'name',
+                title: 'Module Name'
+            }, {
+                field: 'svn',
+                title: 'svn'
+            }, {
+                field: 'dev.username',
+                title: 'dev'
+            }, {
+                field: 'qa.username',
+                title: 'qa'
+            }, {
+                field: 'ops.username',
+                title: 'ops'
+            }, {
+                field: 'software.version',
+                title: 'software'
+            }, {
+                field: 'description',
+                title: 'description'
+            }, ],
+        });
+};
+
+function environmentFormatter(index, row, $detail) {
+    var cur_table = $detail.html('<table></table>').find('table');
+    $(cur_table).bootstrapTable({
+            url: "{{ url_for('project.environment_list') }}" + "?module=" +  row.name,
+            method: 'get',
+            uniqueId: "id",
+            columns: [{
+                field: 'env',
+                title: 'ENV'
+            }, {
+                field: 'server_ip',
+                title: 'server_ip'
+            }, {
+                field: 'idc.name',
+                title: 'idc'
+            }, {
+                field: 'deploy_path',
+                title: 'deploy_path'
+            }, {
+                field: 'check_point1',
+                title: 'check_point1'
+            }, {
+                field: 'check_point2',
+                title: 'check_point2'
+            }, {
+                field: 'check_point3',
+                title: 'check_point3'
+            }, ],
+        });
 };
 </script>
 {% endblock %}
