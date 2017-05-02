@@ -6,7 +6,6 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app, request, url_for
 from flask_login import UserMixin, AnonymousUserMixin
 from . import db, login_manager
-from sqlalchemy.dialects.mysql import INTEGER
 from marshmallow import Schema, fields, ValidationError, pre_load
 
 
@@ -164,7 +163,8 @@ class User(UserMixin, db.Model):
             'username': self.username,
             'email': self.email,
             'mobile': self.mobile,
-            'department': self.department,
+            'department': self.department.name,
+            'type': self.type,
             'member_since': self.member_since,
             'last_seen': self.last_seen
         }
@@ -186,6 +186,9 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+    def __str__(self):
+        return "User(id='%s')" % self.id
 
 
 class AnonymousUser(AnonymousUserMixin):
