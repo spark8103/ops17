@@ -1,29 +1,10 @@
 # coding: utf-8
 from flask import current_app
 from flask_wtf import FlaskForm
-from wtforms import HiddenField, IntegerField, StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField, FloatField, DateTimeField
-from wtforms.validators import Required, Length, Email, Regexp, EqualTo, DataRequired
+from wtforms import HiddenField, StringField, TextAreaField, SelectField, DateTimeField
+from wtforms.validators import Required, Length, Email, Regexp, EqualTo, DataRequired, IPAddress
 from wtforms import ValidationError
 from ..models import User, Department, Idc, Software, Project, Module, Environment
-
-
-class AddSoftwareForm(FlaskForm):
-    name = StringField('Name', validators=[Required()])
-    version = StringField('Version')
-
-    def validate_name(self, field):
-        if Software.query.filter_by(name=field.data).first():
-            raise ValidationError('SoftwareName already in use.')
-
-
-class EditSoftwareForm(FlaskForm):
-    e_id = HiddenField('ID', validators=[Required()])
-    e_name = StringField('Name', validators=[Required()])
-    e_version = StringField('Version')
-
-    def validate_name(self, field):
-        if Software.query.filter_by(name=field.data).first():
-            raise ValidationError('SoftwareName already in use.')
 
 
 class AddProjectForm(FlaskForm):
@@ -42,6 +23,7 @@ class AddProjectForm(FlaskForm):
                                    for department in Department.query.order_by(Department.name).all()]
         self.sla.choices = [(i, i) for i in current_app.config['SLA']]
 
+    @staticmethod
     def validate_name(self, field):
         if Project.query.filter_by(name=field.data).first():
             raise ValidationError('ProjectName already in use.')
@@ -64,6 +46,7 @@ class EditProjectForm(FlaskForm):
                                    for department in Department.query.order_by(Department.name).all()]
         self.e_sla.choices = [(i, i) for i in current_app.config['SLA']]
 
+    @staticmethod
     def validate_name(self, field):
         if Project.query.filter_by(name=field.data).first():
             raise ValidationError('ProjectName already in use.')
@@ -95,6 +78,7 @@ class AddModuleForm(FlaskForm):
         self.software.choices = [(software.id, software.version)
                             for software in Software.query.order_by(Software.version).all()]
 
+    @staticmethod
     def validate_name(self, field):
         if Module.query.filter_by(name=field.data).first():
             raise ValidationError('ModuleName already in use.')
@@ -127,6 +111,7 @@ class EditModuleForm(FlaskForm):
         self.e_software.choices = [(software.id, software.version)
                                  for software in Software.query.order_by(Software.version).all()]
 
+    @staticmethod
     def validate_name(self, field):
         if Module.query.filter_by(name=field.data).first():
             raise ValidationError('ModuleName already in use.')
@@ -152,6 +137,7 @@ class AddEnvironmentForm(FlaskForm):
                                    for idc in Idc.query.order_by(Idc.name).all()]
         self.env.choices = [(i, i) for i in current_app.config['ENVIRONMENT']]
 
+    @staticmethod
     def validate_name(self, field):
         if Environment.query.filter_by(name=field.data).first():
             raise ValidationError('Environment already in use.')
@@ -178,6 +164,7 @@ class EditEnvironmentForm(FlaskForm):
                             for idc in Idc.query.order_by(Idc.name).all()]
         self.e_env.choices = [(i, i) for i in current_app.config['ENVIRONMENT']]
 
+    @staticmethod
     def validate_name(self, field):
         if Environment.query.filter_by(name=field.data).first():
             raise ValidationError('Environment already in use.')

@@ -4,13 +4,35 @@ from flask_wtf import FlaskForm
 from wtforms import HiddenField, StringField, TextAreaField, SelectField
 from wtforms.validators import Required
 from wtforms import ValidationError
-from ..models import Idc, Server
+from ..models import Software, Idc, Server
+
+
+class AddSoftwareForm(FlaskForm):
+    name = StringField('Name', validators=[Required()])
+    version = StringField('Version')
+
+    @staticmethod
+    def validate_name(self, field):
+        if Software.query.filter_by(name=field.data).first():
+            raise ValidationError('SoftwareName already in use.')
+
+
+class EditSoftwareForm(FlaskForm):
+    e_id = HiddenField('ID', validators=[Required()])
+    e_name = StringField('Name', validators=[Required()])
+    e_version = StringField('Version')
+
+    @staticmethod
+    def validate_name(self, field):
+        if Software.query.filter_by(name=field.data).first():
+            raise ValidationError('SoftwareName already in use.')
 
 
 class AddIdcForm(FlaskForm):
     name = StringField('Name', validators=[Required()])
     description = TextAreaField('Description')
 
+    @staticmethod
     def validate_name(self, field):
         if Idc.query.filter_by(name=field.data).first():
             raise ValidationError('IdcName already in use.')
@@ -21,6 +43,7 @@ class EditIdcForm(FlaskForm):
     e_name = StringField('Name', validators=[Required()])
     e_description = TextAreaField('Description')
 
+    @staticmethod
     def validate_name(self, field):
         if Idc.query.filter_by(name=field.data).first():
             raise ValidationError('IdcName already in use.')
@@ -46,9 +69,10 @@ class AddServerForm(FlaskForm):
         self.type.choices = [(i, i) for i in current_app.config['SERVER_TYPE']]
         self.status.choices = [(i, i) for i in current_app.config['SERVER_STATUS']]
 
+    @staticmethod
     def validate_name(self, field):
-        if Idc.query.filter_by(name=field.data).first():
-            raise ValidationError('IdcName already in use.')
+        if Server.query.filter_by(name=field.data).first():
+            raise ValidationError('ServerName already in use.')
 
 
 class EditServerForm(FlaskForm):
@@ -72,6 +96,7 @@ class EditServerForm(FlaskForm):
         self.e_type.choices = [(i, i) for i in current_app.config['SERVER_TYPE']]
         self.e_status.choices = [(i, i) for i in current_app.config['SERVER_STATUS']]
 
+    @staticmethod
     def validate_name(self, field):
-        if Idc.query.filter_by(name=field.data).first():
-            raise ValidationError('IdcName already in use.')
+        if Server.query.filter_by(name=field.data).first():
+            raise ValidationError('ServerName already in use.')

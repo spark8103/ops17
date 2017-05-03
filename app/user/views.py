@@ -50,7 +50,7 @@ def edit_profile():
         return redirect(url_for('user.edit_profile'))
     form.email.data = current_user.email
     form.mobile.data = current_user.mobile
-    form.department.data = current_user.department
+    form.department.data = current_user.department.id
     form.about_me.data = current_user.about_me
     return render_template('user/edit_profile.html', form=form)
 

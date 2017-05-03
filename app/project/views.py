@@ -4,87 +4,18 @@ from flask import render_template, redirect, request, url_for, flash, \
 from flask_login import login_required, current_user
 from . import project
 from .. import db, flash_errors
-from ..models import User, Department, Idc, Software, SoftwareSchema, Project, ProjectSchema, Module, ModuleSchema, \
+from ..models import User, Department, Software, Idc, Project, ProjectSchema, Module, ModuleSchema, \
     Environment, EnvironmentSchema
-from .forms import AddProjectForm, EditProjectForm, AddSoftwareForm, EditSoftwareForm, AddModuleForm, \
+from .forms import AddProjectForm, EditProjectForm,  AddModuleForm, \
     EditModuleForm, AddEnvironmentForm, EditEnvironmentForm
 
-software_schema = SoftwareSchema()
-softwares_schema = SoftwareSchema(many=True)
+
 project_schema = ProjectSchema()
 projects_schema = ProjectSchema(many=True)
 module_schema = ModuleSchema()
 modules_schema = ModuleSchema(many=True)
 environment_schema = EnvironmentSchema()
 environments_schema = EnvironmentSchema(many=True)
-
-
-@project.route('/software')
-@login_required
-def software():
-    add_software_form = AddSoftwareForm()
-    edit_software_form = EditSoftwareForm()
-    return render_template('project/software.html', add_software_form=add_software_form,
-                           edit_software_form=edit_software_form)
-
-
-@project.route('/software-list')
-@login_required
-def software_list():
-    softwares = Software.query.all()
-    if not softwares:
-        return jsonify({})
-    else:
-        # Serialize the queryset
-        result = softwares_schema.dump(softwares)
-        return jsonify(result.data)
-
-
-@project.route('/software-add', methods=['POST'])
-@login_required
-def software_add():
-    form = AddSoftwareForm(data=request.get_json())
-    if form.validate_on_submit():
-        software = Software(
-            name=form.name.data,
-            version=form.version.data
-        )
-        db.session.add(software)
-        db.session.commit()
-        flash('software: ' + request.form.get('name') + ' is add.')
-    else:
-        flash_errors(form)
-    return redirect(url_for('.software'))
-
-
-@project.route('/software-edit', methods=['POST'])
-@login_required
-def software_edit():
-    id = request.form.get('e_id')
-    software = Software.query.get_or_404(id)
-    form = EditSoftwareForm(id=id)
-    if form.validate_on_submit():
-        software.name = form.e_name.data
-        software.version = form.e_version.data
-        db.session.add(software)
-        flash('Software: ' + request.form.get('e_name') + ' is update.')
-    else:
-        flash_errors(form)
-    return redirect(url_for('.software'))
-
-
-@project.route('/software-del', methods=['POST'])
-@login_required
-def software_del():
-    id = request.form.get('id')
-    software = Software.query.filter_by(id=id).first()
-    if software is None:
-        flash('Non-existent software: ' + request.form.get('name'), 'error')
-    else:
-        db.session.delete(software)
-        db.session.commit()
-        flash('Software: ' + request.form.get('name') + ' is del.')
-    return redirect(url_for('.software'))
 
 
 @project.route('/')
