@@ -42,11 +42,12 @@
             <th data-field="state" data-checkbox="true"></th>
             <th data-field="id" data-sortable="true" data-switchable="false" data-visible="false">ID</th>
             <th data-field="name" data-sortable="true">Name</th>
+            <th data-field="category_branch" data-sortable="true">Category_Branch</th>
             <th data-field="idc.name" data-sortable="true">IDC</th>
             <th data-field="rack" data-sortable="true">Rack</th>
             <th data-field="private_ip" data-sortable="true">Private ip</th>
             <th data-field="public_ip" data-sortable="true">Public ip</th>
-            <th data-field="category" data-sortable="true">Category</th>
+            <th data-field="category" data-sortable="true" data-visible="false">Category</th>
             <th data-field="env" data-sortable="true">Env</th>
             <th data-field="type" data-sortable="true" data-visible="false">Type</th>
             <th data-field="status" data-sortable="true">status</th>
@@ -68,6 +69,7 @@
                 <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('cmdb.server_add') }}" method="POST">
                     {{ add_server_form.csrf_token }}
                     {{ render_field(add_server_form.name) }}
+                    {{ render_field(add_server_form.category_branch) }}
                     {{ render_field(add_server_form.idc) }}
                     {{ render_field(add_server_form.rack) }}
                     {{ render_field(add_server_form.private_ip) }}
@@ -105,6 +107,7 @@
                     {{ edit_server_form.csrf_token }}
                     {{ edit_server_form.e_id }}
                     {{ render_field(edit_server_form.e_name) }}
+                    {{ render_field(edit_server_form.e_category_branch) }}
                     {{ render_field(edit_server_form.e_idc) }}
                     {{ render_field(edit_server_form.e_rack) }}
                     {{ render_field(edit_server_form.e_private_ip) }}
@@ -201,6 +204,7 @@ window.actionEvents = {
     'click .edit': function (e, value, row, index) {
         $('#e_id').val(row.id);
         $('#e_name').val(row.name);
+        $('#e_category_branch').val(row.category_branch);
         $('#e_idc').val(row.idc.id);
         $('#e_rack').val(row.rack);
         $('#e_private_ip').val(row.private_ip);

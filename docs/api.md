@@ -1,5 +1,5 @@
 # api op
-
+开放api接口方便查询搜索使用。
 ------
 
 ## api token

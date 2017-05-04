@@ -9,9 +9,9 @@ softwares_schema = SoftwareSchema(many=True, only=('id', 'name', 'version'))
 idc_schema = IdcSchema(only=('id', 'name', 'description'))
 idcs_schema = IdcSchema(many=True, only=('id', 'name', 'description'))
 
-server_schema = ServerSchema(only=('id', 'name', 'idc', 'rack', 'private_ip', 'public_ip', 'category', 'env',
+server_schema = ServerSchema(only=('id', 'category_branch', 'name', 'idc', 'rack', 'private_ip', 'public_ip', 'category', 'env',
                                    'type', 'status', 'description'))
-servers_schema = ServerSchema(many=True, only=('id', 'name', 'idc', 'rack', 'private_ip', 'public_ip',
+servers_schema = ServerSchema(many=True, only=('id', 'category_branch', 'name', 'idc', 'rack', 'private_ip', 'public_ip',
                                                'category', 'env', 'type', 'status', 'description'))
 
 

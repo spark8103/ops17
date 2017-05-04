@@ -13,7 +13,7 @@
     <div class="table-responsive">
     </div>
 
-    <legend><small>文件必须是csv格式，字段： name,idc,rack,private_ip,public_ip,category,env,type,status,description </small></legend>
+    <legend><small>文件必须是csv格式，字段： name,category_branch,idc,rack,private_ip,public_ip,category,env,type,status,description </small></legend>
     <form class="form-horizontal" enctype="multipart/form-data" action="{{ url_for('cmdb.server_import') }}" method="POST">
         <div class="form-group">
             <label class="control-label col-sm-4">File</label>

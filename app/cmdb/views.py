@@ -212,6 +212,7 @@ def server_add():
             private_ip=form.private_ip.data,
             public_ip=form.private_ip.data,
             category=form.category.data,
+            category_branch=form.category_branch.data,
             env=form.env.data,
             type=form.type.data,
             status=form.status.data,
@@ -238,6 +239,7 @@ def server_edit():
         server.private_ip = form.e_private_ip.data
         server.public_ip = form.e_public_ip.data
         server.category = form.e_category.data
+        server.category_branch = form.e_category_branch.data
         server.env = form.e_env.data
         server.type = form.e_type.data
         server.status = form.e_status.data
@@ -284,6 +286,7 @@ def server_import():
                     server.private_ip = strip_tags(line["private_ip"])
                     server.public_ip = strip_tags(line["public_ip"])
                     server.category = strip_tags(line["category"])
+                    server.category_branch = strip_tags(line["category_branch"])
                     server.env = strip_tags(line["env"])
                     server.type = strip_tags(line["type"])
                     server.status = strip_tags(line["status"])

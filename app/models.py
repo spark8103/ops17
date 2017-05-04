@@ -228,7 +228,8 @@ class Server(db.Model):
     rack = db.Column(db.String(64))  # rack info
     private_ip = db.Column(db.String(128))  # private_ip
     public_ip = db.Column(db.String(128))  # public_ip
-    category = db.Column(db.String(128), index=True)  # 大数据 征信
+    category = db.Column(db.String(128), index=True)  # bigdata website
+    category_branch = db.Column(db.String(128), index=True)  # prd-nginx prd-app
     env = db.Column(db.String(64), index=True)  # prd stg dev qa
     type = db.Column(db.String(128))  # server vserver
     status = db.Column(db.String(128))  # 在线 备用 维修
@@ -333,6 +334,22 @@ class Environment(db.Model):
     def __repr__(self):
         return '<Environment %r>' % self.name
 
+
+class Deploy(db.Model):
+    __tablename__ = 'ops_deploys'
+    id = db.Column(db.Integer, primary_key=True)
+    module_id = db.Column(db.Integer, db.ForeignKey('ops_modules.id'))
+    parameter = db.Column(db.String(128))
+    ops_id = db.Column(db.Integer, db.ForeignKey('ops_users.id'))
+    create_time = db.Column(db.DateTime(), default=datetime.utcnow)
+    result = db.Column(db.Text())
+
+    module = db.relationship('Module', foreign_keys=[module_id])
+    ops = db.relationship('User', foreign_keys=[ops_id])
+
+    def __repr__(self):
+        return '<Deploy %r>' % self.name
+
 # SCHEMAS #####
 
 
@@ -375,6 +392,7 @@ class ServerSchema(Schema):
     private_ip = fields.Str()
     public_ip = fields.Str()
     category = fields.Str()
+    category_branch = fields.Str()
     env = fields.Str()
     type = fields.Str()
     status = fields.Str()
@@ -422,3 +440,12 @@ class EnvironmentSchema(Schema):
     server_ip = fields.Str()
     online_since = fields.Str('%Y-%m-%d %H:%M:%S')
     domain = fields.Str()
+
+
+class DeploySchema(Schema):
+    id = fields.Int(dump_only=True)
+    module = fields.Nested(ModuleSchema, only=["id", "name"])
+    parameter = fields.Str()
+    ops = fields.Nested(UserSchema, only=["id", "username"])
+    create_time = fields.Str('%Y-%m-%d %H:%M:%S')
+    result = fields.String()

@@ -45,28 +45,40 @@ def user_insert_data():
     users = {
         'admin': ('admin@example.com', 13465245521, Department.query.filter_by(name=u"管理中心").first(),
                   Role.query.filter_by(name="Administrator").first(), 'admin', True, "admin"),
+
         'ops1': ('ops1@example.com', 13764110236, Department.query.filter_by(name=u"运维部").first(),
                  Role.query.filter_by(name="User").first(), 'ops1', False, "ops"),
+
         'ops2': ('ops2@example.com', 13764110238, Department.query.filter_by(name=u"运维部").first(),
                  Role.query.filter_by(name="User").first(), 'ops2', False, "ops"),
+
         'dev1': ('dev1@example.com', 13612451124, Department.query.filter_by(name=u"开发部").first(),
                  Role.query.filter_by(name="User").first(), 'dev1', False, "dev"),
+
         'dev2': ('dev2@example.com', 13625412214, Department.query.filter_by(name=u"开发部").first(),
                  Role.query.filter_by(name="User").first(), 'dev2', False, "dev"),
+
         'qa1': ('qa1@example.com', 13112453365, Department.query.filter_by(name=u"测试部").first(),
                 Role.query.filter_by(name="User").first(), 'qa1', False, "qa"),
+
         'qa2': ('qa2@example.com', 13124556847, Department.query.filter_by(name=u"测试部").first(),
                 Role.query.filter_by(name="User").first(), 'qa2', False, "qa"),
+
         'dba1': ('dba1@example.com', 13321542635, Department.query.filter_by(name=u"DBA部").first(),
                  Role.query.filter_by(name="User").first(), 'dba1', False, "dba"),
+
         'dba2': ('dba2@example.com', 13214512245, Department.query.filter_by(name=u"DBA部").first(),
                  Role.query.filter_by(name="User").first(), 'dba2', False, "dba"),
+
         'user1': ('user1@example.com', 13412115694, Department.query.filter_by(name=u"活动部").first(),
                   Role.query.filter_by(name="User").first(), 'user1', False, "user"),
+
         'user2': ('user2@example.com', 13451489521, Department.query.filter_by(name=u"行政部").first(),
                   Role.query.filter_by(name="User").first(), 'user2', False, "user"),
+
         'user3': ('user3@example.com', 13465218952, Department.query.filter_by(name=u"营销中心").first(),
                   Role.query.filter_by(name="User").first(), 'user3', False, "manager"),
+
         'user4': ('user4@example.com', 13462548991, Department.query.filter_by(name=u"管理中心").first(),
                   Role.query.filter_by(name="User").first(), 'user4', False, "manager"),
     }
@@ -114,55 +126,67 @@ def idc_insert_data():
 def server_insert_data():
     servers = {
         u'zp-prd-app-10': (
-            Idc.query.filter_by(name=u"周浦").first(), "K1", '10.10.10.10', '', u'大数据', "PRD", "server",
-            u"Online", ""),
+            "zp-prd-app", Idc.query.filter_by(name=u"周浦").first(), "K1", '10.10.10.10', '', u'大数据', "PRD",
+            "server", "Online", ""),
+
         u'zp-prd-app-11': (
-            Idc.query.filter_by(name=u"周浦").first(), "K2", '10.10.10.11', '', u'大数据', "PRD", "server",
-            u"Online", ""),
+            "zp-prd-app", Idc.query.filter_by(name=u"周浦").first(), "K2", '10.10.10.11', '', u'大数据', "PRD",
+            "server", "Online", ""),
+
         u'oyl-stg-app-101': (
-            Idc.query.filter_by(name=u"欧阳路").first(), "R11", '10.18.23.101', '', u'网站部', "STG", "server",
-            u"Online", ""),
+            "oyl-stg-app", Idc.query.filter_by(name=u"欧阳路").first(), "R11", '10.18.23.101', '', u'网站部',
+            "STG", "server", "Online", ""),
+
         u'oyl-stg-app-102': (
-            Idc.query.filter_by(name=u"欧阳路").first(), "R11", '10.18.23.102', '', u'网站部', "STG", "server",
-            u"Online", ""),
+            "oyl-stg-app", Idc.query.filter_by(name=u"欧阳路").first(), "R11", '10.18.23.102', '', u'网站部',
+            "STG", "server", "Online", ""),
+
         u'dev-oracle-21': (
-            Idc.query.filter_by(name=u"北京南路").first(), "A01", '172.16.11.21', '', u'IT部', "DEV", "vserver",
-            u"Online", ""),
+            "dev-oracle", Idc.query.filter_by(name=u"北京南路").first(), "A01", '172.16.11.21', '', u'IT部',
+            "DEV", "vserver", "Online", ""),
+
         u'dev-oracle-22': (
-            Idc.query.filter_by(name=u"北京南路").first(), "A01", '172.16.11.22', '', u'IT据', "DEV", "vserver",
-            u"Online", ""),
+            "dev-oracle", Idc.query.filter_by(name=u"北京南路").first(), "A01", '172.16.11.22', '', u'IT据',
+            "DEV", "vserver", "Online", ""),
+
         u'px-prd-app-10': (
-            Idc.query.filter_by(name=u"万国数据中心").first(), "K1", '10.88.10.10', '', u'大数据', "PRD", "server",
-            u"Online", ""),
+            "px-prd-app", Idc.query.filter_by(name=u"万国数据中心").first(), "K1", '10.88.10.10', '', u'大数据',
+            "PRD", "server", "Online", ""),
+
         u'px-prd-app-11': (
-            Idc.query.filter_by(name=u"万国数据中心").first(), "K2", '10.88.10.11', '', u'大数据', "PRD", "server",
-            u"Online", ""),
+            "px-prd-app", Idc.query.filter_by(name=u"万国数据中心").first(), "K2", '10.88.10.11', '', u'大数据',
+            "PRD", "server", "Online", ""),
+
         u'uc-stg-app-101': (
-            Idc.query.filter_by(name=u"Ucloud").first(), "R11", '10.99.123.101', '', u'网站部', "STG", "server",
-            u"Online", ""),
+            "uc-stg-app", Idc.query.filter_by(name=u"Ucloud").first(), "R11", '10.99.123.101', '', u'网站部',
+            "STG", "server", "Online", ""),
+
         u'uc-stg-app-102': (
-            Idc.query.filter_by(name=u"Ucloud").first(), "R11", '10.99.123.102', '', u'网站部', "STG", "server",
-            u"Online", ""),
+            "uc-stg-app", Idc.query.filter_by(name=u"Ucloud").first(), "R11", '10.99.123.102', '', u'网站部',
+            "STG", "server", "Online", ""),
+
         u'wx-oracle-21': (
-            Idc.query.filter_by(name=u"无锡线路").first(), "A01", '172.16.11.21', '', u'IT部', "DEV", "vserver",
-            u"Online", ""),
+            "wx-oracle", Idc.query.filter_by(name=u"无锡线路").first(), "A01", '172.16.11.21', '', u'IT部',
+            "DEV", "vserver", "Online", ""),
+
         u'wx-oracle-22': (
-            Idc.query.filter_by(name=u"无锡线路").first(), "A01", '172.16.11.22', '', u'IT据', "DEV", "vserver",
-            u"Online", ""),
+            "wx-oracle", Idc.query.filter_by(name=u"无锡线路").first(), "A01", '172.16.11.22', '', u'IT据',
+            "DEV", "vserver", "Online", ""),
     }
     for s in servers:
         server = Server.query.filter_by(name=s).first()
         if server is None:
             server = Server(name=s)
-        server.idc = servers[s][0]
-        server.rack = servers[s][1]
-        server.private_ip = servers[s][2]
-        server.public_ip = servers[s][3]
-        server.category = servers[s][4]
-        server.env = servers[s][5]
-        server.type = servers[s][6]
-        server.status = servers[s][7]
-        server.description = servers[s][8]
+        server.category_branch = servers[s][0]
+        server.idc = servers[s][1]
+        server.rack = servers[s][2]
+        server.private_ip = servers[s][3]
+        server.public_ip = servers[s][4]
+        server.category = servers[s][5]
+        server.env = servers[s][6]
+        server.type = servers[s][7]
+        server.status = servers[s][8]
+        server.description = servers[s][9]
         db.session.add(server)
     db.session.commit()
     print "Insert server test data."
@@ -172,24 +196,34 @@ def project_insert_data():
     projects = {
         u'bd-blink': (Department.query.filter_by(name=u"管理中心").first(),
                              User.query.filter_by(username=u'user1').first(), '99999'),
+
         u'bd-tiger': (Department.query.filter_by(name=u"管理中心").first(),
                              User.query.filter_by(username=u'user2').first(), '99999'),
+
         u'bd-cmdb': (Department.query.filter_by(name=u"运维部").first(),
                              User.query.filter_by(username=u'ops1').first(), '999'),
+
         u'bd-bdmp': (Department.query.filter_by(name=u"运维部").first(),
                      User.query.filter_by(username=u'ops2').first(), '999'),
+
         u'bd-test': (Department.query.filter_by(name=u"开发部").first(),
                      User.query.filter_by(username=u'dev1').first(), '999'),
+
         u'bd-test2': (Department.query.filter_by(name=u"开发部").first(),
                      User.query.filter_by(username=u'dev2').first(), '999'),
+
         u'bd-test3': (Department.query.filter_by(name=u"开发部").first(),
                       User.query.filter_by(username=u'dev1').first(), '999'),
+
         u'bd-jenkins': (Department.query.filter_by(name=u"测试部").first(),
                      User.query.filter_by(username=u'qa1').first(), '999'),
+
         u'bd-qa': (Department.query.filter_by(name=u"测试部").first(),
                         User.query.filter_by(username=u'qa2').first(), '999'),
+
         u'bd-oracle': (Department.query.filter_by(name=u"DBA部").first(),
                         User.query.filter_by(username=u'dba1').first(), '999'),
+
         u'bd-mongodb': (Department.query.filter_by(name=u"DBA部").first(),
                        User.query.filter_by(username=u'dba2').first(), '999'),
     }

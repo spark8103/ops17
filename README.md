@@ -1,11 +1,13 @@
 # ops17
-
+ops17是运维管理平台，以flask+mysql为框架开发的。
 ------
 
 ## Link
+[design](/docs/design.md)
+
 [db-op](/docs/db.md)
 
-[design](/docs/design.md)
+[api-op](/docs/api.md)
 
 ## Init
 ### Install requirements
@@ -33,9 +35,3 @@ Software.insert_softwares()
 ```shell
 python manage.py runserver --threaded
 ```
-
-
-### api
-http://www.bradcypert.com/writing-a-restful-api-in-flask-sqlalchemy/
-
-https://blog.igevin.info/posts/flask-rest-serialize-deserialize/

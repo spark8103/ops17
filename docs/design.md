@@ -1,11 +1,9 @@
 # 简介
-ops是运维管理平台，以flask+mysql为框架开发的。
-
-flask链接：http://flask.pocoo.org/
+此系统为运维管理平台，以flask+mysql为基础框架开发的。
 
 
 # 设计思路
-以CMDB为基础，运用流行的管理工具puppet和ansible支撑整个运维平台。
+以CMDB为基础，运用流行的管理工具Ansible支撑整个运维平台。
 
 
 # 导航图
@@ -18,6 +16,10 @@ flask链接：http://flask.pocoo.org/
 |   |-- 服务器管理
 |   |
 |   |-- IDC管理
+|   |
+|   |-- 软件管理
+|   |
+|   |-- 服务器导入
 |
 |-- 项目管理
 |   |
@@ -26,8 +28,6 @@ flask链接：http://flask.pocoo.org/
 |   |-- 模块管理
 |   |
 |   |-- 环境管理
-|   |
-|   |-- 软件管理
 |
 |-- 配置管理
 |   |
