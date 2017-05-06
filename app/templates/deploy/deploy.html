@@ -3,188 +3,109 @@
 
 {% block title %}{{ config['SITENAME'] }} - Deploy Manager{% endblock %}
 
-{% block head %}
-{{ super() }}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-table-1.11.1/bootstrap-table.min.css') }}">
-{% endblock %}
-
 {% block page_content %}
+<div class="page-header">
     <h2>Deploy Manager</h2>
-    <div class="table-responsive">
-    </div>
+</div>
 
-    <div id="toolbar" class="btn-group">
-        <button type="button" class="btn btn-default" id="idc_add_button" title="Add">
-            <i class="glyphicon glyphicon-plus"></i>
-        </button>
-    </div>
+<div class="col-md-10">
+    <form action="{{ url_for('deploy.deploy_add') }}" method="POST">
+        <div class="row">
+          <div class="col-6">
+              <div class="form-group">
+                  <label class="control-label col-md-2" for="select_project">{{ add_deploy_form.project.label }}：</label>
+                  <div class="col-md-4">
+                      {{ add_deploy_form.project(class="form-control") }}
+                  </div>
+              </div>
+          </div>
 
-    <table id="ListTable"
-           data-toggle="table"
-           data-url="{{ url_for('cmdb.idc_list') }}"
-           data-query-params="queryParams"
-           data-pagination="true"
-           data-page-size=10
-           data-page-list="[10, 25, 50, All]"
-           data-search="true"
-           data-sort-name="id"
-           data-sort-order="asc"
-           data-show-refresh="true"
-           data-show-toggle="true"
-           data-show-columns="true"
-           data-show-export="true"
-           data-show-pagination-switch="true"
-           data-striped="true"
-           data-toolbar="#toolbar">
-        <thead>
-        <tr>
-            <th data-field="id" data-sortable="true" data-switchable="false" data-visible="false">ID</th>
-            <th data-field="name" data-sortable="true">Name</th>
-            <th data-field="description" data-sortable="true">description</th>
-            <th data-field="action" data-formatter="actionFormatter" data-events="actionEvents">Action</th>
-        </tr>
-        </thead>
-    </table>
+          <div class="col-6">
+                <div class="form-group">
+                  <label class="control-label col-md-2" for="select_module">{{ add_deploy_form.module.label }}：</label>
+                  <div class="col-md-4">
+                      {{ add_deploy_form.module(class="form-control") }}
+                  </div>
+              </div>
+          </div>
+        </div>
 
-<!-- Model idc_add -->
-<div class="modal fade" id="idc_add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">IDC Add</h4>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="deploy_dir">Select Deploy DIR:</label>
+                    <div class="col-md-4">
+                        <label class="checkbox-inline" for="apps">
+                            <input type="checkbox" name="deploy_dir" id="apps" value="apps">
+                            apps
+                        </label>
+
+                        <label class="checkbox-inline" for="config">
+                            <input type="checkbox" name="deploy_dir" id="config" value="config">
+                            config
+                        </label>
+
+                        <label class="checkbox-inline" for="lib">
+                            <input type="checkbox" name="deploy_dir" id="lib" value="lib">
+                            lib
+                        </label>
+                  </div>
+                </div>
             </div>
-            <div class="modal-body">
-                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('cmdb.idc_add') }}" method="POST">
-                    {{ add_idc_form.csrf_token }}
-                    {{ render_field(add_idc_form.name) }}
-                    {{ render_field(add_idc_form.description) }}
-                    <div class="form-group">
-                        <div class="col-sm-4">
-                        </div>
-                        <div class="col-sm-8">
-                            <button type="submit" class="btn btn-default">submit</button>&nbsp;&nbsp;&nbsp;&nbsp;
-                            <button type="reset" class="btn btn-default">reset</button>
-                        </div>
+
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="version">Input Version:</label>
+                    <div class="col-md-4">
+                        <input class="form-control input-md" id="version" name="version" type="text">
                     </div>
-                </form>
+                </div>
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal -->
-</div>
-<!-- Model idc_add -->
+        </div>
 
-<!-- Model idc_edit -->
-<div class="modal fade" id="idc_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">IDC Edit</h4>
+        <div class="form-group">
+            <div class="col-sm-4">
             </div>
-            <div class="modal-body">
-                <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('cmdb.idc_edit') }}" method="POST">
-                    {{ edit_idc_form.csrf_token }}
-                    {{ edit_idc_form.e_id }}
-                    {{ render_field(edit_idc_form.e_name) }}
-                    {{ render_field(edit_idc_form.e_description) }}
-                    <div class="form-group">
-                        <div class="col-sm-4">
-                        </div>
-                        <div class="col-sm-8">
-                            <button type="submit" class="btn btn-default">submit</button>
-                        </div>
-                    </div>
-                </form>
+            <div class="col-sm-8">
+                <button type="submit" class="btn btn-primary">submit</button>&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="reset" class="btn btn-default">reset</button>
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal -->
+        </div>
+    </form>
 </div>
-<!-- Model idc_edit -->
 
-<!-- Model idc_del -->
-<div class="modal fade" id="idc_del" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">IDC Del</h4>
-            </div>
-            <div class="modal-body">
-                    <form class="form-horizontal" data-async data-target="#rating-modal" action="{{ url_for('cmdb.idc_del') }}" method="POST">
-                        <input id="idc_del_id" name="id" type="hidden" value="">
-                        <input id="idc_del_name" name="name" type="hidden" value="">
-                        <div class="form-group">
-                            <label class="control-label col-sm-offset-1" id="idc_del_label">Are you sure?</label>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-offset-8 col-sm-10">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                        </div>
-                    </form>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal -->
+<div class="col-md-12">
+    <hr />
 </div>
-<!-- Model idc_del -->
+
+<div class="col-md-12">
+    <div class="panel panel-success">
+        <div class="panel-heading">Result</div>
+        <div class="panel-body">
+            <p id="result"></p>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('static', filename='bootstrap-table-1.11.1/bootstrap-table.min.js') }}"></script>
-<script src="{{ url_for('static', filename='bootstrap-table-1.11.1/locale/bootstrap-table-zh-CN.min.js') }}"></script>
 <script>
-$(function () {
-    $('#ListTable').bootstrapTable({
+$(function() {
+    $('#project').change(function() {
+        if($(this).val() == 0){
+            url = "{{ url_for('project.module_list') }}"
+        }else{
+            url = "{{ url_for('project.module_list') }}" + "?project_id=" +  $(this).val()
+        }
+        $.get(url, function(result){
+            jQuery("#module").empty(); //clean select option
+            for(var item in result){
+                jQuery("#module").append("<option value=" + result[item].id + ">" + result[item].name + "</option>");
+            }
+        });
     });
 });
-
-$(function () {
-    $("button#idc_add_button").click(function(){
-        $('#idc_add').modal('show');
-    });
-})
-
-function queryParams() {
-    return {
-        type: 'owner',
-        sort: 'updated',
-        direction: 'desc',
-        per_page: 100,
-        page: 1
-    };
-}
-
-function actionFormatter(value, row, index) {
-    return [
-        '<a class="edit ml10" href="javascript:void(0)" title="Edit">',
-        '<i class="glyphicon glyphicon-edit"></i>',
-        '</a>',
-        '<a class="remove ml10" href="javascript:void(0)" title="Remove">',
-        '<i class="glyphicon glyphicon-remove"></i>',
-        '</a>'
-    ].join('');
-}
-
-window.actionEvents = {
-    'click .edit': function (e, value, row, index) {
-        $('#e_id').val(row.id);
-        $('#e_name').val(row.name);
-        $('#e_description').val(row.description);
-        $('#idc_edit').modal('show');
-        //alert('You click edit icon, row: ' + $('#e_name').val(row.name););
-        //console.log(value, row, index);
-    },
-    'click .remove': function (e, value, row, index) {
-        document.getElementById('idc_del_label').innerHTML = 'Delete <font color=blue>' + row.name + "</font>, are you sure?";
-        $('#idc_del_id').val(row.id);
-        $('#idc_del_name').val(row.name);
-        $('#idc_del').modal('show');
-        //alert('You click remove icon, row: ' + JSON.stringify(row));
-        //console.log(value, row, index);
-    }
-};
 </script>
 {% endblock %}

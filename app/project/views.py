@@ -106,6 +106,8 @@ def module_main():
 def module_list():
     if request.args.get('project'):
         modules = Module.query.filter_by(project=Project.query.filter_by(name=request.args.get('project')).first())
+    elif request.args.get('project_id'):
+        modules = Module.query.filter_by(project=Project.query.filter_by(id=request.args.get('project_id')).first())
     else:
         modules = Module.query.all()
     if not modules:

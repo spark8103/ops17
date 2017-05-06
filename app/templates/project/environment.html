@@ -42,13 +42,13 @@
             <th data-field="module.name" data-sortable="true">Module</th>
             <th data-field="env" data-sortable="true">ENV</th>
             <th data-field="idc.name" data-sortable="true">IDC</th>
-            <th data-field="server_ip" data-sortable="true">Server_IP</th>
-            <th data-field="deploy_path" data-sortable="true">Deploy_Path</th>
-            <th data-field="check_point1" data-sortable="true">Check_Point1</th>
-            <th data-field="check_point2" data-sortable="true">Check_Point2</th>
-            <th data-field="check_point3" data-sortable="true">check_point3</th>
-            <th data-field="online_since" data-sortable="true" data-visible="false">Online_Since</th>
-            <th data-field="domain" data-sortable="true">Domain</th>
+            <th data-field="server_ip">Server_IP</th>
+            <th data-field="deploy_path">Deploy_Path</th>
+            <th data-field="check_point1" data-visible="false">Check_Point1</th>
+            <th data-field="check_point2" data-visible="false">Check_Point2</th>
+            <th data-field="check_point3" data-visible="false">check_point3</th>
+            <th data-field="online_since" data-visible="false">Online_Since</th>
+            <th data-field="domain" data-visible="false">Domain</th>
             <th data-field="action" data-formatter="actionFormatter" data-events="actionEvents">Action</th>
         </tr>
         </thead>
@@ -56,7 +56,7 @@
 
 <!-- Model environment_add -->
 <div class="modal fade" id="environment_add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -75,9 +75,8 @@
                     {{ render_field(add_environment_form.server_ip) }}
 <div class="form-group">
     <label class="control-label col-sm-4">{{ add_environment_form.online_since.label }}：</label>
-    <div class="input-group col-sm-6">
+    <div class="col-sm-6">
         {{ add_environment_form.online_since(class="form-control dtpick") }}
-        <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
         {% for error in add_environment_form.online_since.errors %}
             <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
@@ -88,8 +87,8 @@
                         <div class="col-sm-4">
                         </div>
                         <div class="col-sm-8">
-                            <button type="submit" class="btn btn-default">submit</button>&nbsp;&nbsp;&nbsp;&nbsp;
-                            <button type="reset" class="btn btn-default">reset</button>
+                            <button type="submit" class="btn btn-primary">submit</button>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="reset" class="btn btn-danger">reset</button>
                         </div>
                     </div>
                 </form>
@@ -101,7 +100,7 @@
 
 <!-- Model environment_edit -->
 <div class="modal fade" id="environment_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -121,9 +120,8 @@
                     {{ render_field(edit_environment_form.e_server_ip) }}
 <div class="form-group">
     <label class="control-label col-sm-4">{{ edit_environment_form.e_online_since.label }}：</label>
-    <div class="input-group col-sm-6">
+    <div class="col-sm-6">
         {{ edit_environment_form.e_online_since(class="form-control dtpick") }}
-        <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
         {% for error in edit_environment_form.e_online_since.errors %}
             <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
@@ -134,7 +132,7 @@
                         <div class="col-sm-4">
                         </div>
                         <div class="col-sm-8">
-                            <button type="submit" class="btn btn-default">submit</button>
+                            <button type="submit" class="btn btn-primary">submit</button>
                         </div>
                     </div>
                 </form>

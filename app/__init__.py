@@ -55,6 +55,9 @@ def create_app(config_name):
     from .project import project as project_blueprint
     app.register_blueprint(project_blueprint, url_prefix='/project')
 
+    from .deploy import deploy as deploy_blueprint
+    app.register_blueprint(deploy_blueprint, url_prefix='/deploy')
+
     from .api_1_0 import api as api_1_0_blueprint
     app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
 

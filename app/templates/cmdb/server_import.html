@@ -16,16 +16,16 @@
     <legend><small>文件必须是csv格式，字段： name,category_branch,idc,rack,private_ip,public_ip,category,env,type,status,description </small></legend>
     <form class="form-horizontal" enctype="multipart/form-data" action="{{ url_for('cmdb.server_import') }}" method="POST">
         <div class="form-group">
-            <label class="control-label col-sm-4">File</label>
+            <label class="control-label col-sm-4" for="file">请选择CSV文件</label>
           <div class="input-group col-sm-6">
-                <input type="file" name="file" placeholder="file" class="form-control" required="true">
+                <input id="file" type="file" name="file" class="input-file" required="true">
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-4">
+            <div class="col-md-4">
             </div>
-            <div class="col-sm-8">
-                <button type="submit" class="btn btn-default">Upload</button>&nbsp;&nbsp;&nbsp;&nbsp;
+            <div class="col-md-8">
+                <button type="submit" class="btn btn-primary">Upload</button>&nbsp;&nbsp;&nbsp;&nbsp;
                 <button type="reset" class="btn btn-default">reset</button>
             </div>
         </div>
