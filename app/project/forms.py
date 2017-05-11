@@ -2,24 +2,24 @@
 from flask import current_app
 from flask_wtf import FlaskForm
 from wtforms import HiddenField, StringField, TextAreaField, SelectField, DateTimeField
-from wtforms.validators import Required, Length, Email, Regexp, EqualTo, DataRequired, IPAddress
+from wtforms.validators import InputRequired, Length, Email, Regexp, EqualTo, DataRequired, IPAddress
 from wtforms import ValidationError
 from ..models import User, Department, Idc, Software, Project, Module, Environment
 
 
 class AddProjectForm(FlaskForm):
-    name = StringField('Name', validators=[Required()])
+    name = StringField('Name', validators=[InputRequired()])
     department = SelectField('Department', coerce=int)
-    pm = SelectField('ProjectManager', coerce=int, default=2)
+    pm = SelectField('ProjectManager', coerce=int)
     sla = SelectField('SLA', coerce=str)
     check_point = StringField('CheckPoint')
     description = TextAreaField('Description')
 
     def __init__(self, *args, **kwargs):
         super(AddProjectForm, self).__init__(*args, **kwargs)
-        self.pm.choices = [(pm.id, pm.username)
+        self.pm.choices = [(0, 'Choose...')] + [(pm.id, pm.username)
                              for pm in User.query.order_by(User.username).all()]
-        self.department.choices = [(department.id, department.name)
+        self.department.choices = [(0, 'Choose...')] + [(department.id, department.name)
                                    for department in Department.query.order_by(Department.name).all()]
         self.sla.choices = [(i, i) for i in current_app.config['SLA']]
 
@@ -30,10 +30,10 @@ class AddProjectForm(FlaskForm):
 
 
 class EditProjectForm(FlaskForm):
-    e_id = HiddenField('ID', validators=[Required()])
-    e_name = StringField('Name', validators=[Required()])
+    e_id = HiddenField('ID', validators=[InputRequired()])
+    e_name = StringField('Name', validators=[InputRequired()])
     e_department = SelectField('Department', coerce=int)
-    e_pm = SelectField('ProjectManager', coerce=int, default=2)
+    e_pm = SelectField('ProjectManager', coerce=int)
     e_sla = SelectField('SLA', coerce=str)
     e_check_point = StringField('CheckPoint')
     e_description = TextAreaField('Description')
@@ -53,8 +53,8 @@ class EditProjectForm(FlaskForm):
 
 
 class AddModuleForm(FlaskForm):
-    name = StringField('Name', validators=[Required()])
-    project = SelectField('Project', coerce=int, validators=[Required()])
+    name = StringField('Name', validators=[InputRequired()])
+    project = SelectField('Project', coerce=int, validators=[InputRequired()])
     svn = StringField('SVN')
     parent = SelectField('PerModule', coerce=int, default=0)
     dev = SelectField('DEV', coerce=int)
@@ -65,7 +65,7 @@ class AddModuleForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(AddModuleForm, self).__init__(*args, **kwargs)
-        self.project.choices = [(project.id, project.name)
+        self.project.choices = [(0, 'Choose...')] + [(project.id, project.name)
                             for project in Project.query.order_by(Project.name).all()]
         self.parent.choices = [(0, 'None')] + [(parent.id, parent.name)
                             for parent in Module.query.order_by(Module.name).all()]
@@ -75,7 +75,7 @@ class AddModuleForm(FlaskForm):
                             for qa in User.query.filter_by(type="qa").order_by(User.username).all()]
         self.ops.choices = [(0, 'None')] + [(ops.id, ops.username)
                             for ops in User.query.filter_by(type="ops").order_by(User.username).all()]
-        self.software.choices = [(software.id, software.version)
+        self.software.choices = [(0, 'Choose...')] + [(software.id, software.version)
                             for software in Software.query.order_by(Software.version).all()]
 
     @staticmethod
@@ -85,9 +85,9 @@ class AddModuleForm(FlaskForm):
 
 
 class EditModuleForm(FlaskForm):
-    e_id = HiddenField('ID', validators=[Required()])
-    e_name = StringField('Name', validators=[Required()])
-    e_project = SelectField('Project', coerce=int, validators=[Required()])
+    e_id = HiddenField('ID', validators=[InputRequired()])
+    e_name = StringField('Name', validators=[InputRequired()])
+    e_project = SelectField('Project', coerce=int, validators=[InputRequired()])
     e_svn = StringField('SVN')
     e_parent = SelectField('PerModule', coerce=int)
     e_dev = SelectField('DEV', coerce=int)
@@ -118,7 +118,7 @@ class EditModuleForm(FlaskForm):
 
 
 class AddEnvironmentForm(FlaskForm):
-    module = SelectField('Module', coerce=int, validators=[Required()])
+    module = SelectField('Module', coerce=int, validators=[InputRequired()])
     idc = SelectField('IDC', coerce=int)
     env = SelectField('ENV', coerce=str)
     check_point1 = StringField('Check_Point1')
@@ -131,9 +131,9 @@ class AddEnvironmentForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(AddEnvironmentForm, self).__init__(*args, **kwargs)
-        self.module.choices = [(module.id, module.name)
+        self.module.choices = [(0, 'Choose...')] + [(module.id, module.name)
                             for module in Module.query.order_by(Module.name).all()]
-        self.idc.choices = [(idc.id, idc.name)
+        self.idc.choices = [(0, 'Choose...')] + [(idc.id, idc.name)
                                    for idc in Idc.query.order_by(Idc.name).all()]
         self.env.choices = [(i, i) for i in current_app.config['ENVIRONMENT']]
 
@@ -144,8 +144,8 @@ class AddEnvironmentForm(FlaskForm):
 
 
 class EditEnvironmentForm(FlaskForm):
-    e_id = HiddenField('ID', validators=[Required()])
-    e_module = SelectField('Module', coerce=int, validators=[Required()])
+    e_id = HiddenField('ID', validators=[InputRequired()])
+    e_module = SelectField('Module', coerce=int, validators=[InputRequired()])
     e_idc = SelectField('IDC', coerce=int)
     e_env = SelectField('ENV', coerce=str)
     e_check_point1 = StringField('Check_Point1')

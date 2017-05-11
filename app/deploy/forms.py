@@ -2,17 +2,17 @@
 from flask import current_app
 from flask_wtf import FlaskForm
 from wtforms import HiddenField, StringField, TextAreaField, SelectField
-from wtforms.validators import Required
+from wtforms.validators import InputRequired
 from wtforms import ValidationError
 from ..models import User, Project, Module, Deploy
 
 
 class AddDeployForm(FlaskForm):
     project = SelectField('Project', coerce=int)
-    module = SelectField('Module', coerce=int, validators=[Required()])
-    parameter = StringField('Parameter', validators=[Required()])
-    ops = SelectField('Ops', coerce=int, validators=[Required()])
-    result = TextAreaField('Parameter', validators=[Required()])
+    module = SelectField('Module', coerce=int, validators=[InputRequired()])
+    parameter = StringField('Parameter', validators=[InputRequired()])
+    ops = SelectField('Ops', coerce=int, validators=[InputRequired()])
+    result = TextAreaField('Parameter', validators=[InputRequired()])
 
     def __init__(self, *args, **kwargs):
         super(AddDeployForm, self).__init__(*args, **kwargs)

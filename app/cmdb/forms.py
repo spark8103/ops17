@@ -2,13 +2,13 @@
 from flask import current_app
 from flask_wtf import FlaskForm
 from wtforms import HiddenField, StringField, TextAreaField, SelectField
-from wtforms.validators import Required
+from wtforms.validators import InputRequired
 from wtforms import ValidationError
 from ..models import Software, Idc, Server
 
 
 class AddSoftwareForm(FlaskForm):
-    name = StringField('Name', validators=[Required()])
+    name = StringField('Name', validators=[InputRequired()])
     version = StringField('Version')
 
     @staticmethod
@@ -18,8 +18,8 @@ class AddSoftwareForm(FlaskForm):
 
 
 class EditSoftwareForm(FlaskForm):
-    e_id = HiddenField('ID', validators=[Required()])
-    e_name = StringField('Name', validators=[Required()])
+    e_id = HiddenField('ID', validators=[InputRequired()])
+    e_name = StringField('Name', validators=[InputRequired()])
     e_version = StringField('Version')
 
     @staticmethod
@@ -29,7 +29,7 @@ class EditSoftwareForm(FlaskForm):
 
 
 class AddIdcForm(FlaskForm):
-    name = StringField('Name', validators=[Required()])
+    name = StringField('Name', validators=[InputRequired()])
     description = TextAreaField('Description')
 
     @staticmethod
@@ -39,8 +39,8 @@ class AddIdcForm(FlaskForm):
 
 
 class EditIdcForm(FlaskForm):
-    e_id = HiddenField('ID', validators=[Required()])
-    e_name = StringField('Name', validators=[Required()])
+    e_id = HiddenField('ID', validators=[InputRequired()])
+    e_name = StringField('Name', validators=[InputRequired()])
     e_description = TextAreaField('Description')
 
     @staticmethod
@@ -50,7 +50,7 @@ class EditIdcForm(FlaskForm):
 
 
 class AddServerForm(FlaskForm):
-    name = StringField('Name', validators=[Required()])
+    name = StringField('Name', validators=[InputRequired()])
     idc = SelectField('IDC', coerce=int)
     rack = StringField('Rack')
     private_ip = StringField('Private_ip')
@@ -64,7 +64,7 @@ class AddServerForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(AddServerForm, self).__init__(*args, **kwargs)
-        self.idc.choices = [(idc.id, idc.name)
+        self.idc.choices = [(0, 'Choose...')] + [(idc.id, idc.name)
                             for idc in Idc.query.order_by(Idc.name).all()]
         self.env.choices = [(i, i) for i in current_app.config['ENVIRONMENT']]
         self.type.choices = [(i, i) for i in current_app.config['SERVER_TYPE']]
@@ -77,8 +77,8 @@ class AddServerForm(FlaskForm):
 
 
 class EditServerForm(FlaskForm):
-    e_id = HiddenField('ID', validators=[Required()])
-    e_name = StringField('Name', validators=[Required()])
+    e_id = HiddenField('ID', validators=[InputRequired()])
+    e_name = StringField('Name', validators=[InputRequired()])
     e_idc = SelectField('IDC', coerce=int)
     e_rack = StringField('Rack')
     e_private_ip = StringField('Private_ip')

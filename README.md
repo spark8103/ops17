@@ -21,7 +21,7 @@ python manage.py db migrate
 python manage.py db upgrade
 
 ### init db
-python manage.py init_db
+python manage.py init_db   #add test db
 
 ```shell
 python manage.py shell   
@@ -30,6 +30,9 @@ from app import models
 Role.insert_roles()
 Software.insert_softwares()
 ```
+
+### clean db
+python manage.py drop_db   #del all db
 
 ### Run Server
 ```shell

@@ -74,11 +74,11 @@ class AddUserAdminForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(AddUserAdminForm, self).__init__(*args, **kwargs)
-        self.department.choices = [(department.id, department.name)
+        self.department.choices = [(0, 'Choose...')] + [(department.id, department.name)
                                    for department in Department.query.order_by(Department.name).all()]
         self.role.choices = [(role.id, role.name)
                              for role in Role.query.order_by(Role.name).all()]
-        self.type.choices = [(i, i) for i in current_app.config['USER_TYPE']]
+        self.type.choices = [(None, 'None')] + [(i, i) for i in current_app.config['USER_TYPE']]
 
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():
