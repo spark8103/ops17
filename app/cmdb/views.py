@@ -303,3 +303,15 @@ def server_import():
     else:
         data = ''
     return render_template('cmdb/server_import.html', data=data)
+
+
+@cmdb.route('/category_branch-list')
+@login_required
+def category_branch_list():
+    category_branch = Server.query.with_entities(Server.category_branch).group_by(Server.category_branch).all()
+    if not category_branch:
+        return jsonify({})
+    else:
+        # Serialize the queryset
+        result = [i[0] for i in category_branch]
+        return jsonify(result)

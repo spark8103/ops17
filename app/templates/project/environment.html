@@ -170,6 +170,57 @@
 </div>
 <!-- Model environment_del -->
 
+<!-- Model server_ip_add -->
+<div class="modal fade" id="server_ip_add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Server ip Add</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="form-group row">
+                        <div class="col-4">
+                            <label class="mr-sm-2" for="category_branch_select">Select category：</label>
+                            <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="category_branch_select">
+                                <option selected>Open this select menu</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+
+                        <div class="col-4">
+                            <label class="mr-sm-2" for="server_ip_select">Select server_ip：</label>
+                            <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="server_ip_select">
+                                <option selected>Open this select menu</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-info">Add</button>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="form-group row">
+                        <p>Add's server_ip:</p>
+                    </div>
+                    <div id="server_ip_add"></div>
+                    <br/>
+                    <div class="col-sm-8">
+                        <button type="submit" class="btn btn-primary">submit</button>
+                    </div>
+                    <br/>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- Model environment_del -->
+
 {% endblock %}
 
 {% block scripts %}
@@ -251,5 +302,45 @@ window.actionEvents = {
     }
 };
 
+$(function () {
+    $("#server_ip").click(function(){
+        $('#server_ip_add').modal('show');
+        var $result = $('#category_branch_select');
+        $.ajax({
+            url: "{{ url_for('cmdb.category_branch_list') }}",
+            data: "",
+            type: "GET",
+            dataType:"json"
+        }).done(function(data){
+            if(!data.r){
+                alert(data);
+            }else{
+                alert(data);
+            }
+        })
+    });
+    $("#category_branch_select").change(function(){
+        //var data = new FormData();
+        //data.append("username", $username);
+        var url = "{{ url_for('cmdb.category_branch_list') }}";
+        var method = "GET";
+        fetch(url,{
+            method: method,
+            body: ""
+        }).then(function(response){
+            return response.json();
+        }).then(function(data){
+            if(!data.r){
+                alert(data.rs);
+            }else{
+                alert(data.error);
+            }
+        })
+
+    });
+    $("#server_ip_select").change(function(){
+        alert("aa");
+    });
+});
 </script>
 {% endblock %}
