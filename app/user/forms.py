@@ -2,41 +2,41 @@
 from flask import current_app
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField, FloatField, HiddenField
-from wtforms.validators import Required, Length, Email, Regexp, EqualTo
+from wtforms.validators import InputRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
 from ..models import User, Department, Role
 
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[Required(), Length(1, 64),
+    username = StringField('Username', validators=[InputRequired(), Length(1, 64),
                                             Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                                                    'Usernames must have only letters, '
                                                    'numbers, dots or underscores')])
-    password = PasswordField('Password', validators=[Required()])
+    password = PasswordField('Password', validators=[InputRequired()])
     remember_me = BooleanField('Keep me logged in')
     submit = SubmitField('Log In')
 
 
 class ChangePasswordForm(FlaskForm):
-    old_password = PasswordField('Old password', validators=[Required()])
+    old_password = PasswordField('Old password', validators=[InputRequired()])
     password = PasswordField('New password', validators=[
-        Required(), EqualTo('password2', message='Passwords must match')])
-    password2 = PasswordField('Confirm new password', validators=[Required()])
+        InputRequired(), EqualTo('password2', message='Passwords must match')])
+    password2 = PasswordField('Confirm new password', validators=[InputRequired()])
     submit = SubmitField('Update Password')
 
 
 class PasswordResetRequestForm(FlaskForm):
-    email = StringField('Email', validators=[Required(), Length(1, 64),
+    email = StringField('Email', validators=[InputRequired(), Length(1, 64),
                                              Email()])
     submit = SubmitField('Reset Password')
 
 
 class PasswordResetForm(FlaskForm):
-    email = StringField('Email', validators=[Required(), Length(1, 64),
+    email = StringField('Email', validators=[InputRequired(), Length(1, 64),
                                              Email()])
     password = PasswordField('New Password', validators=[
-        Required(), EqualTo('password2', message='Passwords must match')])
-    password2 = PasswordField('Confirm password', validators=[Required()])
+        InputRequired(), EqualTo('password2', message='Passwords must match')])
+    password2 = PasswordField('Confirm password', validators=[InputRequired()])
     submit = SubmitField('Reset Password')
 
     def validate_email(self, field):
@@ -45,9 +45,9 @@ class PasswordResetForm(FlaskForm):
 
 
 class EditProfileForm(FlaskForm):
-    email = StringField('New Email', validators=[Required(), Length(1, 64),
+    email = StringField('New Email', validators=[InputRequired(), Length(1, 64),
                                                  Email()])
-    mobile = FloatField("New Mobile", validators=[Required()])
+    mobile = FloatField("New Mobile", validators=[InputRequired()])
     department = SelectField('Department', coerce=int)
     about_me = TextAreaField('About me')
     submit = SubmitField('Submit')
@@ -60,17 +60,17 @@ class EditProfileForm(FlaskForm):
 
 class AddUserAdminForm(FlaskForm):
     username = StringField('Username', validators=[
-        Required(), Length(3, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+        InputRequired(), Length(3, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                                           'Usernames must have only letters, '
                                           'numbers, dots or underscores')])
-    email = StringField('Email', validators=[Required(), Length(1, 64),
+    email = StringField('Email', validators=[InputRequired(), Length(1, 64),
                                                  Email()])
-    mobile = FloatField("Mobile", validators=[Required()])
+    mobile = FloatField("Mobile", validators=[InputRequired()])
     department = SelectField('Department', coerce=int)
     role = SelectField('Role', coerce=int, default=2)
     allow_login = SelectField('Allow_login', choices=[("True", "True"),('False','False')], default="False")
     type = SelectField('Type', coerce=str)
-    password = PasswordField('Password', validators=[Required()])
+    password = PasswordField('Password', validators=[InputRequired()])
 
     def __init__(self, *args, **kwargs):
         super(AddUserAdminForm, self).__init__(*args, **kwargs)
@@ -86,14 +86,14 @@ class AddUserAdminForm(FlaskForm):
 
 
 class EditUserAdminForm(FlaskForm):
-    e_id = HiddenField('ID', validators=[Required()])
+    e_id = HiddenField('ID', validators=[InputRequired()])
     e_username = StringField('Username', validators=[
-        Required(), Length(3, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+        InputRequired(), Length(3, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                                           'Usernames must have only letters, '
                                           'numbers, dots or underscores')])
-    e_email = StringField('Email', validators=[Required(), Length(1, 64),
+    e_email = StringField('Email', validators=[InputRequired(), Length(1, 64),
                                                  Email()])
-    e_mobile = FloatField("Mobile", validators=[Required()])
+    e_mobile = FloatField("Mobile", validators=[InputRequired()])
     e_department = SelectField('Department', coerce=int)
     e_role = SelectField('Role', coerce=int)
     e_allow_login = SelectField('Allow_login', choices=[("True", "True"),('False','False')])
@@ -114,7 +114,7 @@ class EditUserAdminForm(FlaskForm):
 
 
 class AddDepartmentForm(FlaskForm):
-    name = StringField('Name', validators=[Required()])
+    name = StringField('Name', validators=[InputRequired()])
     parent = SelectField('PerDepartment', coerce=int, default=0)
     description = TextAreaField('Description')
 
@@ -129,8 +129,8 @@ class AddDepartmentForm(FlaskForm):
 
 
 class EditDepartmentForm(FlaskForm):
-    e_id = HiddenField('ID', validators=[Required()])
-    e_name = StringField('Name', validators=[Required()])
+    e_id = HiddenField('ID', validators=[InputRequired()])
+    e_name = StringField('Name', validators=[InputRequired()])
     e_parent = SelectField('PerDepartment', coerce=int)
     e_description = TextAreaField('Description')
 
