@@ -171,12 +171,12 @@
 <!-- Model environment_del -->
 
 <!-- Model server_ip_add -->
-<div class="modal fade" id="server_ip_add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="server_ip_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Server ip Add</h4>
+                <h4 class="modal-title">server_ip Add</h4>
             </div>
             <div class="modal-body">
                 <div class="container">
@@ -184,36 +184,28 @@
                         <div class="col-4">
                             <label class="mr-sm-2" for="category_branch_select">Select category：</label>
                             <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="category_branch_select">
-                                <option selected>Open this select menu</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
                             </select>
                         </div>
 
                         <div class="col-4">
                             <label class="mr-sm-2" for="server_ip_select">Select server_ip：</label>
                             <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="server_ip_select">
-                                <option selected>Open this select menu</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-info">Add</button>
+                        <button id="server_ip_button_add" type="submit" class="btn btn-info">Add</button>
                     </div>
                 </div>
 
                 <div class="container">
-                    <div class="form-group row">
+                    <div class="form-group">
                         <p>Add's server_ip:</p>
+                        <div id="server_ip_pool"></div>
+                        <br/>
+                        <div class="col-sm-8">
+                            <button id="server_ip_button_submit" type="submit" class="btn btn-primary">submit</button>
+                        </div>
+                        <br/>
                     </div>
-                    <div id="server_ip_add"></div>
-                    <br/>
-                    <div class="col-sm-8">
-                        <button type="submit" class="btn btn-primary">submit</button>
-                    </div>
-                    <br/>
                 </div>
             </div>
         </div><!-- /.modal-content -->
@@ -228,6 +220,10 @@
 <script src="{{ url_for('static', filename='bootstrap-table-1.11.1/bootstrap-table.min.js') }}"></script>
 <script src="{{ url_for('static', filename='bootstrap-table-1.11.1/locale/bootstrap-table-zh-CN.min.js') }}"></script>
 <script>
+var rm_level = function(e) {
+    $(e).parent().remove();
+};
+
 $(function () {
     $('#ListTable').bootstrapTable({
     });
@@ -304,42 +300,75 @@ window.actionEvents = {
 
 $(function () {
     $("#server_ip").click(function(){
-        $('#server_ip_add').modal('show');
+        $('#server_ip_modal').modal('show');
         var $result = $('#category_branch_select');
+
         $.ajax({
             url: "{{ url_for('cmdb.category_branch_list') }}",
             data: "",
             type: "GET",
             dataType:"json"
         }).done(function(data){
-            if(!data.r){
-                alert(data);
-            }else{
-                alert(data);
-            }
-        })
+            $('#category_branch_select').empty();
+            $('#category_branch_select').append("<option selected>Choose...</option>");
+            $('#server_ip_select').empty();
+            $('#server_ip_select').append("<option selected>Choose...</option>");
+            for( i in data) {
+                $('#category_branch_select').append("<option value=\"" + data[i] + "\">" + data[i] + "</option>");
+            };
+        });
     });
-    $("#category_branch_select").change(function(){
-        //var data = new FormData();
-        //data.append("username", $username);
-        var url = "{{ url_for('cmdb.category_branch_list') }}";
-        var method = "GET";
-        fetch(url,{
-            method: method,
-            body: ""
-        }).then(function(response){
-            return response.json();
-        }).then(function(data){
-            if(!data.r){
-                alert(data.rs);
-            }else{
-                alert(data.error);
-            }
-        })
 
+    $("#e_server_ip").click(function(){
+        $('#server_ip_modal').modal('show');
+        var $result = $('#category_branch_select');
+
+        $.ajax({
+            url: "{{ url_for('cmdb.category_branch_list') }}",
+            data: "",
+            type: "GET",
+            dataType:"json"
+        }).done(function(data){
+            $('#category_branch_select').empty();
+            $('#category_branch_select').append("<option selected>Choose...</option>");
+            $('#server_ip_select').empty();
+            $('#server_ip_select').append("<option selected>Choose...</option>");
+            for( i in data) {
+                $('#category_branch_select').append("<option value=\"" + data[i] + "\">" + data[i] + "</option>");
+            };
+        });
     });
-    $("#server_ip_select").change(function(){
-        alert("aa");
+
+    $("#category_branch_select").change(function(){
+        $.ajax({
+            url: "{{ url_for('cmdb.server_list') }}",
+            data: "category_branch=" + $('#category_branch_select').val(),
+            type: "GET",
+            dataType:"json"
+        }).done(function(data){
+            $('#server_ip_select').empty();
+            $('#server_ip_select').append("<option selected>Choose...</option>");
+            for( i in data) {
+                $('#server_ip_select').append("<option value=\"" + data[i].private_ip + "\">" + data[i].private_ip + "</option>");
+            };
+        });
+    });
+
+    $("#server_ip_button_add").click(function(){
+        var html = "<span class=\"label label-warning level\" data-value=\"" + $('#server_ip_select').val() + "\">"
+            + $('#server_ip_select').val() + "&nbsp;&nbsp;<i class=\"fa fa-remove\" style=\"cursor: pointer\" onclick=\"rm_level(this)\"></i></span>";
+        $('#server_ip_pool').append(html);
+    });
+
+    $("#server_ip_button_submit").click(function(){
+        var levels = [];
+        $(".level").each(function() {
+            levels.push($(this).data('value'))
+        });
+        $("#server_ip").val(levels.join(","));
+        $("#e_server_ip").val(levels.join(","));
+        //show_overlay({"message": "保存成功"}, "ok");
+        $('#server_ip_modal').modal("hide");
     });
 });
 </script>

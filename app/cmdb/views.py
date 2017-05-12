@@ -191,7 +191,10 @@ def server():
 @cmdb.route('/server-list')
 @login_required
 def server_list():
-    servers = Server.query.all()
+    if request.args.get('category_branch'):
+        servers = Server.query.filter_by(category_branch=request.args.get('category_branch')).all()
+    else:
+        servers = Server.query.all()
     if not servers:
         return jsonify({})
     else:
