@@ -58,6 +58,9 @@ def create_app(config_name):
     from .deploy import deploy as deploy_blueprint
     app.register_blueprint(deploy_blueprint, url_prefix='/deploy')
 
+    from .wiki import wiki as wiki_blueprint
+    app.register_blueprint(wiki_blueprint, url_prefix='/wiki')
+
     from .api_1_0 import api as api_1_0_blueprint
     app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
 

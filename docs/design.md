@@ -49,6 +49,14 @@
 |   |
 |   |-- playbook执行
 |
+|-- wiki
+|   |
+|   |-- index
+|   |
+|   |-- server-info
+|   |
+|   |-- nginx-proxy
+|
 |-- 脚本库
 |
 |-- 日志管理
