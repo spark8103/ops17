@@ -105,7 +105,7 @@ def module_main():
 @login_required
 def module_list():
     if request.args.get('project'):
-        modules = Module.query.filter_by(project=Project.query.filter_by(name=request.args.get('project')).first())
+        modules = Module.query.filter_by(project=Project.query.filter_by(name=request.args.get('project')).first()).all()
     elif request.args.get('project_id'):
         modules = Module.query.filter_by(project=Project.query.filter_by(id=request.args.get('project_id')).first())
     else:
@@ -190,7 +190,7 @@ def environment_main():
 @login_required
 def environment_list():
     if request.args.get('module'):
-        environments = Environment.query.filter_by(module=Module.query.filter_by(name=request.args.get('module')).first())
+        environments = Environment.query.filter_by(module=Module.query.filter_by(name=request.args.get('module')).first()).all()
     else:
         environments = Environment.query.all()
     if not environments:
